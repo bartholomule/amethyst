@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.4 2004/03/21 19:30:15 kpharris Exp $
+ * $Id: plane.hpp,v 1.5 2004/03/21 22:12:40 zorthluthik Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
@@ -394,10 +394,10 @@ namespace amethyst
   }
 
   template<class T>
-  bool plane<T>::extract_uv_for_point(const point3<T>& p,
+  bool plane<T>::extract_uv_for_point(const point3<T>& point,
 				      coord2<T>& uv) const
   {
-    if( plane<T>::inside(p) )
+    if( plane<T>::inside(point) )
     {
       T u;
       T v;
