@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.5 2004/05/17 07:09:44 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.6 2004/06/01 03:52:08 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -219,7 +219,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template<class T>
@@ -286,6 +286,11 @@ namespace amethyst
     inline T operator[](size_t index) const
     {
       return data_pointer[index];
+    }
+    /** Tells if the vector is empty */
+    inline bool empty() const
+    {
+      return begin() == end();
     }
     /** Returns the size of the vector */
     inline size_t size() const
@@ -611,6 +616,30 @@ namespace amethyst
   inline void quick_vector<T>::push_back(const quick_vector<T>& vec)
   {
     append(vec);
+  }
+
+  /**
+   * Send a vector to a stream with simple formatting {  } or { a } or
+   * { a, b, ..., d }
+   */
+  template <class T>
+  std::ostream& operator <<(std::ostream& o, const quick_vector<T>& vt)
+  {
+    int i;
+    o << "{ ";
+    // output all of the elements that need a trailing comma (if any)
+    for(i = 0; i < int(vt.size())-1; ++i)
+    {
+      o << vt[i];
+      o << ", ";
+    }
+    // print out the remaining elements (if any)
+    if(i < int(vt.size()))
+    {
+      o << vt[i];
+    }
+    o << " }";
+    return(o);
   }
   
 } // namespace amethyst
