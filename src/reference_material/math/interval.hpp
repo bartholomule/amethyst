@@ -1,5 +1,5 @@
 /*
- * $Id: interval.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
+ * $Id: interval.hpp,v 1.5 2004/03/21 22:13:42 zorthluthik Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -42,6 +42,7 @@
 */
 
 #include <algorithm>
+#include <iostream>
 #include <ostream>
 
 namespace amethyst
