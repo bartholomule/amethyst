@@ -1,5 +1,5 @@
 /*
- * $Id: unit_line3.hpp,v 1.6 2004/04/07 05:10:06 kpharris Exp $
+ * $Id: unit_line3.hpp,v 1.7 2004/04/18 21:40:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple 3d line with a unit direction.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    * 
    */
   template<class T>
@@ -98,7 +98,16 @@ namespace amethyst
     {
       return(line_origin +
              line_limits.end() * direction());
-    }    
+    }
+    point3<T> point_at(const T& t) const
+    {
+      return(line_origin + direction() * t);
+    }
+    point3<T> point_at_scaled(const T& t) const
+    {
+      return(line_origin + direction() * t * non_unit_length);
+    }
+
     bool infinite() const
     {
       return infinite_limits;

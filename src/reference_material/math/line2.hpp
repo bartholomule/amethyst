@@ -1,5 +1,5 @@
 /*
- * $Id: line2.hpp,v 1.4 2004/04/07 05:10:06 kpharris Exp $
+ * $Id: line2.hpp,v 1.5 2004/04/18 21:40:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -36,7 +36,7 @@ namespace amethyst
    * A simple 2d line.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
@@ -96,8 +96,12 @@ namespace amethyst
     {
       return(line_origin +
              line_limits.end() * direction());
-    }    
-
+    }
+    point2<T> point_at(const T& t) const
+    {
+      return(line_origin + direction() * t);
+    }
+    
     bool infinite() const
     {
       return infinite_limits;
