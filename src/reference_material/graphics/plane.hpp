@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.10 2004/04/18 21:30:46 kpharris Exp $
+ * $Id: plane.hpp,v 1.11 2004/05/17 07:17:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.10 $
+   * @version $Revision: 1.11 $
    * 
    */
   template<class T>
@@ -107,12 +107,23 @@ namespace amethyst
     virtual bool intersects(const plane<T>& p) const;
 
     /** Returns if the given line intersects the sphere. */
-    virtual bool intersects_line(const line3<T>& line, intersection_info<T>& intersection) const;
+    virtual bool intersects_line(const line3<T>& line,
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements) const;
 
     /** Returns if the given line intersects the plane. */
     virtual bool intersects_line(const unit_line3<T>& line,
-                                 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements) const;
 
+    /**
+     * A quick intersection test.  This will calculate nothing but the
+     * distance. This is most useful for shadow tests, and other tests where no
+     * textures will be applied.
+     */ 
+    virtual bool quick_intersection(const unit_line3<T>& line,
+                                    T& distance) const;
+    
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
     virtual std::string to_string(const std::string& base_indentation,
@@ -131,6 +142,9 @@ namespace amethyst
     // a speedimprovement when the point is already known to be on the plane. 
     void extract_uv_for_point_nonchecked(const point3<T>& point, coord2<T>& uv) const;
 
+    virtual intersection_capabilities get_intersection_capabilities() const;
+    virtual object_capabilities get_object_capabilities() const;
+    
   private:
     void setup_non_zero_indices();
 
@@ -320,7 +334,8 @@ namespace amethyst
   // Returns if the given line intersects the plane.
   template <class T>
   inline bool plane<T>::intersects_line(const unit_line3<T>& line,
-                                        intersection_info<T>& intersection) const
+                                        intersection_info<T>& intersection,
+                                        const intersection_requirements& requirements) const
   {
     T ctheta = dotprod(line.direction(), normal);
     T t;
@@ -347,17 +362,83 @@ namespace amethyst
 
     if( line.inside(t) )
     {
-      intersection.set(this, t);
+      intersection.set_shape(this);
+      point3<T> p = line.point_at( t );
+      intersection.set_ray( line );
+      intersection.set_first_distance( t );
+      intersection.set_first_point( p );
+
+      if( requirements.needs_normal() )
+      {
+        intersection.set_normal(normal);
+      }
+
+      if( requirements.needs_uv() )
+      {
+        coord2<T> uv;
+        // Note that a non-checked version is being called, because the point
+        // *SHOULD* be on the plane (it hit it, why check it?).  This improves
+        // speed, and reduces artifacts with expanded error (a point that is on
+        // the plane would sometimes not show as being on the plane -- this is
+        // the case when a small epsilon and single-precision floats are used.
+        extract_uv_for_point_nonchecked(p, uv);
+        intersection.set_uv(uv);
+      }
+
+      if( requirements.needs_local_coord_system() )
+      {
+        intersection.set_onb(onb<T>(u_vector, v_vector, normal));
+      }      
+
       return true;
     }
 
     return false;
   }
 
+
+  // Returns if the given line intersects the plane.
+  template <class T>
+  inline bool plane<T>::quick_intersection(const unit_line3<T>& line,
+                                           T& distance) const
+  {
+    T ctheta = dotprod(line.direction(), normal);
+    T t;
+
+    // I will need to explain why this is safe to do.  If the angle is > 0 or
+    // the angle is < 0, then we know there is a hit somewhere, and it can be
+    // found.  If the angle is zero, then it will cause a divide by zero,
+    // setting t to be +/-INF, which when compared to anything (even itself)
+    // returns false, thus, the inside test below can be called with the INF,
+    // and not get bad numbers out.
+    //
+    // DON'T DELETE THESE COMMENTS, AS THEY APPLY TO OTHER PLANE-BASED
+    // FUNCTIONS AS WELL!
+    if( ctheta > 0 )
+    {
+      t = (dotprod(defining_point - line.origin(), normal) /
+           ctheta);
+    }
+    else
+    {
+      t = (dotprod(defining_point - line.origin(), -normal) /
+           -ctheta);
+    }
+
+    if( line.inside(t) )
+    {
+      distance = t;
+      return true;
+    }
+
+    return false;
+  }  
+
   // Returns if the given line intersects the plane.
   template <class T>
   inline bool plane<T>::intersects_line(const line3<T>& line,
-                                        intersection_info<T>& intersection) const
+                                        intersection_info<T>& intersection,
+                                        const intersection_requirements& requirements) const
   {
     T ctheta = ( dotprod(line.direction(), normal) /
                  length(line.direction()) );
@@ -378,7 +459,36 @@ namespace amethyst
 
     if( line.inside(t) )
     {
-      intersection.set(this, t);
+      intersection.set_shape(this);
+      unit_line3<T> unit_ray(line);
+      T scaled_distance = t / unit_ray.normal_length();
+      point3<T> p = unit_ray.point_at( scaled_distance );
+      intersection.set_ray( unit_ray );
+      intersection.set_first_distance( scaled_distance );
+      intersection.set_first_point( p );
+
+      if( requirements.needs_normal() )
+      {
+        intersection.set_normal(normal);
+      }
+
+      if( requirements.needs_uv() )
+      {
+        coord2<T> uv;
+        // Note that a non-checked version is being called, because the point
+        // *SHOULD* be on the plane (it hit it, why check it?).  This improves
+        // speed, and reduces artifacts with expanded error (a point that is on
+        // the plane would sometimes not show as being on the plane -- this is
+        // the case when a small epsilon and single-precision floats are used.
+        extract_uv_for_point_nonchecked(p, uv);
+        intersection.set_uv(uv);
+      }
+
+      if( requirements.needs_local_coord_system() )
+      {
+        intersection.set_onb(onb<T>(u_vector, v_vector, normal));
+      }
+    
       return true;
     }
 
@@ -396,6 +506,8 @@ namespace amethyst
       internal_tagging += plane<T>::name() + "::";
     }
 
+    retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
+    retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());            
     retval += internal_tagging + string_format("point=%1\n", defining_point);
     retval += internal_tagging + string_format("normal=%1\n", normal);
     retval += internal_tagging + string_format("u=%1\n", u_vector);
@@ -485,6 +597,29 @@ namespace amethyst
   }
 
 
+  template <class T>
+  intersection_capabilities plane<T>::get_intersection_capabilities() const
+  {
+    intersection_capabilities caps = shape<T>::get_intersection_capabilities();
+
+    caps |= intersection_capabilities::HIT_FIRST;
+    caps |= intersection_capabilities::NORMAL_CALCULATION;
+    caps |= intersection_capabilities::UV_CALCULATION;
+    caps |= intersection_capabilities::LOCAL_SYSTEM_CALCULATION;
+    return caps;
+  }
+  
+  template <class T>
+  object_capabilities plane<T>::get_object_capabilities() const
+  {
+    object_capabilities caps = shape<T>::get_object_capabilities();
+
+    caps |= object_capabilities::INFINITE;
+    caps |= object_capabilities::SIMPLE;
+    
+    return caps;    
+  }
+  
 } // namespace amethyst
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: sphere.hpp,v 1.6 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: sphere.hpp,v 1.7 2004/05/17 07:17:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -37,7 +37,7 @@ namespace amethyst
    * A sphere class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    * 
    */
   template<class T>
@@ -92,8 +92,17 @@ namespace amethyst
 
     /** Returns if the given line intersects the sphere. */
     virtual bool intersects_line(const unit_line3<T>& line,
-                                 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection,
+				 const intersection_requirements& requirements) const;
 
+    /**
+     * A quick intersection test.  This will calculate nothing but the
+     * distance. This is most useful for shadow tests, and other tests where no
+     * textures will be applied.
+     */ 
+    virtual bool quick_intersection(const unit_line3<T>& line,
+				    T& distance) const;
+    
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
     virtual std::string to_string(const std::string& base_indentation,
@@ -103,6 +112,9 @@ namespace amethyst
     {
       return "sphere";
     }
+
+    virtual intersection_capabilities get_intersection_capabilities() const;
+    virtual object_capabilities get_object_capabilities() const;
   }; // class sphere
 
 
@@ -207,9 +219,12 @@ namespace amethyst
   // Returns if the given line intersects the sphere.
   template <class T>
   bool sphere<T>::intersects_line(const unit_line3<T>& line,
-                                  intersection_info<T>& intersection) const
+                                  intersection_info<T>& intersection,
+				  const intersection_requirements& requirements) const
   {
-    // This is the fast hit test.
+    // FIXME! We need to allow multiple hits.
+    // This is the fast hit test, it should be kept fairly fast while allowing
+    // multiple hits.
     vector3<T> o_c = line.origin() - center;
     register T A = dotprod(line.direction(), line.direction());
     register T B = 2 * dotprod(line.direction(), o_c);
@@ -227,8 +242,21 @@ namespace amethyst
 
       if( line.inside(t1) )
       {
-        intersection.set(this, t1);
-        return true;
+	intersection.set_shape(this);
+	intersection.set_first_distance(t1);
+	intersection.set_first_point( line.point_at(t1) );
+	intersection.set_ray(line);
+
+
+	if( requirements.needs_normal() )
+	{
+	  intersection.set_normal(unit(intersection.get_first_point() - center));
+	}
+	
+	// FIXME! Follow the requirements
+
+	
+	return true;
       }
       else
       {
@@ -236,12 +264,65 @@ namespace amethyst
         T t2 = (-B + sqrtd) / (2 * A);
         if( line.inside(t2) )
         {
-          intersection.set(this, t2);
+	  intersection.set_shape(this);
+	  intersection.set_first_distance(t2);
+	  intersection.set_first_point( line.point_at(t2) );
+	  intersection.set_ray(line);
+
+	  if( requirements.needs_normal() )
+	  {
+	    intersection.set_normal(unit(intersection.get_first_point() - center));
+	  }
+
+	  // FIXME! Follow the requirements (uv, local coords, etc).
           return true;
         }
       }
     }
     return false;
+  }
+
+  /**
+   * A quick intersection test.  This will calculate nothing but the
+   * distance. This is most useful for shadow tests, and other tests where no
+   * textures will be applied.
+   */
+  template <class T>
+  bool sphere<T>::quick_intersection(const unit_line3<T>& line,
+				     T& distance) const
+  {
+    // This is the fast hit test.
+    vector3<T> o_c = line.origin() - center;
+    register T A = dotprod(line.direction(), line.direction());
+    register T B = 2 * dotprod(line.direction(), o_c);
+    register T C = dotprod(o_c, o_c) - radius_squared;
+    T discriminant = B * B - 4 * A * C;
+
+    if( discriminant >= AMETHYST_EPSILON )
+    {
+      T sqrtd = sqrt(discriminant);
+
+      // If t1 is inside, it MUST be the closest, as A will always be positive
+      // (squared length of the line), and the subtraction will be less than
+      // the addition (as the square root will always be positive). 
+      T t1 = (-B - sqrtd) / (2 * A);
+      if( line.inside(t1) )
+      {
+	distance = t1;
+	return true;
+      }
+      else
+      {
+        // The first side (although a hit), wasn't inside the range.
+        T t2 = (-B + sqrtd) / (2 * A);
+        if( line.inside(t2) )
+        {
+	  distance = t2;
+          return true;
+        }
+      }
+    }
+    return false;	
   }
 
   template <class T>
@@ -255,6 +336,8 @@ namespace amethyst
       internal_tagging += sphere<T>::name() + "::";
     }
 
+    retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
+    retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());        
     retval += internal_tagging + string_format("center=%1\n", center);
     retval += internal_tagging + string_format("radius=%1\n", radius);
 
@@ -271,6 +354,30 @@ namespace amethyst
              indent + "}" );
   }  
 
+  template <class T>
+  intersection_capabilities sphere<T>::get_intersection_capabilities() const
+  {
+    intersection_capabilities caps = shape<T>::get_intersection_capabilities();
+
+    caps |= intersection_capabilities::HIT_FIRST;
+    caps |= intersection_capabilities::HIT_ALL;
+    caps |= intersection_capabilities::NORMAL_CALCULATION;
+    caps |= intersection_capabilities::UV_CALCULATION;
+    //    caps |= intersection_capabilities::LOCAL_SYSTEM_CALCULATION
+    return caps;
+  }
+  
+  template <class T>
+  object_capabilities sphere<T>::get_object_capabilities() const
+  {
+    object_capabilities caps = shape<T>::get_object_capabilities();
+
+    caps |= object_capabilities::BOUNDABLE;
+    caps |= object_capabilities::SIMPLE;
+    
+    return caps;    
+  }
+  
 } // namespace amethyst
 
 

@@ -1,4 +1,4 @@
-// g++ -g figure_3_1.cpp -o figure_3_1 -lm -I. -Igraphics -Igeneral
+// g++ -g figure_3_1.cpp graphics/capabilities.cpp graphics/requirements.cpp -o figure_3_1 -lm -I. -Igraphics -Igeneral
 
 /*
  * This is figure 3.1 from Peter Shirley's "Realistic Raytracing" book, second

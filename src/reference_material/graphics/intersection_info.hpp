@@ -1,5 +1,5 @@
 /*
- * $Id: intersection_info.hpp,v 1.5 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: intersection_info.hpp,v 1.6 2004/05/17 07:17:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -22,6 +22,14 @@
 #if       !defined(AMETHYST__INTERSECTION_INFO_HPP)
 #define            AMETHYST__INTERSECTION_INFO_HPP
 
+#include "conditional_value.hpp"
+
+#include "quick_vector.hpp"
+#include "math/vector3.hpp"
+#include "math/coord2.hpp"
+#include "math/onb.hpp"
+#include "math/unit_line3.hpp"
+
 namespace amethyst
 { 
   template <class T>
@@ -32,112 +40,178 @@ namespace amethyst
    * Information about an intersection (point-based intersection).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template<class T>
   class intersection_info
   {
 
+    struct ibool
+    {
+      bool value;
+
+      ibool(bool val=false):value(val) { }
+      ibool(const ibool& ib): value(ib.value) { }
+      operator bool() const { return value; }
+      ibool& operator=(const ibool& ib) { value = ib.value; }
+    };
+    
   private:
 
   protected:
-    const shape<T>* shape_hit;
-    T distance;
+    typedef conditional_value<const shape<T>*, ibool> conditional_shape;
+    typedef conditional_value<T, ibool> conditional_scalar;
+    typedef conditional_value<point3<T>, ibool> conditional_point;
 
+    typedef conditional_value<vector3<T>, ibool> conditional_vector3;
+    typedef conditional_value<quick_vector<const shape<T>*>, ibool> conditional_shape_vector;
+    typedef conditional_value<coord2<T>, ibool> conditional_coord2;
+    typedef conditional_value<onb<T>, ibool> conditional_onb;
+    typedef conditional_value<unit_line3<T>, ibool> conditional_line;
+    typedef conditional_value<quick_vector<intersection_info<T> >, ibool> conditional_intersection_list;
+    
+    conditional_shape shape_hit;
+    conditional_scalar first_hit_distance;
+    conditional_point point_of_hit;
+    conditional_line ray;
+    conditional_coord2 uv_of_hit;
+    conditional_onb onb_of_hit;
+    conditional_vector3 normal;
+    conditional_shape_vector all_containers;
+    conditional_intersection_list all_intersections;
+    
   public:
-    /** Default constructor */
-    intersection_info();
+    /** Default constructor -- compiler default */
+    //    intersection_info();
 
-    /** Destructor */
-    virtual ~intersection_info();
+    /** Destructor -- compiler default*/
+    //    virtual ~intersection_info();
 
-    /** Copy constructor */
-    intersection_info(const intersection_info& old);
+    /** Copy constructor -- compiler default*/
+    //    intersection_info(const intersection_info& old);
 
-    /** Assignment operator */
-    intersection_info& operator= (const intersection_info& old);
-
-    void set(const shape<T>* hit, T dist);
+    /** Assignment operator -- compiler default */
+    //    intersection_info& operator= (const intersection_info& old);
 
     const shape<T>* get_shape() const
     {
-      return shape_hit;
+      return *shape_hit;
     }
-    T get_distance() const
+    T get_first_distance() const
     {
-      return distance;
+      return *first_hit_distance;
+    }
+    point3<T> get_first_point() const
+    {
+      return *point_of_hit;
+    }
+    unit_line3<T> get_ray() const
+    {
+      return *ray;
+    }
+    coord2<T> get_uv() const
+    {
+      return *uv_of_hit;
+    }
+    onb<T> get_onb() const
+    {
+      return *onb_of_hit;
+    }
+    vector3<T> get_normal() const
+    {
+      return *normal;
+    }
+    const quick_vector<const shape<T>*>& get_containers() const
+    {
+      return *all_containers;
+    }
+    quick_vector<intersection_info<T> > get_all_intersections() const
+    {
+      return *all_intersections;
     }
 
     void set_shape(const shape<T>* s)
     {
-      shape_hit = s;
+      shape_hit = conditional_shape(s, true);
     }
-    void set_distance(T dist)
+    void set_first_distance(T dist)
     {
-      distance = dist;
+      first_hit_distance = conditional_scalar(dist, true);
+    }
+    void set_first_point(const point3<T>& p)
+    {
+      point_of_hit = conditional_point(p, true);
+    }
+    void set_ray(const unit_line3<T>& r)
+    {
+      ray = conditional_line(r, true);
+    }
+    void set_uv(const coord2<T>& c)
+    {
+      uv_of_hit = conditional_coord2(c, true);
+    }
+    void set_onb(const onb<T>& o)
+    {
+      onb_of_hit = conditional_onb(o, true);
+    }
+    void set_normal(const vector3<T>& n)
+    {
+      normal = conditional_vector3(n, true);
+    }
+    void set_containers(const quick_vector<const shape<T>*>& cv)
+    {
+      all_containers = conditional_shape_vector(cv, true);
+    }
+    void set_all_intersections(const quick_vector<intersection_info<T> >& intersections)
+    {
+      all_intersections = conditional_intersection_list(intersections, true);
     }
 
+    void append_container(const shape<T>* s)
+    {
+      if( !all_containers.do_test() )
+      {
+        all_containers = conditional_shape_vector(quick_vector<const shape<T>*>(), true);
+      }
+      all_containers->push_back(s);
+    }
+    void append_intersection(const intersection_info<T>& info)
+    {
+      if( !all_intersections.do_test() )
+      {
+        all_intersections = conditional_intersection_list(quick_vector<intersection_info<T> >(), true);
+      }
+      all_intersections->push_back(info);
+    }    
 
+    bool have_shape() const { return shape_hit.do_test(); }
+    bool have_distance() const { return first_hit_distance.do_test(); }
+    bool have_point() const { return point_of_hit.do_test(); }
+    bool have_ray() const { return ray.do_test(); }
+    bool have_uv() const { return uv_of_hit.do_test(); }
+    bool have_onb() const { return onb_of_hit.do_test(); }
+    bool have_normal() const { return normal.do_test(); }
+    bool have_containers() const { return all_containers.do_test(); }
+    bool have_multiple_intersections() const { return all_intersections.do_test(); }
+    
+    // Calculate any important values that are missing, based on other values contained herein.
+    void calculate_missing();
+    
   }; // class intersection_info
 
-
-
-  //------------------------------------------------
-  // Default constructor for class intersection_info
-  //------------------------------------------------
-  template<class T>
-  inline intersection_info<T>::intersection_info():
-    shape_hit(NULL),
-    distance(-std::numeric_limits<T>::infinity())
+  template <class T>
+  void intersection_info<T>::calculate_missing()
   {
-
-  } // intersection_info()
-
-  //---------------------------------------
-  // Destructor for class intersection_info
-  //---------------------------------------
-  template<class T>
-  inline intersection_info<T>::~intersection_info()
-  {
-
-  } // ~intersection_info()
-
-  //---------------------------------------------
-  // Copy constructor for class intersection_info
-  //---------------------------------------------
-  template<class T>
-  inline intersection_info<T>::intersection_info(const intersection_info<T>& old):
-    shape_hit(old.shape_hit),
-    distance(old.distance)
-  {
-
-  } // intersection_info(intersection_info)
-
-  //------------------------------------------------
-  // Assignment operator for class intersection_info
-  //------------------------------------------------
-  template<class T>
-  inline intersection_info<T>& intersection_info<T>::operator= (const intersection_info<T>& old)
-  {
-    // Generic check for self-assignment
-    if( &old != this )
+    // If we have the ray, and the distance, the point should be available.
+    if( ray.do_test() && first_hit_distance.do_test() && !point_of_hit.do_test() )
     {
-      shape_hit = old.shape_hit;
-      distance = old.distance;
-
+      point_of_hit = conditional_point( ray->point_at(*first_hit_distance), true);
     }
-    return(*this);
-  } // intersection_info::operator=(intersection_info)
 
-
-  template<class T>
-  inline void intersection_info<T>::set(const shape<T>* hit, T dist)
-  {
-    shape_hit = hit;
-    distance = dist;
+    // FIXME! Add more.
   }
-
+  
 } // namespace amethyst
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.7 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: shape.hpp,v 1.8 2004/05/17 07:17:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -26,6 +26,8 @@
 #include <math/line3.hpp>
 #include <math/unit_line3.hpp>
 #include "intersection_info.hpp"
+#include "capabilities.hpp"
+#include "requirements.hpp"
 
 #include <string>
 #include <ostream>
@@ -41,7 +43,7 @@ namespace amethyst
    * The base class for a shape.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.7 $
+   * @version $Revision: 1.8 $
    * 
    */
   template<class T>
@@ -74,17 +76,29 @@ namespace amethyst
     /** Returns if the given plane intersects the shape. */
     virtual bool intersects(const plane<T>& p) const = 0;
 
-    /** Returns if the given line intersects the shape.  For performance
-        reasons, this may be overridden, as the default just converts the
-        line to a unit line, calls the unit version, and adjusts the
-        distance for the scaling. */
+    /**
+     * Returns if the given line intersects the shape.  For performance
+     * reasons, this may be overridden, as the default just converts the line
+     * to a unit line, calls the unit version, and adjusts the distance for the
+     * scaling.
+     */ 
     virtual bool intersects_line(const line3<T>& line,
-                                 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements = intersection_requirements()) const;
 
     /** Returns if the given line intersects the shape. */
     virtual bool intersects_line(const unit_line3<T>& line,
-                                 intersection_info<T>& intersection) const = 0;
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements = intersection_requirements()) const = 0;
 
+    /**
+     * A quick intersection test.  This will calculate nothing but the
+     * distance. This is most useful for shadow tests, and other tests where no
+     * textures will be applied.
+     */ 
+    virtual bool quick_intersection(const unit_line3<T>& line,
+                                    T& distance) const = 0;
+    
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const = 0;
 
     virtual std::string to_string(const std::string& base_indentation,
@@ -100,6 +114,16 @@ namespace amethyst
       return "shape";
     }
 
+    virtual intersection_capabilities get_intersection_capabilities() const
+    {
+      return intersection_capabilities::NONE;
+    }
+
+    virtual object_capabilities get_object_capabilities() const
+    {
+      return object_capabilities::NONE;
+    }
+    
   }; // class shape
 
 
@@ -148,26 +172,26 @@ namespace amethyst
 
   template <class T>
   bool shape<T>::intersects_line(const line3<T>& line,
-                                 intersection_info<T>& intersection) const
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements) const
   {
     unit_line3<T> ul(line);
 
-    if( intersects_line(ul, intersection) )
+    if( intersects_line(ul, intersection, requirements) )
     {
-      intersection.set_distance(intersection.get_distance() /
-                                ul.normal_length());
+      intersection.set_first_distance(intersection.get_first_distance() /
+                                      ul.normal_length());
       return true;
     }
     return false;
   } // shape::intersects_line(line3<T>,T)
-
 
   template <class T>
   std::ostream& operator<<(std::ostream& o, const shape<T>& s)
   {
     o << s.to_string();
     return o;
-  }  
+  }
 
 } // namespace amethyst
 

@@ -1,4 +1,4 @@
-// g++ -g figure_4_5.cpp -o figure_4_5 -lm -I. -Igraphics -Igeneral
+// g++ -g figure_4_5.cpp graphics/capabilities.cpp graphics/requirements.cpp -o figure_4_5 -lm -I. -Igraphics -Igeneral
 
 /*
  * This is figure 4.5 from Peter Shirley's "Realistic Raytracing" book, second
@@ -61,7 +61,10 @@ int main(int argc, char** argv)
 
   cout << "objects=" << sl << endl;
   cout << "camera=" << camera << endl;
-                                         
+
+  intersection_requirements requirements;
+  requirements.force_normal(true);
+  
   for( int y = 0; y < HEIGHT; ++y )
   {
     for( int x = 0; x < WIDTH; ++x )
@@ -85,17 +88,13 @@ int main(int argc, char** argv)
         cout << "ray.point_at_scaled(1)=" << r.point_at_scaled(float_type(1)) << endl;
       */
       
-      if( !sl.intersects_line(r, stuff) )
+      if( !sl.intersects_line(r, stuff, requirements) )
       {
         image(x,y) = black;
       }
       else
       {
-        // EVIL HACK! This is here because intersections do not yet calculate
-        // normals.
-        point intersection_point = (stuff.get_distance() * r.v() + r.o());
-        vec normal = unit(intersection_point - point(0,0,0));
-
+        vec normal = stuff.get_normal();
 
         // Assign a color which is just a cosine between the normal and 
         float_type f = 0.1 + 0.9 * std::max<float_type>(dotprod(normal, vec(0,1,0)), 0);

@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.6 2004/04/18 21:29:36 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.7 2004/05/17 07:17:03 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -27,7 +27,7 @@
 // --------------------------------------
 #include "shape.hpp"
 
-#include <vector>
+#include "quick_vector.hpp"
 #include <rc_pointer.hpp>
 
 namespace amethyst
@@ -38,7 +38,7 @@ namespace amethyst
    * An aggregate (collection) of shapes.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    * 
    */
   template<class T>
@@ -46,7 +46,7 @@ namespace amethyst
   {
   public:
     typedef rc_pointer<shape<T> > shape_pointer_type;
-    typedef std::vector<shape_pointer_type> shape_list_type;
+    typedef quick_vector<shape_pointer_type> shape_list_type;
 
   private:
     shape_list_type shape_list;
@@ -77,10 +77,19 @@ namespace amethyst
 
     /** Returns if the given line intersects the shape. */
     virtual bool intersects_line(const unit_line3<T>& line,
-                                 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements = intersection_requirements()) const;
     
     virtual bool intersects_line(const line3<T>& line,
-                                 intersection_info<T>& intersection) const;    
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements = intersection_requirements()) const;
+
+    /**
+     * A quick intersection test.  This will calculate nothing but the
+     * distance. This is most useful for shadow tests, and other tests where no
+     * textures will be applied.
+     */ 
+    virtual bool quick_intersection(const unit_line3<T>& line, T& distance) const;    
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
@@ -199,43 +208,121 @@ namespace amethyst
   }
 
   template <class T>
-  bool aggregate<T>::intersects_line(const line3<T>& line,
-                                     intersection_info<T>& intersection) const
+  bool aggregate<T>::quick_intersection(const unit_line3<T>& line, T& distance) const
   {
-    return shape<T>::intersects_line(line, intersection);
-  }  
-  
-  template <class T>
-  bool aggregate<T>::intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection) const
-  {
-    bool intersects_something = false;
+    bool hit_something = false;
+    T closest = line.limits().end() + 1;
 
     for( typename shape_list_type::const_iterator iter = shape_list.begin();
          ( iter != shape_list.end() );
          ++iter )
     {
-      intersection_info<T> temp_intersection;
-      if( (*iter)->intersects_line(line, temp_intersection) )
+      T dist;
+      if( (*iter)->quick_intersection(line, dist) )
       {
-        if( !intersects_something )
+        if( dist < closest )
         {
-          intersects_something = true;
-          intersection = temp_intersection;
+          // NOTE: The minimum does not need to be tested, because it must be
+          // within the range of the line to be considered a hit.  We'll just
+          // save that comparison, as this is slow enough already (for a quick
+          // intersection test).
+          closest = dist;
+          hit_something = true;
         }
-        else
+      }
+    }
+    return hit_something;
+  }
+  
+  template <class T>
+  bool aggregate<T>::intersects_line(const line3<T>& line,
+                                     intersection_info<T>& intersection,
+                                     const intersection_requirements& requirements) const
+  {
+    return shape<T>::intersects_line(line, intersection, requirements);
+  }  
+  
+  template <class T>
+  bool aggregate<T>::intersects_line(const unit_line3<T>& line,
+                                     intersection_info<T>& intersection,
+                                     const intersection_requirements& requirements) const
+  {
+    bool intersects_something = false;
+
+    // Clear it out...
+    intersection = intersection_info<T>();
+    
+    for( typename shape_list_type::const_iterator iter = shape_list.begin();
+         ( iter != shape_list.end() );
+         ++iter )
+    {
+      intersection_info<T> temp_intersection;
+      if( (*iter)->intersects_line(line, temp_intersection, requirements) )
+      {
+
+        if( intersects_something && requirements.needs_containers() )
         {
-          if( temp_intersection.get_distance() < intersection.get_distance() )
+          temp_intersection.append_container(this);
+        }
+
+        if( ! requirements.needs_all_hits() )
+        {
+          // This is the easy case, because the entire hit information is
+          // replaced if the hit is closer than the current (if any). 
+          if( !intersects_something )
           {
+            intersects_something = true;
             intersection = temp_intersection;
           }
           else
           {
-            // The existing hit is closer...
+            if( temp_intersection.get_first_distance() < intersection.get_first_distance() )
+            {
+              intersection = temp_intersection;
+            }
+            else
+            {
+              // The existing hit is closer...
+            }
           }
-        }
-      }
-    }
+        } // !all hits
+        else
+        {
+          // This is the harder case, or at least messier case, because some of
+          // the information will need to be preserved (I've chosen the shape,
+          // the distance), for later comparison.
+          
+          // Append the complete intersection information, for later retrieval.
+          intersection.append_intersection(temp_intersection);
+          if( !intersects_something )
+          {
+            // Copy some of the values (distance, shape) to the main intersection container.
+            if( temp_intersection.have_shape() )
+            {
+              intersection.set_shape(temp_intersection.get_shape());
+            }
+            if( temp_intersection.have_distance() )
+            {
+              intersection.set_first_distance(temp_intersection.get_first_distance());
+            }
+          } // !intersects something
+          else // Do a comparison before assigning.
+          {
+            if( (temp_intersection.have_distance() && intersection.have_distance()) &&
+                (temp_intersection.get_first_distance() < intersection.get_first_distance()) )
+            {
+              intersection.set_first_distance(temp_intersection.get_first_distance());
+              // Copy some of the values (distance, shape, line) to the main intersection container.
+              if( temp_intersection.have_shape() )
+              {
+                intersection.set_shape(temp_intersection.get_shape());
+              }
+            } // this hit is closer than any preexisting hits.
+          } // prior hits
+        } // all hits required
+      } // if the shape intersects the line.
+    } // for each shape.
+    
     return intersects_something;
   }
 

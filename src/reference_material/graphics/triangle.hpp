@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.6 2004/04/07 06:15:39 kpharris Exp $
+ * $Id: triangle.hpp,v 1.7 2004/05/17 07:17:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple triangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    * 
    */
   template<class T>
@@ -74,8 +74,18 @@ namespace amethyst
 
     /** Returns if the given line intersects the plane. */
     virtual bool intersects_line(const unit_line3<T>& line,
-                                 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements) const;
 
+
+    /**
+     * A quick intersection test.  This will calculate nothing but the
+     * distance. This is most useful for shadow tests, and other tests where no
+     * textures will be applied.
+     */ 
+    virtual bool quick_intersection(const unit_line3<T>& line,
+                                    T& distance) const;
+    
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
     virtual std::string to_string(const std::string& indent,
@@ -84,6 +94,10 @@ namespace amethyst
     {
       return "triangle";
     }
+
+    virtual intersection_capabilities get_intersection_capabilities() const;
+    virtual object_capabilities get_object_capabilities() const;
+    
   }; // class triangle
 
 
@@ -171,14 +185,14 @@ namespace amethyst
   template<class T>
   bool triangle<T>::intersects(const plane<T>& p) const
   {
-    intersection_info<T> unused;
+    T unused;
     const point3<T>& pp = plane<T>::get_origin();
     point3<T> pu = plane<T>::get_origin() + plane<T>::get_u_vector();
     point3<T> pv = plane<T>::get_origin() + plane<T>::get_v_vector();
 
-    if( p.intersects_line( line3<T>(pp, pu), unused ) ||
-        p.intersects_line( line3<T>(pp, pv), unused ) ||
-        p.intersects_line( line3<T>(pu, pv), unused ) )
+    if( p.quick_intersection( unit_line3<T>(pp, pu), unused ) ||
+        p.quick_intersection( unit_line3<T>(pp, pv), unused ) ||
+        p.quick_intersection( unit_line3<T>(pu, pv), unused ) )
     {
       return true;
     }
@@ -188,27 +202,34 @@ namespace amethyst
 
   template<class T>
   bool triangle<T>::intersects_line(const unit_line3<T>& line,
-                                    intersection_info<T>& intersection) const
+                                    intersection_info<T>& intersection,
+                                    const intersection_requirements& requirements) const
   {
     intersection_info<T> temp_intersection;
 
-    if( plane<T>::intersects_line(line, temp_intersection) )
+    intersection_requirements temp_requirements = requirements;
+    temp_requirements.force_uv(true);
+    
+    if( plane<T>::intersects_line(line, temp_intersection, temp_requirements) )
     {
-      point3<T> p = (temp_intersection.get_distance() * line.direction() + line.origin());
-      coord2<T> uv;
 
-      // Note that a non-checked version is being called, because the point
-      // *SHOULD* be on the plane (it hit it, why check it?).  This improves
-      // speed, and reduces artifacts with expanded error (a point that is on
-      // the plane would sometimes not show as being on the plane -- this is
-      // the case when a small epsilon and single-precision floats are used. 
-      plane<T>::extract_uv_for_point_nonchecked(p, uv);
-
-      if( (uv.x() > 0 && uv.y() > 0) &&
-          (uv.x() + uv.y() < 1) )
+      if( temp_intersection.have_uv() )
       {
-        intersection = temp_intersection;
-        return true;
+        coord2<T> uv = temp_intersection.get_uv();
+        
+        if( (uv.x() > 0 && uv.y() > 0) &&
+            (uv.x() + uv.y() < 1) )
+        {
+          intersection = temp_intersection;
+          
+          // The requirements should be handled by the plane.
+          
+          return true;
+        }
+      }
+      else
+      {
+        std::cout << "ERROR! We should have a UV, but none was provided!" << std::endl;
       }
     }
     return false;
@@ -220,6 +241,8 @@ namespace amethyst
     std::string retval;
     std::string internal_tagging = indentation;
 
+    retval += plane<T>::internal_members(indentation, true);
+    
     if( prefix_with_classname )
     {
       internal_tagging += triangle<T>::name() + "::";
@@ -234,11 +257,57 @@ namespace amethyst
   {
     return ( indent + "triangle\n" +
              indent + "{\n" +
-             plane<T>::internal_members(indent + level_indent, true) +
              triangle<T>::internal_members(indent + level_indent, false) +
              indent + "}" );
   }
 
+  template <class T>
+  intersection_capabilities triangle<T>::get_intersection_capabilities() const
+  {
+    intersection_capabilities caps = plane<T>::get_intersection_capabilities();
+
+    return caps;
+  }
+  
+  template <class T>
+  object_capabilities triangle<T>::get_object_capabilities() const
+  {
+    object_capabilities caps = plane<T>::get_object_capabilities();
+
+    caps &= ~object_capabilities::INFINITE;
+    caps |= object_capabilities::BOUNDABLE;
+    caps |= object_capabilities::POLYGONIZATION;
+    
+    return caps;    
+  }
+
+  template <class T>
+  bool triangle<T>::quick_intersection(const unit_line3<T>& line, T& distance) const
+  {
+    T temp_distance;
+    
+    if( plane<T>::quick_intersection(line, temp_distance) )
+    {
+      point3<T> p = (temp_distance * line.direction() + line.origin());
+      coord2<T> uv;
+
+      // Note that a non-checked version is being called, because the point
+      // *SHOULD* be on the plane (it hit it, why check it?).  This improves
+      // speed, and reduces artifacts with expanded error (a point that is on
+      // the plane would sometimes not show as being on the plane -- this is
+      // the case when a small epsilon and single-precision floats are used. 
+      plane<T>::extract_uv_for_point_nonchecked(p, uv);
+
+      if( (uv.x() > 0 && uv.y() > 0) &&
+          (uv.x() + uv.y() < 1) )
+      {
+        distance = temp_distance;
+        return true;
+      }
+    }
+    return false;    
+  }
+  
 } // namespace amethyst
 
 
