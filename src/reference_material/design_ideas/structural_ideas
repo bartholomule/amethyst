@@ -1,0 +1,155 @@
+
+Suggested structure for amethyst:
+
+    External Scene Representation => translator
+        => Internal Scene Representation => translator2
+        => Image
+
+    In short form:
+        ESR => T1 => ISR => T2 => Image
+
+    Kevin called this an image compiler. :-) I think it's important
+        to keep in mind that most (all?) interfaces can be thought of
+        as langauges. This notion is inspired by my understanding of
+        th structure of most compilers. I keeping thinking of gcc
+        when I think about this. (Hey, maybe we should rip off gcc
+        3.4's new C++ parser, and write scenes in C++ ... now that
+        would be ambitious ... ;-)
+
+    Even a gui defines a language. Eben Moglen calls guis 
+        'point' and 'grunt', or caveman interfaces :-), but that
+        doesn't make them non-languages; each point and click is an
+        instruction, and needs to be translated to some sort of
+        action. 
+        
+I'm not convinced this is the best structure, but I think it has its
+    good points, and I don't know of a better one myself. I'm going
+    to use it to talk about some ideas for plugins. So I'm not trying
+    to define amethyst's structure yet (ar at least, I'm not yet
+    taking the blame for doing so :-), I'm just defining some
+    provisional notions so I can speak specifically instead of
+    vaguely. That way, we stay in the domain of engineering (form is
+    liberating and all that) instead of philosophy.
+    
+    The ISR is the central piece, which will define amethyst. It's the
+        data structure amethyst operates on.
+
+    ESR is some external scene representation. It could be a
+        text-file format, xml, guile, or it could be the internal rep
+        of another program, such as an interactive modeller.
+
+    T1 is a translator which translates an ESR into the ISR. T1 is
+        really just a placeholder; ESR => ISR translators should be
+        implementable as plugins.
+
+    T2 is a translator which translates an ISR into an image. Again,
+        an ISR => Image translator should be a plugin.
+
+    This tells us two imporant things about what we want plugins to
+        be capable of:
+
+        (a) Plugins should be able to translate an ESR into an ISR. 
+            
+
+        (b) Plugins should be able to render (translate) an ISR into
+            an image.
+
+    Now we have two potential requirements for the plugin interface.
+
+It's easy to think of elaborations of the above structure. I'll
+    concentrate on a few which help me talk about what kinds of
+    plugins we might want.
+
+    Elaboration (1)
+
+    There are many different file formats. But the structures
+        of most are conceptually similar. So T2 above, could be
+        structured like this:
+
+                 /----T2----\
+                /      |     \
+        ISR => T2a => IIR => T2b => EID
+
+    T2a renders an ISR into an Internal Image Representation.
+
+    T2b translates an IIR into an External Image Description. An example
+        of an EIF would be TIFF, BMP, JPEG, PNG, pdf, ps etc.
+
+    Besides the fact that T2 was a crappy name, and T2a, T2b are
+        crappy names, this tells us T2b needs to be a plugin, so we
+        can support output to different external image
+        descriptions. Note I don't say 'file'; I could imagine an
+        external image description being a sequence of opengl
+        commands, writes to a framebuffer, microcode commands to
+        graphics hardware, or electrical shocks to a roach with paint
+        on its feet. This is requirement (c) of plugins:
+
+        (c) Plugins should be able to define how to translate an
+            IIR into an EID.
+
+    I don't know if T2a needs to be a plugin. The Holy Book of
+        Generic Programming says YES. The only advantage I can think
+        of to doing so would be allowing different IIRs (making IIR a
+        plugin too, which GP cannon also commands). I could imagine a
+        pixel oriented IIR being much easier to translate to a TIFF
+        or png, and a vector-oriented IIR being much easier to
+        translate to opengl or SVG or postscript.
+
+    Elaboration (2)
+
+    Several existing scene file formats consist of a text file
+        describing the structure of the scene, and accompanying image
+        files which are referenced by the text file for textures and
+        so forth.
+
+    I'd like a plugin for such a scene file format to be able to
+        easily support multiple image formats. So just as we need to
+        allow plugins to define how to read image file formats, as
+        well as how to write image file formats.
+
+        ESSD  => T1 => ISR
+          |       |     |
+        EIDs  => IT => IIRs
+
+    ESSD is an External Scene Structure Description. I think it is
+        easiest to think of this as a text file, and that will
+        probably be the common case, but a an interactive modeller
+        may wish to render 'directly' as opposed to via a text file.
+
+    EID is an External Image Description. Again, it is easiest to
+        think of this as a file, but that needn't be the case.
+
+    The vertical bar | connecting ESSD to EIDs means that the ESSD
+        references the EIDs
+
+    IT is an External Image Description to IIR translator. Think of
+        it as a plugin which loads a kind of image file and prepares
+        it for the rendering engine (called T2, above).
+
+    The vertical bar between T1 and IT means a T1 plugin will call
+        an IT plugin to load an image.
+
+    The vertical bar between ISR and IIRs means the internal scene 
+        representation will reference IIRs. The diagram doesn't show
+        it, but the T1 plugin will create these references.
+
+    This tells us two more plugin requirements:
+
+        (d) Plugins should be able to define how to translate an EID
+            into an IIR.
+
+        (e) Plugins need to be able to use other plugins.
+
+Things missing from this document:
+
+    (a) The text does not talk about dependencies, or how we will
+        minimize them.
+
+    (b) The text lacks concrete examples in some places.
+
+    (c) The text lacks references to inspiration and so forth. 
+    
+
+      
+  
+  
