@@ -68,27 +68,27 @@ It's easy to think of elaborations of the above structure. I'll
 
                  /----T2----\
                 /      |     \
-        ISR => T2a => IIR => T2b => EID
+        ISR => RE => IIR => T2b => EID
 
-    T2a renders an ISR into an Internal Image Representation.
+    RE renders an ISR into an Internal Image Representation. RE is
+        the Rendering Image.
 
     T2b translates an IIR into an External Image Description. An example
         of an EIF would be TIFF, BMP, JPEG, PNG, pdf, ps etc.
 
-    Besides the fact that T2 was a crappy name, and T2a, T2b are
-        crappy names, this tells us T2b needs to be a plugin, so we
-        can support output to different external image
-        descriptions. Note I don't say 'file'; I could imagine an
-        external image description being a sequence of opengl
-        commands, writes to a framebuffer, microcode commands to
-        graphics hardware, or electrical shocks to a roach with paint
-        on its feet. This is requirement (c) of plugins:
+    This tells us T2b needs to be a plugin, so we can support output
+        to different external image descriptions. Note I don't say
+        'file'; I could imagine an external image description being a
+        sequence of opengl commands, writes to a framebuffer,
+        microcode commands to graphics hardware, or electrical shocks
+        to a roach with paint on its feet. This is requirement (c) of
+        plugins:
 
-        (c) Plugins should be able to define how to translate an
-            IIR into an EID.
+        (c) Plugins should be able to define how to translate an IIR
+            into an EID.
 
-    In this elaboration, T2a is the rendering pass, doing the real
-        work of the program. T2a would ideally be a plugin as
+    In this elaboration, RE is the rendering pass, doing the real
+        work of the program. RE would ideally be a plugin as
         well. This would allow wholesale replacement of the renderer,
         making amethyst a framework as much as a renderer.
 
@@ -143,7 +143,7 @@ The primary drawback of the structures described here is that they
 
 The whole picture:              /----T2----\          
                                /      |     \         
-        ESSD  => SR => ISR => T2a => IIR => T2b => EIDISR  
+        ESSD  => SR => ISR => RE => IIR => T2b => EIDISR  
           |       |     |
         EIDs  => IT => IIRs
 
@@ -173,7 +173,7 @@ Naming Interfaces:
         Description. 
         
 
-    ISR => T2a : Rendering Engine Input Interface . 
+    ISR => RE : Rendering Engine Input Interface . 
         The interface the Rendering Engine uses to render the scene. 
 
     IIR => T2b : Rendering Engine Output Interface .
