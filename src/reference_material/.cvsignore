@@ -1,0 +1,7 @@
+*.tga
+figure_3_1
+figure_4_10
+figure_4_5
+.libs
+.deps
+Makefile
