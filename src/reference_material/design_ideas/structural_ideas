@@ -195,6 +195,24 @@ Naming Interfaces:
 
         User Interface:
 
+Desirable properties of interfaces:
+
+    (a) Versioned.
+
+        Types of versioning:
+
+            Simple: Any version mismatch is a rejection.
+            
+            Backward Compatiblity Supporting: `1
+
+    (b) Maximize static validity checking, particularly static type
+        safety. 
+
+    (c) Maximize dynamic checking of that which cannot be verified as
+        valid staticly.
+
+    (b) Support callbacks.
+
 Things missing from this document:
 
     (a) The text does not talk about dependencies, or how we will
