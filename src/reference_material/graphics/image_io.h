@@ -11,10 +11,12 @@
   19jan1999 Created this file.
  */
 
-#include "raster.h"
+#include <raster.hpp>
 #include <string>
 #include <fstream>
-#include <magic_pointer.h>
+#include <magic_pointer.hpp>
+
+namespace amethyst {
 
 template <class T>
 class image_io
@@ -44,7 +46,7 @@ public:
 protected:
 };
 
-
+} // namespace amethyst
 
 #endif /* !defined(KH_IMAGEOUT_H) */
 

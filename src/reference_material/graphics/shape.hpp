@@ -1,7 +1,7 @@
 /*
- * $Id: shape.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: shape.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -41,7 +41,7 @@ namespace amethyst
    * The base class for a shape.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>

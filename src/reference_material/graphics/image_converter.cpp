@@ -1,8 +1,8 @@
-#include <manygames/image_converter.hpp>
+#include <image_converter.hpp>
 
 #include <cmath>
 
-namespace manygames
+namespace amethyst
 { 
   template<>
   extern rgbcolor<double>
@@ -41,4 +41,4 @@ namespace manygames
   }
 
   
-} // namespace manygames  
+} // namespace amethyst  

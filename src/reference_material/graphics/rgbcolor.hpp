@@ -1,7 +1,7 @@
 /*
- * $Id: rgbcolor.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: rgbcolor.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -19,10 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__MANYGAMES__RGBCOLOR_HPP)
-#define            __MANYGAMES__RGBCOLOR_HPP
+#if       !defined(AMETHYST__RGBCOLOR_HPP)
+#define            AMETHYST__RGBCOLOR_HPP
 
-namespace manygames
+namespace amethyst
 { 
 
   /**
@@ -49,7 +49,7 @@ namespace manygames
    * class as an array of three ints.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template <class T>
@@ -277,7 +277,7 @@ namespace manygames
   } // operator-(rgbcolor,rgbcolor)  
   
   
-} // namespace manygames
+} // namespace amethyst
 
 
-#endif /* !defined(__MANYGAMES__RGBCOLOR_HPP) */
+#endif /* !defined(AMETHYST__RGBCOLOR_HPP) */

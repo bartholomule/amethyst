@@ -1,7 +1,7 @@
 /*
- * $Id: image.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: image.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -19,16 +19,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__MANYGAMES__IMAGE_HPP)
-#define            __MANYGAMES__IMAGE_HPP
+#if       !defined(AMETHYST__IMAGE_HPP)
+#define            AMETHYST__IMAGE_HPP
 
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include <manygames/raster.hpp>
-#include <manygames/rgbcolor.hpp>
+#include <raster.hpp>
+#include <rgbcolor.hpp>
 
-namespace manygames
+namespace amethyst
 { 
 
   // Sorry about these comments, as they are meant to be viewed in html form.
@@ -59,7 +59,7 @@ namespace manygames
    * </font>
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * @see raster
    * @see rgbcolor
    * 
@@ -145,8 +145,8 @@ namespace manygames
     return (*this);
   } // image::operator=(image)
   
-} // namespace manygames
+} // namespace amethyst
 
 
-#endif /* !defined(__MANYGAMES__IMAGE_HPP) */
+#endif /* !defined(AMETHYST__IMAGE_HPP) */
 

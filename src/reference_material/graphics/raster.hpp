@@ -1,7 +1,7 @@
 /*
- * $Id: raster.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: raster.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -19,16 +19,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__MANYGAMES__RASTER_HPP)
-#define            __MANYGAMES__RASTER_HPP
+#if       !defined(AMETHYST__RASTER_HPP)
+#define            AMETHYST__RASTER_HPP
 
-#include <manygames/textized.hpp>
-#include <manygames/extra_exceptions.hpp>
-#include <manygames/template_functions.hpp>
-#include <manygames/useful_functions.hpp>
+#include <textized.hpp>
+#include <extra_exceptions.hpp>
+#include <template_functions.hpp>
+#include <useful_functions.hpp>
 #include <string>
 
-namespace manygames
+namespace amethyst
 {
   template <class T> class scanline;
 
@@ -39,7 +39,7 @@ namespace manygames
    * have iterators (at this time).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template <class T>
@@ -173,7 +173,7 @@ namespace manygames
    * row number be changed.
    *
    * @author Kevin Harris
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    */
   template <class T>
   class scanline
@@ -715,9 +715,9 @@ namespace manygames
     return *this;	  
   } // scanline::operator=(scanline)
   
-} // namespace manygames
+} // namespace amethyst
 
 
 
 
-#endif /* !defined(__MANYGAMES__RASTER_HPP) */
+#endif /* !defined(AMETHYST__RASTER_HPP) */
