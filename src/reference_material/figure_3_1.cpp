@@ -16,9 +16,12 @@
 
 using namespace amethyst;
 
-typedef point3<double> point;
-typedef vector3<double> vec;
-typedef rgbcolor<double> color;
+typedef double float_type;
+//typedef float float_type;
+
+typedef point3<float_type> point;
+typedef vector3<float_type> vec;
+typedef rgbcolor<float_type> color;
 
 using std::cout;
 using std::endl;
@@ -30,15 +33,15 @@ int main(int argc, char** argv)
 {
   (void) argc;
   (void) argv;
-  aggregate<double> sl;
+  aggregate<float_type> sl;
 
-  rc_pointer<shape<double> > sph_ptr(new sphere<double>(point(250,250,-1000),
-							150));
+  rc_pointer<shape<float_type> > sph_ptr(new sphere<float_type>(point(250,250,-1000),
+                                                                150));
   sl.add(sph_ptr);
   point p1(300,600,-800);
   point p2(0,100,-1000);
   point p3(450,20,-1000);
-  rc_pointer<shape<double> > tri_ptr(new triangle<double>(p1,p2,p3));
+  rc_pointer<shape<float_type> > tri_ptr(new triangle<float_type>(p1,p2,p3));
 
   sl.add(tri_ptr);
 
@@ -47,7 +50,7 @@ int main(int argc, char** argv)
 
   raster<color> image(WIDTH, HEIGHT);
 
-  intersection_info<double> stuff;
+  intersection_info<float_type> stuff;
 
   cout << "objects=" << sl << endl;
 
@@ -55,10 +58,10 @@ int main(int argc, char** argv)
   {
     for( int x = 0; x < WIDTH; ++x )
     {
-      unit_line3<double> r(point3<double>(500.0 * x / double(WIDTH),
-					  500.0 * (HEIGHT-y)/double(HEIGHT),
-					  0),
-                           vector3<double>(0,0,-1));
+      unit_line3<float_type> r(point3<float_type>(500.0 * x / float_type(WIDTH),
+                                                  500.0 * (HEIGHT-y)/float_type(HEIGHT),
+                                                  0),
+                               vector3<float_type>(0,0,-1));
 
       if( !sl.intersects_line(r, stuff) )
       {
@@ -66,13 +69,13 @@ int main(int argc, char** argv)
       }
       else
       {
-        const shape<double>* hit_shape = stuff.get_shape();
+        const shape<float_type>* hit_shape = stuff.get_shape();
 
-        if( dynamic_cast<const sphere<double>*>(hit_shape) != NULL )
+        if( dynamic_cast<const sphere<float_type>*>(hit_shape) != NULL )
         {
           image(x,y) = blue;
         }
-        else if( dynamic_cast<const triangle<double>*>(hit_shape) != NULL )
+        else if( dynamic_cast<const triangle<float_type>*>(hit_shape) != NULL )
         {
           image(x,y) = red;
         }
