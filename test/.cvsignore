@@ -1,0 +1,6 @@
+*~
+.deps
+.libs
+Makefile
+test_raster
+test_rgbcolor

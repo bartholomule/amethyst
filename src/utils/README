@@ -1,0 +1,7 @@
+These are general utilities that can be used to either create games for use
+with 'manygames', or to aid in the creation of 'manygames' itself. 
+
+* gen-class -- A C++ class stub generator.
+* gen-class-lgpl -- A C++ class stub generator (generates stubs with a LGPL
+  license).  
+

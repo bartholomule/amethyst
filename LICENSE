@@ -1,0 +1,36 @@
+    This package is released, as a whole, under the GNU GPL license. Individual
+    modules, as contributed by their author(s), may at the choice of their
+    author(s) be licensed differently (ie. GNU LGPL).  These author-supplied
+    licenses, if any, apply only to the modules designated by their respective
+    author(s), and shall not conflict with the ability to release the module
+    within this package (see http://www.gnu.org/licenses/license-list.html for
+    compatible licenses).  
+
+    If a license is not supplied with a module contained in this package, it
+    will fall under the GNU GPL.  Read the corresponding documentation of each
+    module for details. 
+
+    If you are contributing a module to this project, it is recommended that
+    you release that module under the GNU GPL license; the GNU LGPL license,
+    however, may be used if you want that module to be to be used in both
+    free and non-free programs (before you choose to do this, please read 
+    http://www.gnu.org/licenses/why-not-lgpl.html). 
+
+    The complete text of the GNU GPL license may be found in doc/gpl.txt, and
+    the GNU LGPL license in doc/lgpl.txt.
+
+---------------------------------------------------------------------------
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
