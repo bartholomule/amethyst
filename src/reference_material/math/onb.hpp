@@ -1,5 +1,5 @@
 /*
- * $Id: onb.hpp,v 1.2 2003/09/18 20:36:59 kpharris Exp $
+ * $Id: onb.hpp,v 1.3 2003/09/19 00:40:09 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -22,7 +22,12 @@
 #define            __AMETHYST__ONB_HPP__
 
 /*
-  onb.hpp -- A class to represent an ortho-normal basis
+  onb.hpp -- A class to represent an ortho-normal basis.
+
+  An ortho-normal basis is a set of 3 mutually perpendicular (ortho) vectors
+  which are all unit-length (normal).  As such, it can be used for simple
+  transformations on vectors, points, and coordinates involving only a single
+  rotation.  
 */
 
 /*
@@ -35,6 +40,7 @@
 */
 
 #include "vector3.hpp"
+#include "point3.hpp"
 #include "vector_utils.hpp"
 
 namespace amethyst
@@ -84,25 +90,41 @@ namespace amethyst
     }  
 
     // Take an external coord, and convert to one for this ONB
-    inline coord3<T> coord_to_onb(const coord3<T>& c) const
+    inline coord3<T> into_onb(const coord3<T>& c) const
     {
       vector3<T> cv(c);
       return coord3<T>(dotprod(cv,u),dotprod(cv,v),dotprod(cv,w));
     }
+    
+    // Take an external point, and convert to one for this ONB
+    inline point3<T> into_onb(const point3<T>& c) const
+    {
+      vector3<T> cv(c.x(), c.y(), c.z());
+      return point3<T>(dotprod(cv,u),dotprod(cv,v),dotprod(cv,w));
+    }
+
+    // Take an external vector, and convert to one for this ONB
+    inline vector3<T> into_onb(const vector3<T>& c) const
+    {
+      return vector3<T>(dotprod(c,u),dotprod(c,v),dotprod(c,w));
+    }
+    
     // Take an internal coord, and convert to one for a 'global' ONB.
-    inline coord3<T> coord_from_onb(const coord3<T>& c) const
+    inline coord3<T> outof_onb(const coord3<T>& c) const
     {
       vector3<T> cv(u * c.x() + v * c.y() + w * c.z());
       return( coord3<T>(cv.x(), cv.y(), cv.z()) );
     }
-  
-    // Take an external vector, and convert to one for this ONB
-    inline vector3<T> vector_to_onb(const vector3<T>& c) const
+    
+    // Take an internal point, and convert to one for a 'global' ONB.
+    inline point3<T> outof_onb(const point3<T>& c) const
     {
-      return vector3<T>(dotprod(c,u),dotprod(c,v),dotprod(c,w));
+      vector3<T> cv(u * c.x() + v * c.y() + w * c.z());
+      return( point3<T>(cv.x(), cv.y(), cv.z()) );
     }
+
     // Take an internal vector, and convert to one for a 'global' ONB.
-    inline vector3<T> vector_from_onb(const vector3<T>& c) const
+    inline vector3<T> outof_onb(const vector3<T>& c) const
     {
       return (u * c.x() + v * c.y() + w * c.z());
     }
