@@ -141,6 +141,59 @@ The primary drawback of the structures described here is that they
     are too general. The more generic a tool is, the less work it
     does in a specific example.
 
+The whole picture:              /----T2----\          
+                               /      |     \         
+        ESSD  => T1 => ISR => T2a => IIR => T2b => EIDISR  
+          |       |     |
+        EIDs  => IT => IIRs
+
+Naming Interfaces:
+
+    One drawback of the above diagram is that all the interfaces are
+        are all named '=>' , in the sense that '=>' is used to
+        represent each one. Yet each interface is a linchpin; if it
+        doesn't work correctly, the whole structure falls apart.
+
+    For both performance and compatibility, the design of the
+        interfaces will I suspect be the most important part;
+        everything else can be readily replaced if it turns out to be 
+        flawed.
+        
+    There 8 interfaces in the above diagram. We need a simple, clear,
+        and consistent naming for each of them.
+
+    ESSD => T1 : Scene Input Interface.
+        This interface should probably be inside the the T1 plugin;
+        that is the best way that I know how to grant the plugin
+        control over input source.
+
+    T1 => ISR : Scene Construction Interface.
+        The interface the T1 translator uses to build a scene, based
+        on the instructions from the External Scene Structure
+        Description. 
+        
+
+    ISR => T2a : Rendering Engine Input Interface . 
+        The interface the Rendering Engine uses to render the scene. 
+
+    IIR => T2b : Rendering Engine Output Interface .
+        The interface the Rendering Engine uses to output the scene.
+
+    T2b => EIDISR : Image Output Interface.
+        The interface used to write the image. Ideally, this should
+        be contained within the T2b plugin, so that the plugin can
+        control the output source.
+
+    EID => IT : Image Input Interface.
+
+    IT => IIR : Image To Rendering Engine Input Interface.
+
+    Interfaces missing from the above list:
+
+        Plugin Loader Interface:
+
+        User Interface:
+
 Things missing from this document:
 
     (a) The text does not talk about dependencies, or how we will
@@ -150,6 +203,3 @@ Things missing from this document:
 
     (c) The text lacks references to inspiration and so forth. 
     
-
-      
-  
