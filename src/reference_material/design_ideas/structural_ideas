@@ -17,7 +17,7 @@ Suggested structure for amethyst:
         would be ambitious ... ;-)
 
     Even a gui defines a language. Eben Moglen calls guis 
-        'point' and 'grunt', or caveman interfaces :-), but that
+        'point and grunt', or 'caveman' interfaces :-), but that
         doesn't make them non-languages; each point and click is an
         instruction, and needs to be translated to some sort of
         action. 
