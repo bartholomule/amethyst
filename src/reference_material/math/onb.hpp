@@ -1,5 +1,5 @@
 /*
- * $Id: onb.hpp,v 1.1 2003/09/18 20:21:09 kpharris Exp $
+ * $Id: onb.hpp,v 1.2 2003/09/18 20:36:59 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -35,6 +35,7 @@
 */
 
 #include "vector3.hpp"
+#include "vector_utils.hpp"
 
 namespace amethyst
 {
@@ -85,7 +86,7 @@ namespace amethyst
     // Take an external coord, and convert to one for this ONB
     inline coord3<T> coord_to_onb(const coord3<T>& c) const
     {
-      vector<T> cv(c);
+      vector3<T> cv(c);
       return coord3<T>(dotprod(cv,u),dotprod(cv,v),dotprod(cv,w));
     }
     // Take an internal coord, and convert to one for a 'global' ONB.
