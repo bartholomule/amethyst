@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.9 2004/04/07 06:15:37 kpharris Exp $
+ * $Id: plane.hpp,v 1.10 2004/04/18 21:30:46 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.9 $
+   * @version $Revision: 1.10 $
    * 
    */
   template<class T>
@@ -410,7 +410,7 @@ namespace amethyst
   std::string plane<T>::to_string(const std::string& indent,
                                   const std::string& level_indent) const
   {
-    return ( indent + "plane\n" +
+    return ( indent + plane<T>::name() + "\n" + 
              indent + "{\n" +
              plane<T>::internal_members(indent + level_indent, false) +
              indent + "}" );         
