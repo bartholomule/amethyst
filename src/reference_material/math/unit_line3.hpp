@@ -1,7 +1,7 @@
 /*
- * $Id: unit_line3.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: unit_line3.hpp,v 1.3 2004/03/20 06:20:43 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -25,6 +25,8 @@
 #include "line3.hpp"
 #include <limits>
 
+#include <iosfwd>
+
 namespace amethyst
 { 
 
@@ -33,7 +35,7 @@ namespace amethyst
    * A simple 3d line with a unit direction.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>
@@ -54,8 +56,8 @@ namespace amethyst
     unit_line3();
 
     unit_line3(const point3<T>& o, const vector3<T>& v,
-	 const interval<T>& limits = interval<T>( -std::numeric_limits<T>::max(),
-						  std::numeric_limits<T>::min() ));
+	 const interval<T>& limits = interval<T>( std::numeric_limits<T>::min(),
+						  std::numeric_limits<T>::max() ));
     unit_line3(const point3<T>& p1, const point3<T>& p2);
 
     explicit unit_line3(const line3<T>& line);
@@ -120,13 +122,13 @@ namespace amethyst
     infinite_limits = ( (line_limits.begin() <= -std::numeric_limits<T>::max()) &&
 			(line_limits.end() >= std::numeric_limits<T>::max()) );
 
-    non_unit_length = line_direction.length();
+    non_unit_length = length(line_direction);
     line_direction /= non_unit_length;
 
     if( !infinite_limits )
     {
-      line_limits.set( line_limits.begin() * d,
-		       line_limits.end() * d );
+      line_limits.set( line_limits.begin() * non_unit_length,
+		       line_limits.end() * non_unit_length );
     }
   } // unit_line3()
 
@@ -214,6 +216,13 @@ namespace amethyst
 		    line_direction * non_unit_length,
 		    interval<T>( line_limits.begin() / non_unit_length,
 				 line_limits.end() / non_unit_length ));
+  }
+
+  template <class T>
+  std::ostream& operator<<(std::ostream& o, const unit_line3<T>& l)
+  {
+    o << "|" << l.o() << ", " << l.v() << ", " << l.normal_length() << ", " << l.limits() << "|";
+    return o;
   }
   
 } // namespace amethyst

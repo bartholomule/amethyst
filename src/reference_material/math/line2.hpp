@@ -1,7 +1,7 @@
 /*
- * $Id: line2.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: line2.hpp,v 1.3 2004/03/20 06:20:43 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -36,7 +36,7 @@ namespace amethyst
    * A simple 2d line.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>
@@ -56,8 +56,8 @@ namespace amethyst
     line2();
 
     line2(const point2<T>& o, const vector2<T>& v,
-	 const interval<T>& limits = interval<T>( -numeric_limits<T>::max(),
-						  numeric_limits<T>::min() ));
+	 const interval<T>& limits = interval<T>( numeric_limits<T>::min(),
+						  numeric_limits<T>::max() ));
     line2(const point2<T>& p1, const point2<T>& p2);
 
     /** Destructor */
@@ -170,6 +170,13 @@ namespace amethyst
     return (*this);
   } // line2::operator=(line2)
 
+  template <class T>
+  std::ostream& operator<<(std::ostream& o, const line2<T>& l)
+  {
+    o << "|" << l.o() << ", " << l.v() << "|";
+    return o;
+  }
+  
 } // namespace amethyst
 
 
