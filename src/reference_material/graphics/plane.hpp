@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
+ * $Id: plane.hpp,v 1.4 2004/03/21 19:30:15 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -27,6 +27,7 @@
 // --------------------------------------
 #include "shape.hpp"
 #include "sphere.hpp"
+#include <math/coord2.hpp>
 #include <general/string_format.hpp>
 
 namespace amethyst
@@ -37,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template<class T>
@@ -48,6 +49,10 @@ namespace amethyst
 
     point3<T> defining_point;
     vector3<T> normal;
+    vector3<T> u_vector;
+    vector3<T> v_vector;
+    int non_zero_u_index;
+    int non_zero_v_index;
     
   protected:
     
@@ -57,6 +62,14 @@ namespace amethyst
 
     /** Secondary (pos/orientation) constructor */
     plane(const point3<T>& p, const vector3<T>& n);
+
+    /** Tertiary (pos/orientation/rotation) constructor */
+    plane(const point3<T>& p, const vector3<T>& n, const vector3<T>& vec_u);
+
+    /** Quaternary (pos1, pos2, pos3) constructor */
+    plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v);
+    /** Quinary (pos, vec, vec, vec) constructor */
+    plane(const point3<T>& p, const vector3<T>& normal, const vector3<T>& vec_u, const vector3<T>& vec_v);
     
     /** Destructor */
     virtual ~plane();
@@ -67,6 +80,11 @@ namespace amethyst
     /** Assignment operator */
     plane& operator= (const plane& old);
 
+    const point3<T>& p() const { return defining_point; }
+    const vector3<T>& n() const { return normal; }
+    const vector3<T>& u() const { return u_vector; }
+    const vector3<T>& v() const { return v_vector; }
+    
     /** Returns if the given point is inside the shape. */
     virtual bool inside(const point3<T>& p) const;
 
@@ -85,6 +103,11 @@ namespace amethyst
 
     virtual std::string to_string(const std::string& base_indentation,
 				  const std::string& level_indentation = "  ") const;
+
+    bool extract_uv_for_point(const point3<T>& p, coord2<T>& uv) const;
+
+  private:
+    void setup_non_zero_indices();
     
   }; // class plane
 
@@ -97,9 +120,13 @@ namespace amethyst
   plane<T>::plane():
     shape<T>(),
     defining_point(0,0,0),
-    normal(0,0,0)
+    normal(0,0,0),
+    u_vector(0,0,0),
+    v_vector(0,0,0),
+    non_zero_u_index(0),
+    non_zero_v_index(0)
   {
-  
+    
   } // plane()
 
   //---------------------------------------------------------
@@ -111,9 +138,65 @@ namespace amethyst
     defining_point(p),
     normal(unit(n))
   {
-    
+    v_vector = unit(crossprod(normal,
+			      point3<T>(defining_point.x() + 1,
+					defining_point.y(),
+					defining_point.z()) -
+			      defining_point));
+    u_vector = crossprod(v_vector, normal);
+
+    setup_non_zero_indices();
   } // plane(point3,vector3)
 
+  //---------------------------------------------------------
+  // Tertiary (pos/orientation/rotation) constructor for class plane.
+  //---------------------------------------------------------
+  template <class T>
+  plane<T>::plane(const point3<T>& p, const vector3<T>& n, const vector3<T>& vec_u):
+    shape<T>(),
+    defining_point(p),
+    normal(unit(n)),
+    v_vector(crossprod(normal, vec_u))
+  {
+    u_vector = crossprod(v_vector, normal);
+
+    setup_non_zero_indices();
+    
+  } // plane(point3,vector3,vector3)
+
+  //---------------------------------------------------------
+  // Quaternary (pos1, pos2, pos3) constructor for class plane.
+  //---------------------------------------------------------
+  template <class T>
+  plane<T>::plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v):
+    shape<T>(),
+    defining_point(p)
+  {
+    u_vector = plus_u - p;
+    v_vector = plus_v - p;
+    normal = unit(crossprod(u_vector, v_vector));
+
+    setup_non_zero_indices();
+    
+  } // plane(point3,point3,point3)    
+
+  //---------------------------------------------------------
+  // Quinary (pos, vec, vec, vec) constructor for class plane.
+  //---------------------------------------------------------
+  template <class T>
+  plane<T>::plane(const point3<T>& p, const vector3<T>& normal,
+		  const vector3<T>& vec_u, const vector3<T>& vec_v):
+    shape<T>(),
+    defining_point(p),
+    normal(unit(crossprod(vec_u, vec_v))),
+    u_vector(vec_u),
+    v_vector(vec_v)
+  {
+    
+    setup_non_zero_indices();
+    
+  } // plane(point3,vector3,vector3,vector3)
+  
   //---------------------------
   // Destructor for class plane
   //---------------------------
@@ -130,7 +213,11 @@ namespace amethyst
   plane<T>::plane(const plane<T>& old):
     shape<T>(old),
     defining_point(old.defining_point),
-    normal(old.normal)
+    normal(old.normal),
+    u_vector(old.u_vector),
+    v_vector(old.v_vector),
+    non_zero_u_index(old.non_zero_u_index),
+    non_zero_v_index(old.non_zero_v_index)
   {
 
   } // plane(plane)
@@ -146,7 +233,12 @@ namespace amethyst
     {
       defining_point = old.defining_point;
       normal = old.normal;
+      u_vector = old.u_vector;
+      v_vector = old.v_vector;
 
+      non_zero_u_index = old.non_zero_u_index;
+      non_zero_v_index = old.non_zero_v_index;
+	
       shape<T>::operator=(old);
     }
     return (*this);
@@ -277,8 +369,48 @@ namespace amethyst
 	     indent + "{\n" +
 	     indent + level_indent + string_format("point=%1\n", defining_point) + 
 	     indent + level_indent + string_format("normal=%1\n", normal) +
-	     indent + "}" );
-	     
+	     indent + level_indent + string_format("u=%1\n", u_vector) +
+	     indent + level_indent + string_format("v=%1\n", v_vector) +
+	     indent + level_indent + string_format("nz_indices=(%1,%2\n",
+						   non_zero_u_index,
+						   non_zero_v_index) +
+	     indent + "}" );	     
+  }
+
+  template <class T>
+  void plane<T>::setup_non_zero_indices()
+  {
+    for(non_zero_u_index = 0; non_zero_u_index < 3; ++non_zero_u_index)
+    {
+      if(fabs(u_vector[non_zero_u_index]) > AMETHYST_EPSILON)
+	break;
+    }
+    for(non_zero_v_index = 0; non_zero_v_index < 3; ++non_zero_v_index)
+    {
+      if(non_zero_v_index == non_zero_u_index) continue;
+      if(fabs(v_vector[non_zero_v_index]) > AMETHYST_EPSILON)
+	break;
+    }
+  }
+
+  template<class T>
+  bool plane<T>::extract_uv_for_point(const point3<T>& p,
+				      coord2<T>& uv) const
+  {
+    if( plane<T>::inside(p) )
+    {
+      T u;
+      T v;
+      vector3<T> point_diff_vector((point - defining_point) - v_vector);
+      T u_scalar = u_vector[non_zero_v_index]/u_vector[non_zero_u_index];
+      v = (point_diff_vector[non_zero_v_index] - point_diff_vector[non_zero_u_index]*u_scalar) /
+	(v_vector[non_zero_v_index] - v_vector[non_zero_u_index] * u_scalar);
+      u = (point_diff_vector[non_zero_u_index]  - v * v_vector[non_zero_u_index]) /
+	u_vector[non_zero_u_index];
+      
+      return true;
+    }
+    return false;
   }
 
   
@@ -287,6 +419,7 @@ namespace amethyst
   {
     return p.intersects(s);
   }
+
   
 } // namespace amethyst
 
