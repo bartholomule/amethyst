@@ -1,4 +1,4 @@
-// g++ -g figure_3_7.cpp -o figure_3_7 -lm -I. -Igraphics -Igeneral -DDO_NOT_ICE
+// g++ -g figure_3_7.cpp -o figure_3_7 -lm -I. -Igraphics -Igeneral
 
 /*
  * This is figure 3.7 from Peter Shirley's "Realistic Raytracing" book, or at
@@ -31,16 +31,15 @@ int main(int argc, char** argv)
   aggregate<double> sl;
 
 
-  rc_pointer<shape<double> > sph_ptr(new sphere<double>(point(0,0,1-WIDTH-50), WIDTH-0.9));
+  double sphere_radius = WIDTH-AMETHYST_EPSILON;
+  rc_pointer<shape<double> > sph_ptr(new sphere<double>(point(0,0,-sphere_radius), -sphere_radius));
   sl.add(sph_ptr);
-
-#if !defined(DO_NOT_ICE)
-  rc_pointer<shape<double> > tri_ptr(new triangle<double>(point(0,0,-WIDTH),
-							  point(WIDTH+0.1,0,-WIDTH),
-							  point(WIDTH/2.0,WIDTH+0.1,-WIDTH)));
+  point p1(0,0,-WIDTH/2);
+  point p2(WIDTH,0,-WIDTH/2);
+  point p3(WIDTH/2.0,WIDTH,-WIDTH/2);
+  rc_pointer<shape<double> > tri_ptr(new triangle<double>(p1,p2,p3));
 
   sl.add(tri_ptr);
-#endif
 
   color light(0.7,0.7,0.7), dark(0.5,0.5,0.5), black(0,0,0);
 
