@@ -1,5 +1,5 @@
 /*
- * $Id: defines.hpp,v 1.3 2004/03/20 06:33:46 kpharris Exp $
+ * $Id: defines.hpp,v 1.4 2004/06/01 03:50:25 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -26,6 +26,11 @@
 #define AMETHYST_EPS_SRQ (AMETHYST_EPSILON * AMETHYST_EPSILON)
 
 #include <limits.h>
+#include <limits>
+
+// This may need to be much lower for everything (huge number)
+#define AMETHYST_DEPTH_MAX (std::numeric_limits<long>::max())
+
 
 namespace amethyst
 {
