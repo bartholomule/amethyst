@@ -1,5 +1,5 @@
 /*
- * $Id: sphere.hpp,v 1.4 2004/03/21 23:25:02 kpharris Exp $
+ * $Id: sphere.hpp,v 1.5 2004/03/27 19:33:28 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -37,7 +37,7 @@ namespace amethyst
    * A sphere class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
@@ -86,10 +86,12 @@ namespace amethyst
     
     /** Returns if the given line intersects the sphere. */
     virtual bool intersects_line(const unit_line3<T>& line,
-				 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection) const;
+
+    virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
     virtual std::string to_string(const std::string& base_indentation,
-				  const std::string& level_indentation = "  ") const;
+                                  const std::string& level_indentation = "  ") const;
 
     virtual std::string name() const { return "sphere"; }
     
@@ -173,9 +175,9 @@ namespace amethyst
   {
     // The epsilon adjusted radius is (r^2 + 2*r*E + E^2)
     return ( squared_length(p - center) <
-	     (radius_squared +
-	      2 * radius * AMETHYST_EPSILON +
-	      AMETHYST_EPSILON * AMETHYST_EPSILON) );
+             (radius_squared +
+              2 * radius * AMETHYST_EPSILON +
+              AMETHYST_EPSILON * AMETHYST_EPSILON) );
   }
   
   // Returns if the given sphere intersects the sphere.
@@ -184,7 +186,7 @@ namespace amethyst
   {
     T combined_radius = s.radius + radius + AMETHYST_EPSILON;
     return ( squared_length(s.center - center) <
-	     (combined_radius * combined_radius) );
+             (combined_radius * combined_radius) );
   }
   
   // Returns if the given plane intersects the shape.
@@ -197,7 +199,7 @@ namespace amethyst
   // Returns if the given line intersects the sphere.
   template <class T>
   bool sphere<T>::intersects_line(const unit_line3<T>& line,
-				  intersection_info<T>& intersection) const
+                                  intersection_info<T>& intersection) const
   {
     // This is the fast hit test.
     vector3<T> o_c = line.origin() - center;
@@ -217,33 +219,49 @@ namespace amethyst
 
       if(line.inside(t1))
       {
-	intersection.set(this, t1);
-	return true;
+        intersection.set(this, t1);
+        return true;
       }
       else
       {
-	// The first side (although a hit), wasn't inside the range.
-	T t2 = (-B + sqrtd) / (2 * A);
-	if(line.inside(t2))
-	{
-	  intersection.set(this, t2);
-	  return true;
-	}
+        // The first side (although a hit), wasn't inside the range.
+        T t2 = (-B + sqrtd) / (2 * A);
+        if(line.inside(t2))
+        {
+          intersection.set(this, t2);
+          return true;
+        }
       }
     }
     return false;
   }
 
   template <class T>
+  std::string sphere<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+  {
+    std::string retval;
+    std::string internal_tagging = indentation;
+
+    if( prefix_with_classname )
+    {
+      internal_tagging += sphere<T>::name() + "::";
+    }
+
+    retval += internal_tagging + string_format("center=%1\n", center);
+    retval += internal_tagging + string_format("radius=%1\n", radius);
+
+    return retval;
+  }
+
+  template <class T>
   std::string sphere<T>::to_string(const std::string& indent,
-				  const std::string& level_indent) const
+                                  const std::string& level_indent) const
   {
     return ( indent + "sphere\n" +
-	     indent + "{\n" +
-	     indent + level_indent + string_format("center=%1\n", center) + 
-	     indent + level_indent + string_format("radius=%1\n", radius) +
-	     indent + "}" );
-	     
+             indent + "{\n" +
+             sphere<T>::internal_members(indent + level_indent, false) +
+             indent + "}" );
+             
   }  
   
 } // namespace amethyst

@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.5 2004/03/21 23:25:02 kpharris Exp $
+ * $Id: shape.hpp,v 1.6 2004/03/27 19:33:28 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -41,7 +41,7 @@ namespace amethyst
    * The base class for a shape.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template<class T>
@@ -84,6 +84,8 @@ namespace amethyst
     /** Returns if the given line intersects the shape. */
     virtual bool intersects_line(const unit_line3<T>& line,
 				 intersection_info<T>& intersection) const = 0;
+
+    virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const = 0;
 
     virtual std::string to_string(const std::string& base_indentation,
 				  const std::string& level_indentation = "  ") const = 0;

@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.3 2004/03/21 23:55:38 kpharris Exp $
+ * $Id: triangle.hpp,v 1.4 2004/03/27 19:33:28 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple triangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template<class T>
@@ -51,8 +51,8 @@ namespace amethyst
     triangle();
 
     triangle(const point3<T>& corner1 = point3<T>(0,0,0),
-	     const point3<T>& corner2 = point3<T>(1,0,0),
-	     const point3<T>& corner3 = point3<T>(0,1,0));
+             const point3<T>& corner2 = point3<T>(1,0,0),
+             const point3<T>& corner3 = point3<T>(0,1,0));
 
     /** Destructor */
     virtual ~triangle();
@@ -74,10 +74,12 @@ namespace amethyst
     
     /** Returns if the given line intersects the plane. */
     virtual bool intersects_line(const unit_line3<T>& line,
-				 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection) const;
+
+    virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
     virtual std::string to_string(const std::string& indent,
-				  const std::string& level_indent = "  ") const;
+                                  const std::string& level_indent = "  ") const;
     virtual std::string name() const { return "triangle"; }
     
   }; // class triangle
@@ -96,8 +98,8 @@ namespace amethyst
 
   template<class T>
   triangle<T>::triangle(const point3<T>& corner1,
-			const point3<T>& corner2,
-			const point3<T>& corner3):
+                        const point3<T>& corner2,
+                        const point3<T>& corner3):
     plane<T>(corner1, corner2, corner3)
   {
   } // triangle(point3,point3,point3)
@@ -143,9 +145,9 @@ namespace amethyst
     if( plane<T>::extract_uv_for_point(point, uv) )
     {
       if( (uv.x() > 0 && uv.y() > 0) &&
-	  (uv.x() + uv.y() < 1) )
+          (uv.x() + uv.y() < 1) )
       {
-	return true;
+        return true;
       }
     }
     return false;
@@ -156,8 +158,8 @@ namespace amethyst
   {
     // If any of the 3 corners is inside the sphere, the triangle intersects.
     if( s.inside( plane<T>::get_origin() ) ||
-	s.inside( plane<T>::get_origin() + plane<T>::get_u_vector() ) ||
-	s.inside( plane<T>::get_origin() + plane<T>::get_v_vector() ) )
+        s.inside( plane<T>::get_origin() + plane<T>::get_u_vector() ) ||
+        s.inside( plane<T>::get_origin() + plane<T>::get_v_vector() ) )
     {
       return true;
     }
@@ -173,8 +175,8 @@ namespace amethyst
     point3<T> pv = plane<T>::get_origin() + plane<T>::get_v_vector();
     
     if( p.intersects_line( line3<T>(pp, pu), unused ) ||
-	p.intersects_line( line3<T>(pp, pv), unused ) ||
-	p.intersects_line( line3<T>(pu, pv), unused ) )
+        p.intersects_line( line3<T>(pp, pv), unused ) ||
+        p.intersects_line( line3<T>(pu, pv), unused ) )
     {
       return true;
     }
@@ -184,7 +186,7 @@ namespace amethyst
   
   template<class T>
   bool triangle<T>::intersects_line(const unit_line3<T>& line,
-				    intersection_info<T>& intersection) const
+                                    intersection_info<T>& intersection) const
   {
     intersection_info<T> temp_intersection;
 
@@ -194,29 +196,41 @@ namespace amethyst
       coord2<T> uv;
       if( plane<T>::extract_uv_for_point(p, uv) )
       {
-	if( (uv.x() > 0 && uv.y() > 0) &&
-	    (uv.x() + uv.y() < 1) )
-	{
-	  intersection = temp_intersection;
-	  return true;
-	}
+        if( (uv.x() > 0 && uv.y() > 0) &&
+            (uv.x() + uv.y() < 1) )
+        {
+          intersection = temp_intersection;
+          return true;
+        }
       }      
     }
     return false;
   }
 
   template <class T>
+  std::string triangle<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+  {
+    std::string retval;
+    std::string internal_tagging = indentation;
+
+    if( prefix_with_classname )
+    {
+      internal_tagging += triangle<T>::name() + "::";
+    }
+
+    return retval;
+  }
+
+  template <class T>
   std::string triangle<T>::to_string(const std::string& indent,
-				     const std::string& level_indent) const
+                                     const std::string& level_indent) const
   {
     
     return ( indent + "triangle\n" +
-	     indent + "{\n" +
-	     indent + level_indent + string_format("point=%1\n", plane<T>::get_origin()) +
-	     indent + level_indent + string_format("u=%1\n", plane<T>::get_u_vector()) + 	     
-	     indent + level_indent + string_format("v=%1\n", plane<T>::get_v_vector()) +
-	     indent + level_indent + string_format("normal=%1\n", plane<T>::get_normal()) +
-	     indent + "}" );
+             indent + "{\n" +
+             plane<T>::internal_members(indent + level_indent, true) +
+             triangle<T>::internal_members(indent + level_indent, false) +
+             indent + "}" );
     
   }
   

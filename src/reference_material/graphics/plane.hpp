@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.6 2004/03/21 23:23:33 kpharris Exp $
+ * $Id: plane.hpp,v 1.7 2004/03/27 19:33:28 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    * 
    */
   template<class T>
@@ -99,10 +99,12 @@ namespace amethyst
     
     /** Returns if the given line intersects the plane. */
     virtual bool intersects_line(const unit_line3<T>& line,
-				 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection) const;
+
+    virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
     virtual std::string to_string(const std::string& base_indentation,
-				  const std::string& level_indentation = "  ") const;
+                                  const std::string& level_indentation = "  ") const;
 
     virtual std::string name() const { return "plane"; }
     
@@ -141,10 +143,10 @@ namespace amethyst
     normal(unit(n))
   {
     v_vector = unit(crossprod(normal,
-			      point3<T>(defining_point.x() + 1,
-					defining_point.y(),
-					defining_point.z()) -
-			      defining_point));
+                              point3<T>(defining_point.x() + 1,
+                                        defining_point.y(),
+                                        defining_point.z()) -
+                              defining_point));
     u_vector = crossprod(v_vector, normal);
 
     setup_non_zero_indices();
@@ -187,7 +189,7 @@ namespace amethyst
   //---------------------------------------------------------
   template <class T>
   plane<T>::plane(const point3<T>& p, const vector3<T>& normal,
-		  const vector3<T>& vec_u, const vector3<T>& vec_v):
+                  const vector3<T>& vec_u, const vector3<T>& vec_v):
     shape<T>(),
     defining_point(p),
     normal(unit(crossprod(vec_u, vec_v))),
@@ -240,7 +242,7 @@ namespace amethyst
 
       non_zero_u_index = old.non_zero_u_index;
       non_zero_v_index = old.non_zero_v_index;
-	
+        
       shape<T>::operator=(old);
     }
     return (*this);
@@ -283,7 +285,7 @@ namespace amethyst
     // If they are parallel, but have the same defining point, then they
     // overlap EVERYWHERE (the same plane).
     else if( squared_length(defining_point - p.defining_point) <
-	     AMETHYST_EPSILON )
+             AMETHYST_EPSILON )
     {
       return true;
     }
@@ -298,7 +300,7 @@ namespace amethyst
   // Returns if the given line intersects the plane.
   template <class T>
   bool plane<T>::intersects_line(const unit_line3<T>& line,
-				 intersection_info<T>& intersection) const
+                                 intersection_info<T>& intersection) const
   {
     T ctheta = dotprod(line.direction(), normal);
     T t;
@@ -315,12 +317,12 @@ namespace amethyst
     if( ctheta > 0 )
     {
       t = (dotprod(defining_point - line.origin(), normal) /
-	   ctheta);
+           ctheta);
     }
     else
     {
       t = (dotprod(defining_point - line.origin(), -normal) /
-	   -ctheta);
+           -ctheta);
     }
 
     if(line.inside(t))
@@ -335,10 +337,10 @@ namespace amethyst
   // Returns if the given line intersects the plane.
   template <class T>
   bool plane<T>::intersects_line(const line3<T>& line,
-				 intersection_info<T>& intersection) const
+                                 intersection_info<T>& intersection) const
   {
     T ctheta = ( dotprod(line.direction(), normal) /
-		 length(line.direction()) );
+                 length(line.direction()) );
     T t;
 
     // Check the unit line version of this function for proper comments on why
@@ -346,12 +348,12 @@ namespace amethyst
     if( ctheta > 0 )
     {
       t = (dotprod(defining_point - line.origin(), normal) /
-	   ctheta);
+           ctheta);
     }
     else
     {
       t = (dotprod(defining_point - line.origin(), -normal) /
-	   -ctheta);
+           -ctheta);
     }
 
     if(line.inside(t))
@@ -364,19 +366,34 @@ namespace amethyst
   }
 
   template <class T>
+  std::string plane<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+  {
+    std::string retval;
+    std::string internal_tagging = indentation;
+
+    if( prefix_with_classname )
+    {
+      internal_tagging += plane<T>::name() + "::";
+    }
+
+    retval += internal_tagging + string_format("point=%1\n", defining_point);
+    retval += internal_tagging + string_format("normal=%1\n", normal);
+    retval += internal_tagging + string_format("u=%1\n", u_vector);
+    retval += internal_tagging + string_format("v=%1\n", v_vector);
+    retval += internal_tagging + string_format("nz_indices=(%1,%2)\n",
+                                               non_zero_u_index,
+                                               non_zero_v_index);
+    return retval;
+  }
+
+  template <class T>
   std::string plane<T>::to_string(const std::string& indent,
-				  const std::string& level_indent) const
+                                  const std::string& level_indent) const
   {
     return ( indent + "plane\n" +
-	     indent + "{\n" +
-	     indent + level_indent + string_format("point=%1\n", defining_point) + 
-	     indent + level_indent + string_format("normal=%1\n", normal) +
-	     indent + level_indent + string_format("u=%1\n", u_vector) +
-	     indent + level_indent + string_format("v=%1\n", v_vector) +
-	     indent + level_indent + string_format("nz_indices=(%1,%2\n",
-						   non_zero_u_index,
-						   non_zero_v_index) +
-	     indent + "}" );	     
+             indent + "{\n" +
+             plane<T>::internal_members(indent + level_indent, false) +
+             indent + "}" );         
   }
 
   template <class T>
@@ -385,30 +402,33 @@ namespace amethyst
     for(non_zero_u_index = 0; non_zero_u_index < 3; ++non_zero_u_index)
     {
       if(fabs(u_vector[non_zero_u_index]) > AMETHYST_EPSILON)
-	break;
+        break;
     }
     for(non_zero_v_index = 0; non_zero_v_index < 3; ++non_zero_v_index)
     {
       if(non_zero_v_index == non_zero_u_index) continue;
       if(fabs(v_vector[non_zero_v_index]) > AMETHYST_EPSILON)
-	break;
+        break;
     }
   }
 
   template<class T>
   bool plane<T>::extract_uv_for_point(const point3<T>& point,
-				      coord2<T>& uv) const
+                                      coord2<T>& uv) const
   {
     if( plane<T>::inside(point) )
     {
       T u;
       T v;
       vector3<T> point_diff_vector(point - defining_point);
-      T u_scalar = u_vector[non_zero_v_index]/u_vector[non_zero_u_index];
-      v = (point_diff_vector[non_zero_v_index] - point_diff_vector[non_zero_u_index]*u_scalar) /
-	(v_vector[non_zero_v_index] - v_vector[non_zero_u_index] * u_scalar);
-      u = (point_diff_vector[non_zero_u_index]  - v * v_vector[non_zero_u_index]) /
-	u_vector[non_zero_u_index];
+      T u_scalar = u_vector[non_zero_v_index] / u_vector[non_zero_u_index];
+      v = ( ( point_diff_vector[non_zero_v_index] - 
+              point_diff_vector[non_zero_u_index] * u_scalar ) /
+            ( v_vector[non_zero_v_index] - 
+              v_vector[non_zero_u_index] * u_scalar) );
+      u = ( ( point_diff_vector[non_zero_u_index]  - 
+              v * v_vector[non_zero_u_index]) /
+            u_vector[non_zero_u_index] );
 
       uv.set(u,v);
       
