@@ -87,13 +87,10 @@ It's easy to think of elaborations of the above structure. I'll
         (c) Plugins should be able to define how to translate an
             IIR into an EID.
 
-    I don't know if T2a needs to be a plugin. The Holy Book of
-        Generic Programming says YES. The only advantage I can think
-        of to doing so would be allowing different IIRs (making IIR a
-        plugin too, which GP cannon also commands). I could imagine a
-        pixel oriented IIR being much easier to translate to a TIFF
-        or png, and a vector-oriented IIR being much easier to
-        translate to opengl or SVG or postscript.
+    In this elaboration, T2a is the rendering pass, doing the real
+        work of the program. T2a would ideally be a plugin as
+        well. This would allow wholesale replacement of the renderer,
+        making amethyst a framework as much as a renderer.
 
     Elaboration (2)
 
