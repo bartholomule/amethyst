@@ -1,36 +1,44 @@
 dnl Process this file with autoconf to produce a configure script.
 
 dnl NOTE: As the version number changes, it must be changed in both of the
-dnl _INIT statements below (AC and AM).	 
+dnl _INIT statements below (AC and AM).
 dnl Change the version number here when required.
 VERSION=0.00.00
 
 dnl Change the version number here when required.
 AC_INIT(panorama-amethyst, 0.00.00, panorama-amethyst@lists.sourceforge.net)
-dnl ---------------------------------------------------------------------------
-dnl Gets the host type
-dnl ---------------------------------------------------------------------------
-AC_CANONICAL_TARGET
 dnl Change the version number here when required.
 AM_INIT_AUTOMAKE(panorama-amethyst, 0.00.00)
 AC_PREFIX_DEFAULT(/usr/local/)
 
 AM_CONFIG_HEADER(src/amethyst_config.hpp)
 
+dnl ---------------------------------------------------------------------------
+dnl Gets the host type
+dnl ---------------------------------------------------------------------------
+AC_CANONICAL_HOST
 
 dnl ---------------------------------------------------------------------------
 dnl Checks for programs.
 dnl ---------------------------------------------------------------------------
-AM_PROG_LEX
-AC_LIBTOOL_DLOPEN
-AC_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
 AC_PROG_CXX
 AC_LANG(C++)
+
+AM_PROG_LEX
 AC_PROG_YACC
+
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AM_GNU_GETTEXT
+
+AC_LIBTOOL_DLOPEN
+AC_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
+
+dnl ---------------------------------------------------------------------------
+dnl Checks for dlopen function
+dnl ---------------------------------------------------------------------------
+AC_CHECK_LIB(dl, dlopen)
 
 dnl ---------------------------------------------------------------------------
 dnl Checks for header files.
@@ -44,7 +52,7 @@ AC_CACHE_CHECK([for working member templates (C++)],
   ac_cv_member_templates_ok,
 [AC_TRY_COMPILE([
   class foo
-  { 
+  {
   public:
     template <class T>
     bool callme(T t) { return true; }
@@ -55,15 +63,15 @@ AC_CACHE_CHECK([for working member templates (C++)],
     f.callme(int(1));
     f.callme(bool(true));
     f.callme(double(1.0));
-  ], 
+  ],
   ac_cv_member_templates_ok=yes,
   ac_cv_member_templates_ok=no)
 ])
 if test $ac_cv_member_templates_ok = yes; then
-  AC_DEFINE(MEMBER_TEMPLATES_WORK, 1, Member templates work or not (C++))
+  AC_DEFINE(MEMBER_TEMPLATES_WORK, 1, [Member templates work or not (C++)])
 fi
 
-AC_CACHE_CHECK([for working subtype ptr returns for virtual functions (C++)],
+AC_CACHE_CHECK([for working covariant return types (C++)],
   ac_cv_virtual_return_type_ok,
 [AC_TRY_COMPILE([
   class foo
@@ -95,8 +103,8 @@ AC_CACHE_CHECK([for working subtype ptr returns for virtual functions (C++)],
   ac_cv_virtual_return_type_ok=no)
 ])
 if test $ac_cv_virtual_return_type_ok = no; then
-  AC_DEFINE(BROKEN_RETURN_SUBTYPES_ON_VIRTUAL, 1, If virtual functions cannot have return types of a subclass (C++))
-fi  
+  AC_DEFINE(BROKEN_COVARIANT_RETURN, 1, [If covariant return types are broken (C++)])
+fi
 
 dnl ---------------------------------------------------------------------------
 dnl Check for special libraries
@@ -105,33 +113,23 @@ dnl ---------------------------------------------------------------------------
 dnl ---------------
 dnl gtkmm-2.0
 dnl ---------------
-PKG_CHECK_MODULES(GTKMM, gtkmm-2.0)
+PKG_CHECK_MODULES(GTKMM, gtkmm-2.0, HAVE_GTKMM=1, HAVE_GTKMM=0 )
+AC_DEFINE(HAVE_GTKMM, $HAVE_GTKMM, gtk-- is available.)
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
+AM_CONDITIONAL(HAVE_GTKMM, test "x$HAVE_GTKMM" = "x1")
 
 dnl ---------------
 dnl SigC++
 dnl ---------------
-echo -e "checking for SigC++... \c"
-dnl AC_CHECK_PROG(sigcxx_val,"sigc-config --cflags","yes","no")
-if [ `sigc-config --cflags >/dev/null 2>/dev/null` ]
-then
-  echo "yes"
-  AC_DEFINE(USE_SIGCXX, 1, Using sigc++ or not )
-  BARF1=`sigc-config --cflags`
-  BARF2=`sigc-config --libs`
-  extra_includes="$extra_includes $BARF1"
-  extra_libs="$extra_libs $BARF2"
-else
-  echo "no"
-  AC_DEFINE(USE_SIGCXX, 0, Using sigc++ or not)
-fi
-AC_SUBST(extra_includes)
-AC_SUBST(extra_libs)
-
+PKG_CHECK_MODULES(SIGCPP, sigc++-2.0, HAVE_SIGCPP=1, HAVE_SIGCPP=0 )
+AC_DEFINE(HAVE_SIGCPP, $HAVE_SIGCPP, sigc++ is available.)
+AC_SUBST(SIGCPP_CFLAGS)
+AC_SUBST(SIGCPP_LIBS)
+AM_CONDITIONAL(HAVE_SIGCPP, test "x$HAVE_SIGCPP" = "x1")
 
 AC_MSG_CHECKING(for a forced cpu type)
-AC_ARG_ENABLE(cpu, 
+AC_ARG_ENABLE(cpu,
 [  --enable-cpu=CPUTYPE    Force the use of the given cpu type in compilation.]
 [                          This is for using a specific CPU within a family.  ]
 [                          --enable-cpu=pentium4  or  --enable-cpu=athlon-xp  ]
@@ -166,7 +164,7 @@ AC_SUBST(CPU_TYPE)
 AC_MSG_RESULT($CPU_MESSAGE)
 
 if test $CPU_OVERRIDE != 0
-then 
+then
   AC_MSG_CHECKING(which compiler flag specifies CPU type)
   OLD_CXXFLAGS=$CXXFLAGS
   CXXFLAGS="$OLD_CXXFLAGS -march=$CPU_TYPE"
@@ -219,11 +217,11 @@ elif test $OPTIMIZATION_VAL != "no"; then
     2) OPTIMIZATIONS_ALLOWED=1 ;;
     3) OPTIMIZATIONS_ALLOWED=1 ;;
     4) OPTIMIZATIONS_ALLOWED=1 ;;
-    5) OPTIMIZATIONS_ALLOWED=1 ;; 
-    6) OPTIMIZATIONS_ALLOWED=1 ;; 
-    7) OPTIMIZATIONS_ALLOWED=1 ;; 
-    8) OPTIMIZATIONS_ALLOWED=1 ;; 
-    9) OPTIMIZATIONS_ALLOWED=1 ;; 
+    5) OPTIMIZATIONS_ALLOWED=1 ;;
+    6) OPTIMIZATIONS_ALLOWED=1 ;;
+    7) OPTIMIZATIONS_ALLOWED=1 ;;
+    8) OPTIMIZATIONS_ALLOWED=1 ;;
+    9) OPTIMIZATIONS_ALLOWED=1 ;;
     0) OPTIMIZATIONS_ALLOWED=1 ;;
     *) OPTIMIZATION_VAL="NO -- unknown value \"$OPTIMIZATION_VAL\"" ;;
   esac
@@ -333,18 +331,19 @@ AC_MSG_RESULT($EXPER_VAL)
 
 AC_SUBST(ARCH_MAKE_SHARED_OPTS)
 AC_SUBST(ARCH_PROG_SETLIBPATH)
-  
-AC_OUTPUT([ Makefile         \
-            doc/Makefile     \
-            intl/Makefile    \
-            po/Makefile.in   \
-            po/Makefile      \
-            m4/Makefile      \
-            src/Makefile     \
-            src/utils/Makefile \
-            src/reference_material/Makefile \
-            include/Makefile \
-	    test/Makefile 
+
+AC_OUTPUT([
+            Makefile
+            doc/Makefile
+            intl/Makefile
+            po/Makefile.in
+            po/Makefile
+            m4/Makefile
+            src/Makefile
+            src/utils/Makefile
+            src/reference_material/Makefile
+            include/Makefile
+            test/Makefile
           ],
           echo "------------------"
           echo "Configure is done."
