@@ -46,11 +46,11 @@ int main(int argc, char** argv)
   (void) argv;
   aggregate<float_type> sl;
 
-  point e(0,0,6);
+  point e(0,0,24);
   vec vup(0,1,0);
   vec g(0,0,-2);
-  float_type vw=4;
-  float_type vh=4;
+  float_type vw=1;
+  float_type vh=1;
   float_type dist=2;
   int nx = WIDTH;
   int ny = HEIGHT;
