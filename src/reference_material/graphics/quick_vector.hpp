@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.2 2004/04/10 04:45:26 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.3 2004/04/11 13:43:16 zorthluthik Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -212,7 +212,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>
@@ -296,6 +296,10 @@ namespace amethyst
 
     void append(const T& val);
     void append(const quick_vector<T>& vec);
+
+    /* push_back is for interface compat with std::vector. It just forwards to append.*/
+    void push_back(const T& val);
+    void push_back(const quick_vector<T>& vec);
     
   }; // class quick_vector
 
@@ -574,6 +578,18 @@ namespace amethyst
       new(&data_pointer[data_size]) T(vec.data_pointer[data_size - current_size]);
     }
   }
+
+  template<class T>
+    inline void quick_vector<T>::push_back(const T& val)
+    {
+      append(val);
+    }
+  
+  template<class T>
+    inline void quick_vector<T>::push_back(const quick_vector<T>& vec)
+    {
+      append(vec);
+    }
   
 } // namespace amethyst
 
