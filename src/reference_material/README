@@ -1,0 +1,6 @@
+The files in this directory are for reference only.  They come from other projects
+and some were hacked quickly to get an idea across.  Testing should be performed
+on anything in here that is desireable to use.
+
+In general, a file with an '.hpp' extension is newer than one with a '.h' 
+extension, so check the .hpp file first.
