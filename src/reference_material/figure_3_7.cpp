@@ -1,4 +1,4 @@
-// g++ -g figure_3_7.cpp -o figure_3_7 -lm -I. -Igraphics -Igeneral
+// g++ -g figure_3_7.cpp -o figure_3_7 -lm -I. -Igraphics -Igeneral -DDO_NOT_ICE
 
 /*
  * This is figure 3.7 from Peter Shirley's "Realistic Raytracing" book, or at
@@ -6,7 +6,7 @@
  */
 
 #include <sphere.hpp>
-#include <plane.hpp>
+#include <triangle.hpp>
 #include <aggregate.hpp>
 #include <raster.hpp>
 #include <tga_io.h>
@@ -31,14 +31,16 @@ int main(int argc, char** argv)
   aggregate<double> sl;
 
 
-  magic_pointer<shape<double> > sph_ptr(new sphere<double>(point(0,0,1-WIDTH-50), WIDTH-0.9));
-
-  // FIXME! This is supposed to be a triangle.  When triangles are written,
-  // change it.
-  //  magic_pointer<shape<double> > plane_ptr(new plane<double>(point(0,0,-WIDTH), crossprod(point(WIDTH/2.0,WIDTH+0.1,-WIDTH) - point(0,0,-WIDTH), point(WIDTH+0.1,0,-WIDTH) - point(0,0,-WIDTH))));
-  //  sl.add(plane_ptr);
-  
+  rc_pointer<shape<double> > sph_ptr(new sphere<double>(point(0,0,1-WIDTH-50), WIDTH-0.9));
   sl.add(sph_ptr);
+
+#if !defined(DO_NOT_ICE)
+  rc_pointer<shape<double> > tri_ptr(new triangle<double>(point(0,0,-WIDTH),
+							  point(WIDTH+0.1,0,-WIDTH),
+							  point(WIDTH/2.0,WIDTH+0.1,-WIDTH)));
+
+  sl.add(tri_ptr);
+#endif
 
   color light(0.7,0.7,0.7), dark(0.5,0.5,0.5), black(0,0,0);
 
@@ -70,7 +72,7 @@ int main(int argc, char** argv)
 	{
 	  image(x,y) = light;
 	}
-	else if( dynamic_cast<const plane<double>*>(hit_shape) != NULL )
+	else if( dynamic_cast<const triangle<double>*>(hit_shape) != NULL )
 	{
 	  image(x,y) = dark;
 	}
