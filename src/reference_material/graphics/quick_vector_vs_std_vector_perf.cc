@@ -198,84 +198,154 @@ template<class container>
 template <class T>
 struct foo
 {
+  static long long construct_count;
+  static long long destruct_count;
+  static long long assign_count;
   T val;
 
-  inline foo() { }
-  inline foo(const T& v): val(v) { }
+  inline foo() { ++construct_count; }
+  inline foo(const T& v): val(v) { ++construct_count; }
+  inline foo(const foo<T>& f): val(f.val) { ++construct_count; }
+  inline ~foo() { ++destruct_count; }
+  inline foo<T>& operator=(const foo<T>& f) { ++assign_count; val = f.val; return *this; }
 };
+
+template <class T> long long foo<T>::construct_count = 0;
+template <class T> long long foo<T>::destruct_count = 0;
+template <class T> long long foo<T>::assign_count = 0;
+
+#define PRE_SETUP() \
+prev_constructs = foo<int>::construct_count; \
+prev_destructs = foo<int>::destruct_count; \
+prev_assigns = foo<int>::assign_count;
+
+#define POST_ADD(HEADER) \
+constructs_##HEADER += foo<int>::construct_count - prev_constructs; \
+destructs_##HEADER += foo<int>::destruct_count - prev_destructs; \
+assigns_##HEADER += foo<int>::assign_count - prev_assigns;
 
 int main(int argc, char** argv)
   {
+    long long constructs_qv = 0;
+    long long destructs_qv = 0;
+    long long assigns_qv = 0;
+
+    long long constructs_stlv = 0;
+    long long destructs_stlv = 0;
+    long long assigns_stlv = 0;
+
+    long long prev_constructs, prev_destructs, prev_assigns;
+    
     int const iterations= (argc > 1) ? atoi(argv[1]) : 100000;
     int const size= (argc > 2) ? atoi(argv[2]) : 100;
+
+    PRE_SETUP();
     clock_t vector_creation_time=
       time_test_creation< vector<struct foo<int> > > (iterations, size);
     cout << "time_test_creation< vector<struct foo<int> > > (" << iterations << ", "
       << size << ") :       " << vector_creation_time << "\n";
+    POST_ADD(stlv);
+    PRE_SETUP();
     clock_t quick_vector_creation_time=
       time_test_creation< quick_vector<struct foo<int> > >(iterations, size);
     cout << "time_test_creation< quick_vector<struct foo<int> > > (" << iterations << ", "
       << size << ") : " << quick_vector_creation_time
       << "\n";
-
+    POST_ADD(qv);
+    PRE_SETUP();
     clock_t vector_copy_time=
       time_test_copy< vector<struct foo<int> > > (iterations, size);
     cout << "time_test_copy< vector<struct foo<int> > > (" << iterations << ", "
       << size << ") :       " << vector_copy_time << "\n";
+    POST_ADD(stlv);
+    PRE_SETUP();    
     clock_t quick_vector_copy_time=
       time_test_copy< quick_vector<struct foo<int> > >(iterations, size);
     cout << "time_test_copy< quick_vector<struct foo<int> > > ("
       << iterations << ", " << size << ") : " << quick_vector_copy_time
       << "\n";
-
+    POST_ADD(qv);
+    PRE_SETUP();
+    
     clock_t vector_assign_time=
       time_test_assign< vector<struct foo<int> > > (iterations, size);
     cout << "time_test_assign< vector<struct foo<int> > > (" << iterations << ", "
       << size << ") :       " << vector_assign_time << "\n";
+    POST_ADD(stlv);
+    PRE_SETUP();    
     clock_t quick_vector_assign_time=
       time_test_assign< quick_vector<struct foo<int> > >(iterations, size);
     cout << "time_test_assign< quick_vector<struct foo<int> > > ("
       << iterations << ", " << size << ") : " << quick_vector_assign_time
       << "\n";
-    
+    POST_ADD(qv);
+    PRE_SETUP();    
+
     clock_t vector_push_back_time=
       time_test_push_back< vector<struct foo<int> > > (iterations, size);
     cout << "time_test_push_back< vector<struct foo<int> > > (" << iterations << ", "
       << size << ") :       " << vector_push_back_time << "\n";
+    POST_ADD(stlv);
+    PRE_SETUP();    
     clock_t quick_vector_push_back_time=
       time_test_push_back< quick_vector<struct foo<int> > >(iterations, size);
     cout << "time_test_push_back< quick_vector<struct foo<int> > > (" << iterations
       << ", " << size << ") : " << quick_vector_push_back_time << "\n";
+    POST_ADD(qv);
+    PRE_SETUP();    
 
     clock_t vector_iterator_traversal_time=
       time_test_iterator_traversal< vector<struct foo<int> > > (iterations, size);
     cout << "time_test_iterator_traversal< vector<struct foo<int> > > (" << iterations
       << ", " << size << ") :       " << vector_iterator_traversal_time << "\n";
+    POST_ADD(stlv);
+    PRE_SETUP();    
     clock_t quick_vector_iterator_traversal_time=
       time_test_iterator_traversal< quick_vector<struct foo<int> > >(iterations, size);
     cout << "time_test_iterator_traversal< quick_vector<struct foo<int> > > ("
       << iterations << ", " << size << ") : "
       << quick_vector_iterator_traversal_time << "\n";
-
+    POST_ADD(qv);
+    PRE_SETUP();    
+    
     clock_t vector_index_traversal_time=
       time_test_index_traversal< vector<struct foo<int> > > (iterations, size);
     cout << "time_test_index_traversal< vector<struct foo<int> > > (" << iterations
       << ", " << size << ") :       " << vector_index_traversal_time << "\n";
+    POST_ADD(stlv);
+    PRE_SETUP();    
     clock_t quick_vector_index_traversal_time=
       time_test_index_traversal< quick_vector<struct foo<int> > >(iterations, size);
     cout << "time_test_index_traversal< quick_vector<struct foo<int> > > ("
       << iterations << ", " << size << ") : "
       << quick_vector_index_traversal_time << "\n";
+    POST_ADD(qv);
+    PRE_SETUP();    
 
     clock_t vector_random_access_time=
       time_test_random_access< vector<struct foo<int> > > (iterations, size);
     cout << "time_test_random_access< vector<struct foo<int> > > (" << iterations
       << ", " << size << ") :       " << vector_random_access_time << "\n";
+    POST_ADD(stlv);
+    PRE_SETUP();    
     clock_t quick_vector_random_access_time=
       time_test_random_access< quick_vector<struct foo<int> > >(iterations, size);
     cout << "time_test_random_access< quick_vector<struct foo<int> > > ("
       << iterations << ", " << size << ") : "
       << quick_vector_random_access_time << "\n";
+    POST_ADD(qv);
+    PRE_SETUP();
 
     cout << endl;
+
+    cout << "Construct count (total)= " << foo<int>::construct_count << endl;
+    cout << "Destruct count (total)=  " << foo<int>::destruct_count << endl;
+    cout << "Assign count (total)=    " << foo<int>::assign_count << endl;
+    cout << "-------------------------" << endl;
+    cout << "Construct count (stlv)=  " << constructs_stlv << endl;
+    cout << "Construct count (qv)=    " << constructs_qv << endl;
+    cout << "Destruct count (stlv)=   " << destructs_stlv << endl;
+    cout << "Destruct count (qv)=     " << destructs_qv << endl;
+    cout << "Assign count (stlv)=     " << assigns_stlv << endl;
+    cout << "Assign count (qv)=       " << assigns_qv << endl;
   }
