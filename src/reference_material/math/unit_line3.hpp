@@ -1,5 +1,5 @@
 /*
- * $Id: unit_line3.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
+ * $Id: unit_line3.hpp,v 1.5 2004/03/21 22:14:32 zorthluthik Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple 3d line with a unit direction.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
@@ -142,8 +142,8 @@ namespace amethyst
   {
     non_unit_length = line_direction.length();
     line_direction /= non_unit_length;
-    line_limits.set( line_limits.begin() * d,
-		     line_limits.end() * d );
+    line_limits.set( line_limits.begin() * non_unit_length,
+		     line_limits.end() * non_unit_length );
   } // unit_line3()  
   
 
