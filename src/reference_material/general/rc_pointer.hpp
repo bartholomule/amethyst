@@ -90,11 +90,10 @@
 #include <ostream>
 
 template <class T, class counter_type>
-  class rc_pointer;
+class rc_pointer;
 
 template <class T, class counter_type>
-  std::ostream& operator<< (std::ostream& o, const rc_pointer<T,counter_type>& rcp);
-
+std::ostream& operator<< (std::ostream& o, const rc_pointer<T,counter_type>& rcp);
 
 /**
  * A reference counted pointer class (rc_pointer is a much shorter name).
@@ -287,7 +286,7 @@ private:
 };
 
 
-/** Create a new reference counted pointer using anallocated/copied object. */
+/** Create a new reference counted pointer using an allocated/copied object. */
 template <class T>
 rc_pointer<T> new_object(const T& old_object)
 {
