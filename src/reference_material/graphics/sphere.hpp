@@ -1,7 +1,7 @@
 /*
- * $Id: sphere.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: sphere.hpp,v 1.3 2004/03/20 06:29:49 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -27,6 +27,7 @@
 // --------------------------------------
 #include "shape.hpp"
 #include <general/defines.hpp>
+#include <general/string_format.hpp>
 
 namespace amethyst
 {
@@ -36,7 +37,7 @@ namespace amethyst
    * A sphere class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>
@@ -211,6 +212,7 @@ namespace amethyst
       // (squared length of the line), and the subtraction will be less than
       // the addition (as the square root will always be positive). 
       T t1 = (-B - sqrtd) / (2 * A);
+
       if(line.inside(t1))
       {
 	intersection.set(this, t1);
@@ -220,7 +222,7 @@ namespace amethyst
       {
 	// The first side (although a hit), wasn't inside the range.
 	T t2 = (-B + sqrtd) / (2 * A);
-	if(line.inside(t1))
+	if(line.inside(t2))
 	{
 	  intersection.set(this, t2);
 	  return true;
