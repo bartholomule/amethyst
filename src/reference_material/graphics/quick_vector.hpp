@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.1 2004/04/09 06:52:19 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.2 2004/04/10 04:45:26 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -27,6 +27,15 @@
 
 // Include for the iterator base classes.
 #include <iterator>
+
+/**
+ * The size (bytes) to increment after this size has been reached.  Before
+ * this size, the size will be repeatedly doubled.  Note that for some types,
+ * this size can never be reached evenly, so it is just an approximation.
+ */
+#if       !defined(AMETHYST_VECTOR_INCREMENT_SIZE)
+#define AMETHYST_VECTOR_INCREMENT_SIZE 1024
+#endif /* !defined(AMETHYST_VECTOR_INCREMENT_SIZE) */
 
 namespace amethyst
 { 
@@ -192,10 +201,8 @@ namespace amethyst
    * to give a little faster speed over the STL vector.  The size of it cannot
    * be decreased, except by assigning another smaller vector to it.
    *
-   * Note: This may not be thread safe.  While attempts have been made to make
-   * many operations (append, for example) safe for access while appending
-   * (read-only, of course), locks/mutexes should be used around any critical
-   * sections.
+   * Note: This will not be thread safe. locks/mutexes should be used around
+   * any critical sections (construction, appends, etc).
    *
    * Exception safety for constructors and other operations can be gained by
    * defining AMETHYST_EXCEPTION_SAFETY.  This ensures that exceptions thrown
@@ -205,7 +212,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
@@ -220,13 +227,26 @@ namespace amethyst
   private:
     T* data_pointer;
     size_t data_size;
+    size_t storage_size;
 
     /**
-     * Call the destructor for the first count items, free the data pointer, 
-     * and set things to a known state (0 and NULL);
+     * Call the destructor for the first count items, but leave the current
+     * data pointer intact. 
      */
     void destroy_data(size_t count);
-  
+
+    /**
+     * Remove the data pointer, setting things to a known state.
+     */
+    void remove_storage();
+
+    enum resize_type { E_ABSOLUTE, E_NORMAL };
+    
+    /**
+     * Increase the storage space in the vector.
+     */
+    void increase_storage(size_t desired, resize_type size_method = E_ABSOLUTE);
+    
   protected:
 
   public:
@@ -286,7 +306,8 @@ namespace amethyst
   template<class T>
   inline quick_vector<T>::quick_vector():
     data_pointer(NULL),
-    data_size(0)    
+    data_size(0),
+    storage_size(0)
   {
   
   } // quick_vector()
@@ -301,36 +322,44 @@ namespace amethyst
       {
         data_pointer[i].~T();
       }
-      delete[] reinterpret_cast<char*>(data_pointer);
     }
-    data_pointer = NULL;
     data_size = 0;
   }
 
+  template<class T>
+  inline void quick_vector<T>::remove_storage()  
+  {
+    destroy_data(data_size);
+    delete[] reinterpret_cast<char*>(data_pointer);
+    data_pointer = NULL;
+    storage_size = 0;
+  }
+  
   //-------------------------------------------
   // Secondary constructor for class quick_vector
   //-------------------------------------------
   template<class T>
   inline quick_vector<T>::quick_vector(size_t size):
-    data_size(size)
+    data_pointer(NULL),
+    data_size(0),
+    storage_size(0)
   {
-    data_pointer = reinterpret_cast<T*>(new char[size * sizeof(T)]);
-    size_t i = 0;
+    increase_storage(size);
 
 #if defined(AMETHYST_EXCEPTION_SAFETY)    
     try
 #endif
     {
-      for( ; i < data_size; ++i )
+      for( data_size = 0; data_size < size; ++data_size )
       {
-        new(&data_pointer[i]) T();
+        new(&data_pointer[data_size]) T();
       }
     }
 #if defined(AMETHYST_EXCEPTION_SAFETY)
     catch(...)
     {
       // Clean up any pre-constructed items.
-      destroy_data(i);
+      remove_storage();
       
       // Rethrow the exception.
       throw;
@@ -344,24 +373,25 @@ namespace amethyst
   //-------------------------------------------
   template<class T>
   inline quick_vector<T>::quick_vector(size_t size, const T& initial_value):
-    data_size(size)
-  {
-    data_pointer = reinterpret_cast<T*>(new char[size * sizeof(T)]);
-    size_t i = 0;
+    data_pointer(NULL),
+    data_size(0),
+    storage_size(0)
+  { 
+    increase_storage(size);   
 #if defined(AMETHYST_EXCEPTION_SAFETY)
     try
 #endif
     {
-      for( ; i < data_size; ++i )
+      for( data_size = 0 ; data_size < size; ++data_size )
       {
-        new(&data_pointer[i]) T(initial_value);
+        new(&data_pointer[data_size]) T(initial_value);
       }
     }
 #if defined(AMETHYST_EXCEPTION_SAFETY)
     catch(...)
     {
       // Clean up any pre-constructed items.
-      destroy_data(i);
+      remove_storage();
 
       // Rethrow the exception.
       throw;
@@ -376,7 +406,7 @@ namespace amethyst
   template<class T>
   inline quick_vector<T>::~quick_vector()
   {
-    destroy_data(data_size);
+    remove_storage();
   } // ~quick_vector()
 
   //----------------------------------------
@@ -385,30 +415,28 @@ namespace amethyst
   template<class T>
   inline quick_vector<T>::quick_vector(const quick_vector<T>& old):
     data_pointer(NULL),
-    data_size(0)
+    data_size(0),
+    storage_size(0)
   {
     if( old.data_pointer )
     {
-      data_pointer = reinterpret_cast<T*>(new char[sizeof(T) * old.data_size]);
-      data_size = old.data_size;
-
-      size_t i = 0;
+      increase_storage(old.data_size);
 
 #if defined(AMETHYST_EXCEPTION_SAFETY)
       try
 #endif
       {
-        for( ; i < old.data_size; ++i )
+        for( data_size = 0; data_size < old.data_size; ++data_size )
         {
-          new(&data_pointer[i]) T(old.data_pointer[i]);
+          new(&data_pointer[data_size]) T(old.data_pointer[data_size]);
         }
       }
 #if defined(AMETHYST_EXCEPTION_SAFETY)
       catch(...)
       {
         // Cleanup any already constructed items...
-        destroy_data(i);
-
+        remove_storage();
+        
         // Rethrow the exception.
         throw;
       }
@@ -425,140 +453,126 @@ namespace amethyst
     // Generic check for self-assignment
     if( &old != this)
     {
-      if( data_size != old.data_size )
-      {
-        destroy_data(data_size);
-        
-        if( old.data_size )
-        {
-          data_pointer = reinterpret_cast<T*>(new char[sizeof(T) * old.data_size]);
-          data_size = old.data_size;
+      // Remove the current data (leave the storage alone).
+      destroy_data(data_size);
 
-          // Copy the data.  Note that this is unintuitive, as it uses the copy
-          // constructor instead of the assignment operator, however it is MUCH
-          // faster.
-          size_t i = 0;
-#if defined(AMETHYST_EXCEPTION_SAFETY)
-          try
-#endif
-          {
-            for( ; i < data_size; ++i )
-            {
-              new(&data_pointer[i]) T(old.data_pointer[i]);
-            }
-          }
-#if defined(AMETHYST_EXCEPTION_SAFETY)
-          catch(...)
-          {
-            // Cleanup any already constructed items...
-            destroy_data(i);
+      // Increase the storage (if required) to hold all of the data to be
+      // copied.
+      increase_storage(old.data_size);
 
-            // Rethrow the exception.
-            throw;
-          }
-#endif
-        }
-      }
-      else
+      // NOTE: This assumes that the data sizes are valid when the pointers
+      // are non-null, and that when the pointers are NULL, the data size is
+      // 0.  This should always be the case.
+      //
+      // Also, no exception block is required around this, since all memory
+      // allocated can be freed from the destructor, and this loop will leave
+      // the data in good state (up until the final item that threw), so
+      // data_size worth of elements can have the destructor called, should any
+      // exception be thrown from a copy constructor..
+      for( data_size = 0; data_size < old.data_size; ++data_size )
       {
-        // The proper size.  Use the assignment operator for each element.
-        // NOTE: This assumes that the data sizes are valid when the pointers
-        // are non-null, and that when the pointers are NULL, the data size is
-        // 0.  This should always be the case.
-        for( size_t i = 0; i < data_size; ++i )
-        {
-          data_pointer[i] = old.data_pointer[i];
-        }
+        new(&data_pointer[data_size]) T(old.data_pointer[data_size]);
       }
     }
     return (*this);
   } // quick_vector::operator=(quick_vector)
 
   template <class T>
+  inline void quick_vector<T>::increase_storage(size_t desired, quick_vector<T>::resize_type size_method)
+  {
+    // NOTE: Size cannot decrease, so the only other case is equal, in which we
+    // don't need any more memory.
+    if( desired > storage_size )
+    {
+      size_t new_size = desired;
+      if( size_method == E_NORMAL )
+      {
+        // If less than 1k, double the size.  If larger, be more conservative.
+        if( storage_size * sizeof(T) < (AMETHYST_VECTOR_INCREMENT_SIZE) )
+        {
+          new_size = storage_size * 2;
+
+          if( new_size < desired )
+          {
+            new_size = desired;
+          }
+        }
+        else
+        {
+          size_t current_bytes = storage_size * sizeof(T);
+          size_t desired_bytes = desired * sizeof(T);
+
+          // Allocate even kilobytes.
+          size_t current_kilobytes = ((current_bytes >> 10) +
+                                      ((current_bytes & 0x3FF)?(1):(0)));
+
+          size_t desired_kilobytes = ((desired_bytes >> 10) +
+                                      ((desired_bytes & 0x3FF)?(1):(0)));
+
+
+          new_size = ( std::max(current_kilobytes + ((AMETHYST_VECTOR_INCREMENT_SIZE) >> 10), desired_kilobytes ) << 10 ) / sizeof(T);
+        }
+      }
+      T* new_ptr = reinterpret_cast<T*>(new char[sizeof(T) * new_size]);
+
+      size_t i = 0;
+
+      // NOTE: this exception block is very important if containing objects
+      // can allocate memory, or other resources.  Otherwise, there will be a
+      // memory leak!
+#if defined(AMETHYST_EXCEPTION_SAFETY)
+      try
+#endif
+      {
+        for( ; i < data_size; ++i )
+        {
+          new(&new_ptr[i]) T(data_pointer[i]);
+        }
+      }
+#if defined(AMETHYST_EXCEPTION_SAFETY)
+      catch(...)
+      {
+        // Note that this only cleans up local storage.  The class storage will
+        // be freed when the destructor is called.
+        for( ; i > 0; --i )
+        {
+          new_ptr[i - 1].~T()
+            }
+
+        delete[] static_cast<char*>(new_ptr);
+
+        throw;
+      }
+#endif      
+      size_t current_size = data_size;
+      remove_storage();
+      data_pointer = new_ptr;
+      data_size = current_size;
+      storage_size = new_size;      
+    }
+  }
+
+  template <class T>
   inline void quick_vector<T>::append(const T& val)
   {
     size_t new_size = data_size + 1;
-    T* new_ptr = reinterpret_cast<T*>(new char[sizeof(T) * new_size]);
 
-    size_t i = 0;
+    increase_storage(new_size, E_NORMAL);
 
-#if defined(AMETHYST_EXCEPTION_SAFETY)
-    try
-#endif
-    {
-      for( ; i < data_size; ++i )
-      {
-	new(&new_ptr[i]) T(data_pointer[i]);
-      }
-      new(&new_ptr[i++]) T(val);
-    }
-#if defined(AMETHYST_EXCEPTION_SAFETY)
-    catch(...)
-    {
-      // Clean up any pre-constructed items.
-      for( size_t j = 0; j < i; ++j )
-      {
-	new_pointer[j].~T();
-      }
-      delete[] new_ptr;
-      // Rethrow.
-      throw;
-    }
-#endif
-    T* temp = data_pointer;
-    data_pointer = new_ptr;
-    data_size = new_size;
-    for( size_t j = 0; j < data_size; ++j )
-    {
-      temp[j].~T();
-    }
-    delete[] reinterpret_cast<char*>(temp);
+    new(&data_pointer[data_size++]) T(val);
   }
 
   template <class T>
   inline void quick_vector<T>::append(const quick_vector<T>& vec)
   {
     size_t new_size = data_size + vec.data_size;
-    T* new_ptr = reinterpret_cast<T*>(new char[sizeof(T) * new_size]);
-
-
-    size_t i = 0;
-    size_t j = 0;
-
-#if defined(AMETHYST_EXCEPTION_SAFETY)
-    try
-#endif
+    size_t current_size = data_size;
+    increase_storage(new_size, E_NORMAL);
+    
+    for( ; data_size < new_size; ++data_size )
     {
-      for( ; i < data_size; ++i )
-      {
-	new(&new_ptr[i]) T(data_pointer[i]);
-      }
-      for( ; j < vec.data_size; ++j )
-      {
-	new(&new_ptr[i + j]) T(vec.data_pointer[j]);
-      }
+      new(&data_pointer[data_size]) T(vec.data_pointer[data_size - current_size]);
     }
-#if defined(AMETHYST_EXCEPTION_SAFETY)
-    catch(...)
-    {
-      // Clean up any pre-constructed items.
-      for( size_t k = 0; k < (i+j); ++k )
-      {
-	new_pointer[k].~T();
-      }      
-      delete[] new_ptr;
-      // Rethrow
-      throw;
-    }
-#endif
-    T* temp = data_pointer;
-    data_pointer = new_ptr;
-    data_size = new_size;    
-    for( size_t k = 0; k < data_size; ++k )
-    {
-      temp[j].~T();
-    }
-    delete[] reinterpret_cast<char*>(temp);
   }
   
 } // namespace amethyst
