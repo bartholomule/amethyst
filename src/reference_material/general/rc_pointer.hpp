@@ -89,6 +89,13 @@
 
 #include <ostream>
 
+template <class T, class counter_type>
+  class rc_pointer;
+
+template <class T, class counter_type>
+  std::ostream& operator<< (std::ostream& o, const rc_pointer<T,counter_type>& rcp);
+
+
 /**
  * A reference counted pointer class (rc_pointer is a much shorter name).
  * A simple class type that can be used to "allocate and forget".  As this is
