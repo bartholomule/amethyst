@@ -137,6 +137,10 @@ It's easy to think of elaborations of the above structure. I'll
 
         (e) Plugins need to be able to use other plugins.
 
+The primary drawback of the structures described here is that they
+    are too general. The more generic a tool is, the less work it
+    does in a specific example.
+
 Things missing from this document:
 
     (a) The text does not talk about dependencies, or how we will
@@ -148,5 +152,4 @@ Things missing from this document:
     
 
       
-  
   
