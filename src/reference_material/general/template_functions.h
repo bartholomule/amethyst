@@ -34,7 +34,7 @@
   09Sep2003 Added some comments about potential replacements from the STL.
  */
 
-#include <iosfwd>
+#include <ostream>
 #include <vector>
 //#include <pair.h>
 #include <utility>
