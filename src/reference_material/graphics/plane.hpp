@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.5 2004/03/21 22:12:40 zorthluthik Exp $
+ * $Id: plane.hpp,v 1.6 2004/03/21 23:23:33 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template<class T>
@@ -80,10 +80,10 @@ namespace amethyst
     /** Assignment operator */
     plane& operator= (const plane& old);
 
-    const point3<T>& p() const { return defining_point; }
-    const vector3<T>& n() const { return normal; }
-    const vector3<T>& u() const { return u_vector; }
-    const vector3<T>& v() const { return v_vector; }
+    const point3<T>& get_origin() const { return defining_point; }
+    const vector3<T>& get_normal() const { return normal; }
+    const vector3<T>& get_u_vector() const { return u_vector; }
+    const vector3<T>& get_v_vector() const { return v_vector; }
     
     /** Returns if the given point is inside the shape. */
     virtual bool inside(const point3<T>& p) const;
@@ -104,7 +104,9 @@ namespace amethyst
     virtual std::string to_string(const std::string& base_indentation,
 				  const std::string& level_indentation = "  ") const;
 
-    bool extract_uv_for_point(const point3<T>& p, coord2<T>& uv) const;
+    virtual std::string name() const { return "plane"; }
+    
+    bool extract_uv_for_point(const point3<T>& point, coord2<T>& uv) const;
 
   private:
     void setup_non_zero_indices();
@@ -401,12 +403,14 @@ namespace amethyst
     {
       T u;
       T v;
-      vector3<T> point_diff_vector((point - defining_point) - v_vector);
+      vector3<T> point_diff_vector(point - defining_point);
       T u_scalar = u_vector[non_zero_v_index]/u_vector[non_zero_u_index];
       v = (point_diff_vector[non_zero_v_index] - point_diff_vector[non_zero_u_index]*u_scalar) /
 	(v_vector[non_zero_v_index] - v_vector[non_zero_u_index] * u_scalar);
       u = (point_diff_vector[non_zero_u_index]  - v * v_vector[non_zero_u_index]) /
 	u_vector[non_zero_u_index];
+
+      uv.set(u,v);
       
       return true;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.1 2004/03/21 19:55:51 kpharris Exp $
+ * $Id: triangle.hpp,v 1.2 2004/03/21 23:23:33 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple triangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
@@ -78,7 +78,8 @@ namespace amethyst
     
     virtual std::string to_string(const std::string& indent,
 				  const std::string& level_indent = "  ") const;
-
+    virtual std::string name() const { return "triangle"; }
+    
   }; // class triangle
 
 
@@ -136,10 +137,10 @@ namespace amethyst
   } // triangle::operator=(triangle)
 
   template<class T>
-  bool triangle<T>::inside(const point3<T>& p) const
+  bool triangle<T>::inside(const point3<T>& point) const
   {
     coord2<T> uv;
-    if( plane<T>::extract_uv_for_point(p, uv) )
+    if( plane<T>::extract_uv_for_point(point, uv) )
     {
       if( (uv.x() > 0 && uv.y() > 0) &&
 	  (uv.x() + uv.y() < 1) )
@@ -154,9 +155,9 @@ namespace amethyst
   bool triangle<T>::intersects(const sphere<T>& s) const
   {
     // If any of the 3 corners is inside the sphere, the triangle intersects.
-    if( s.inside( plane<T>::p() ) ||
-	s.inside( plane<T>::p() + plane<T>::u() ) ||
-	s.inside( plane<T>::p() + plane<T>::v() ) )
+    if( s.inside( plane<T>::get_origin() ) ||
+	s.inside( plane<T>::get_origin() + plane<T>::get_u_vector() ) ||
+	s.inside( plane<T>::get_origin() + plane<T>::get_v_vector() ) )
     {
       return true;
     }
@@ -167,9 +168,9 @@ namespace amethyst
   bool triangle<T>::intersects(const plane<T>& p) const
   {
     intersection_info<T> unused;
-    const point3<T>& pp = plane<T>::p();
-    point3<T> pu = plane<T>::p() + plane<T>::u();
-    point3<T> pv = plane<T>::p() + plane<T>::v();
+    const point3<T>& pp = plane<T>::get_origin();
+    point3<T> pu = plane<T>::get_origin() + plane<T>::get_u_vector();
+    point3<T> pv = plane<T>::get_origin() + plane<T>::get_v_vector();
     
     if( plane<T>::intersects_line( line3<T>(pp, pu), unused ) ||
 	plane<T>::intersects_line( line3<T>(pp, pv), unused ) ||
@@ -189,13 +190,14 @@ namespace amethyst
 
     if( plane<T>::intersects_line(line, temp_intersection) )
     {
-      point3<T> p = (temp_intersection.get_distance() * line.v() + line.o());
+      point3<T> p = (temp_intersection.get_distance() * line.direction() + line.origin());
       coord2<T> uv;
       if( plane<T>::extract_uv_for_point(p, uv) )
       {
 	if( (uv.x() > 0 && uv.y() > 0) &&
 	    (uv.x() + uv.y() < 1) )
 	{
+	  intersection = temp_intersection;
 	  return true;
 	}
       }      
@@ -210,10 +212,10 @@ namespace amethyst
     
     return ( indent + "triangle\n" +
 	     indent + "{\n" +
-	     indent + level_indent + string_format("point=%1\n", plane<T>::p()) +
-	     indent + level_indent + string_format("u=%1\n", plane<T>::u()) + 	     
-	     indent + level_indent + string_format("v=%1\n", plane<T>::v()) +
-	     indent + level_indent + string_format("normal=%1\n", plane<T>::n()) +
+	     indent + level_indent + string_format("point=%1\n", plane<T>::get_origin()) +
+	     indent + level_indent + string_format("u=%1\n", plane<T>::get_u_vector()) + 	     
+	     indent + level_indent + string_format("v=%1\n", plane<T>::get_v_vector()) +
+	     indent + level_indent + string_format("normal=%1\n", plane<T>::get_normal()) +
 	     indent + "}" );
     
   }
