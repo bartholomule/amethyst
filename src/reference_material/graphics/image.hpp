@@ -1,5 +1,5 @@
 /*
- * $Id: image.hpp,v 1.1 2003/09/17 10:13:31 kpharris Exp $
+ * $Id: image.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Many Games" - A nearly infinitely expandable gaming framework
  * Copyright (C) 2003 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__MANYGAMES__IMAGE_HPP__)
-#define            __MANYGAMES__IMAGE_HPP__
+#if       !defined(__MANYGAMES__IMAGE_HPP)
+#define            __MANYGAMES__IMAGE_HPP
 
 // --------------------------------------
 // Default include of parent class header
@@ -59,7 +59,7 @@ namespace manygames
    * </font>
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * @see raster
    * @see rgbcolor
    * 
@@ -148,5 +148,5 @@ namespace manygames
 } // namespace manygames
 
 
-#endif /* !defined(__MANYGAMES__IMAGE_HPP__) */
+#endif /* !defined(__MANYGAMES__IMAGE_HPP) */
 

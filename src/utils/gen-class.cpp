@@ -23,7 +23,7 @@
 */
 
 /*
-  $Id: gen-class.cpp,v 1.1 2003/09/16 09:04:04 kpharris Exp $
+  $Id: gen-class.cpp,v 1.2 2004/02/14 06:55:19 kpharris Exp $
  */
 
 #include <string>
@@ -271,7 +271,7 @@ void RemoveSwitches(int& argc, char** argv, string& munged_class, string& parent
       } break;
     case 'v':
       {
-	cout << "Class Stub Generator version $Revision: 1.1 $" << endl;
+	cout << "Class Stub Generator version $Revision: 1.2 $" << endl;
 	cout << "Copyright (C) 2003 Kevin Harris" << endl;
 	cout << endl;
 	cout << "This is free software, released under terms of the GNU Public License (GPL)" << endl;
@@ -280,7 +280,7 @@ void RemoveSwitches(int& argc, char** argv, string& munged_class, string& parent
       }
     case 'h':
       {
-	cout << "Class Stub Generator version $Revision: 1.1 $" << endl;
+	cout << "Class Stub Generator version $Revision: 1.2 $" << endl;
 	cout << "  This is a program to generate class stubs. \n\
   As arguments, it accepts one non-switch argument, which is the classname.\n\
   ie. giving it 'foo.baz' would generate a class baz in namespace foo.\n\
@@ -390,12 +390,12 @@ string IncludeGuardMunger(string s)
 
 string GenerateIncludeGuardText(const vector<string>& namespaces, const string& output_root)
 {
-  string s = "__";
+  string s = "";
   for( int i = 0; i < int(namespaces.size()); ++i)
   {
     s += namespaces[i] + "  ";
   }
-  s += output_root + " " + HeaderExtension + "  ";
+  s += output_root + " " + HeaderExtension + "";
   return IncludeGuardMunger(s);
 }
 

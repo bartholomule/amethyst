@@ -1,5 +1,5 @@
 /*
- * $Id: textized.hpp,v 1.2 2003/09/18 00:51:04 kpharris Exp $
+ * $Id: textized.hpp,v 1.3 2004/02/14 06:55:17 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__TEXTIZED_HPP__)
-#define            __AMETHYST__TEXTIZED_HPP__
+#if       !defined(AMETHYST__TEXTIZED_HPP)
+#define            AMETHYST__TEXTIZED_HPP
 
 // Define this value to effectively remove internationalization
 #if !defined(ENABLE_NLS) || !ENABLE_NLS
@@ -42,4 +42,4 @@
 
 #endif /* defined(ENABLE_NLS) */
 
-#endif /* !defined(__AMETHYST__TEXTIZED_HPP__) */
+#endif /* !defined(AMETHYST__TEXTIZED_HPP) */

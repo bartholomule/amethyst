@@ -1,5 +1,5 @@
 /*
- * $Id: vector_utils.hpp,v 1.1 2003/09/18 01:32:38 kpharris Exp $
+ * $Id: vector_utils.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__VECTOR_UTILS_HPP__)
-#define            __AMETHYST__VECTOR_UTILS_HPP__
+#if       !defined(AMETHYST__VECTOR_UTILS_HPP)
+#define            AMETHYST__VECTOR_UTILS_HPP
 
 #include <algorithm>
 #include "../general/template_functions.hpp"
@@ -129,4 +129,4 @@ namespace amethyst
   
 } // namespace amethyst  
 
-#endif /* !defined(__AMETHYST__VECTOR_UTILS_HPP__) */
+#endif /* !defined(AMETHYST__VECTOR_UTILS_HPP) */

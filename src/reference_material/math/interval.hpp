@@ -1,5 +1,5 @@
 /*
- * $Id: interval.hpp,v 1.2 2003/09/30 03:36:58 kpharris Exp $
+ * $Id: interval.hpp,v 1.3 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__INTERVAL_HPP__)
-#define            __AMETHYST__INTERVAL_HPP__
+#if       !defined(AMETHYST__INTERVAL_HPP)
+#define            AMETHYST__INTERVAL_HPP
 
 /*
   interval.hpp -- A simple class for use in creating/testing intervals.
@@ -431,4 +431,4 @@ namespace amethyst
   } // operator << (ostream&,const interval&)
 
 } // namespace amethyst
-#endif /* !defined(__AMETHYST__INTERVAL_HPP__) */
+#endif /* !defined(AMETHYST__INTERVAL_HPP) */

@@ -1,5 +1,5 @@
 /*
- * $Id: coord3.hpp,v 1.1 2003/09/18 01:32:38 kpharris Exp $
+ * $Id: coord3.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if    !defined(__AMETHYST__COORD3_HPP__)
-#define         __AMETHYST__COORD3_HPP__
+#if    !defined(AMETHYST__COORD3_HPP)
+#define         AMETHYST__COORD3_HPP
 
 /*
   coord3.hpp
@@ -315,7 +315,7 @@ namespace amethyst
 
 } // namespace amethyst
 
-#endif /* !defined(__AMETHYST__COORD3_HPP__) */
+#endif /* !defined(AMETHYST__COORD3_HPP) */
 
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: unit_line3.hpp,v 1.1 2004/02/08 23:59:42 kpharris Exp $
+ * $Id: unit_line3.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Many Games" - A nearly infinitely expandable gaming framework
  * Copyright (C) 2004 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__UNIT_LINE3_HPP__)
-#define            __AMETHYST__UNIT_LINE3_HPP__
+#if       !defined(AMETHYST__UNIT_LINE3_HPP)
+#define            AMETHYST__UNIT_LINE3_HPP
 
 #include "line3.hpp"
 #include <limits>
@@ -33,7 +33,7 @@ namespace amethyst
    * A simple 3d line with a unit direction.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
@@ -219,5 +219,5 @@ namespace amethyst
 } // namespace amethyst
 
 
-#endif /* !defined(__AMETHYST__UNIT_LINE3_HPP__) */
+#endif /* !defined(AMETHYST__UNIT_LINE3_HPP) */
 

@@ -1,5 +1,5 @@
 /*
- * $Id: onb.hpp,v 1.3 2003/09/19 00:40:09 kpharris Exp $
+ * $Id: onb.hpp,v 1.4 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -18,8 +18,8 @@
  * along with this program; if not, write to the Free Software          
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
-#if       !defined(__AMETHYST__ONB_HPP__)
-#define            __AMETHYST__ONB_HPP__
+#if       !defined(AMETHYST__ONB_HPP)
+#define            AMETHYST__ONB_HPP
 
 /*
   onb.hpp -- A class to represent an ortho-normal basis.
@@ -143,4 +143,4 @@ namespace amethyst
 
 } // namespace amethyst
   
-#endif /* !defined(__AMETHYST__ONB_HPP__) */
+#endif /* !defined(AMETHYST__ONB_HPP) */

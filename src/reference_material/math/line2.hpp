@@ -1,5 +1,5 @@
 /*
- * $Id: line2.hpp,v 1.1 2004/02/08 23:59:42 kpharris Exp $
+ * $Id: line2.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Many Games" - A nearly infinitely expandable gaming framework
  * Copyright (C) 2004 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__LINE2_HPP__)
-#define            __AMETHYST__LINE2_HPP__
+#if       !defined(AMETHYST__LINE2_HPP)
+#define            AMETHYST__LINE2_HPP
 
 #include "point2.hpp"
 #include "vector2.hpp"
@@ -36,7 +36,7 @@ namespace amethyst
    * A simple 2d line.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
@@ -173,5 +173,5 @@ namespace amethyst
 } // namespace amethyst
 
 
-#endif /* !defined(__AMETHYST__LINE2_HPP__) */
+#endif /* !defined(AMETHYST__LINE2_HPP) */
 

@@ -1,5 +1,5 @@
 /*
- * $Id: frame.hpp,v 1.1 2003/09/19 00:29:19 kpharris Exp $
+ * $Id: frame.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -18,8 +18,8 @@
  * along with this program; if not, write to the Free Software          
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
-#if       !defined(__AMETHYST__FRAME_HPP__)
-#define            __AMETHYST__FRAME_HPP__
+#if       !defined(AMETHYST__FRAME_HPP)
+#define            AMETHYST__FRAME_HPP
 
 /*
   frame.hpp -- A class to represent a complete coordinate system.
@@ -200,4 +200,4 @@ namespace amethyst
 
 
 
-#endif /* !defined(__AMETHYST__FRAME_HPP__) */
+#endif /* !defined(AMETHYST__FRAME_HPP) */

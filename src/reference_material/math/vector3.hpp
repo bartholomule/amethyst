@@ -1,5 +1,5 @@
 /*
- * $Id: vector3.hpp,v 1.2 2004/02/08 23:55:30 kpharris Exp $
+ * $Id: vector3.hpp,v 1.3 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if    !defined(__AMETHYST__VECTOR3_HPP__)
-#define         __AMETHYST__VECTOR3_HPP__
+#if    !defined(AMETHYST__VECTOR3_HPP)
+#define         AMETHYST__VECTOR3_HPP
 
 /*
   vector3.hpp
@@ -279,4 +279,4 @@ namespace amethyst
   
 } // namespace amethyst
 
-#endif /* !defined(__AMETHYST__VECTOR3_HPP__) */
+#endif /* !defined(AMETHYST__VECTOR3_HPP) */

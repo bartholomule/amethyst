@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.1 2004/02/09 00:39:20 kpharris Exp $
+ * $Id: plane.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Many Games" - A nearly infinitely expandable gaming framework
  * Copyright (C) 2004 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__PLANE_HPP__)
-#define            __AMETHYST__PLANE_HPP__
+#if       !defined(AMETHYST__PLANE_HPP)
+#define            AMETHYST__PLANE_HPP
 
 // --------------------------------------
 // Default include of parent class header
@@ -37,7 +37,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
@@ -291,5 +291,5 @@ namespace amethyst
 } // namespace amethyst
 
 
-#endif /* !defined(__AMETHYST__PLANE_HPP__) */
+#endif /* !defined(AMETHYST__PLANE_HPP) */
 

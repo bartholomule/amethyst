@@ -1,5 +1,5 @@
 /*
- * $Id: extra_exceptions.hpp,v 1.2 2003/09/18 00:40:52 kpharris Exp $
+ * $Id: extra_exceptions.hpp,v 1.3 2004/02/14 06:55:17 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__EXTRA_EXCEPTIONS_HPP__)
-#define            __AMETHYST__EXTRA_EXCEPTIONS_HPP__
+#if       !defined(AMETHYST__EXTRA_EXCEPTIONS_HPP)
+#define            AMETHYST__EXTRA_EXCEPTIONS_HPP
 
 #include <stdexcept>
 
@@ -32,7 +32,7 @@ namespace amethyst
    * Thrown to indicate a size error (for assignment of arrays, etc).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   class size_mismatch : public std::runtime_error
@@ -50,5 +50,5 @@ namespace amethyst
 } // namespace amethyst
 
 
-#endif /* !defined(__AMETHYST__EXTRA_EXCEPTIONS_HPP__) */
+#endif /* !defined(AMETHYST__EXTRA_EXCEPTIONS_HPP) */
 

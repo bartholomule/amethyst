@@ -1,5 +1,5 @@
 /*
- * $Id: string_format.hpp,v 1.1 2004/02/09 00:39:20 kpharris Exp $
+ * $Id: string_format.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
  *
  * Part of "Many Games" - A nearly infinitely expandable gaming framework
  * Copyright (C) 2004 Kevin Harris
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__AMETHYST__STRING_FORMAT_HPP__)
-#define            __AMETHYST__STRING_FORMAT_HPP__
+#if       !defined(AMETHYST__STRING_FORMAT_HPP)
+#define            AMETHYST__STRING_FORMAT_HPP
 
 #include <sstream>
 #include <string>
@@ -587,5 +587,5 @@ namespace amethyst
 } // namespace amethyst
 
 
-#endif /* !defined(__AMETHYST__STRING_FORMAT_HPP__) */
+#endif /* !defined(AMETHYST__STRING_FORMAT_HPP) */
 
