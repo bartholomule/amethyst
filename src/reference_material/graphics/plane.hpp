@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.8 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: plane.hpp,v 1.9 2004/04/07 06:15:37 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.8 $
+   * @version $Revision: 1.9 $
    * 
    */
   template<class T>
@@ -123,7 +123,13 @@ namespace amethyst
       return "plane";
     }
 
+    // Check to see if the given point is on the plane, and if so, get the UV
+    // coordinates of the point.
     bool extract_uv_for_point(const point3<T>& point, coord2<T>& uv) const;
+
+    // This doesn't check to see if the point is on the plane.  As such, it is
+    // a speedimprovement when the point is already known to be on the plane. 
+    void extract_uv_for_point_nonchecked(const point3<T>& point, coord2<T>& uv) const;
 
   private:
     void setup_non_zero_indices();
@@ -450,6 +456,26 @@ namespace amethyst
     }
     return false;
   }
+
+
+  template<class T>
+  inline void plane<T>::extract_uv_for_point_nonchecked(const point3<T>& point,
+                                                        coord2<T>& uv) const
+  {
+    T u;
+    T v;
+    vector3<T> point_diff_vector(point - defining_point);
+    T u_scalar = u_vector[non_zero_v_index] / u_vector[non_zero_u_index];
+    v = ( ( point_diff_vector[non_zero_v_index] - 
+            point_diff_vector[non_zero_u_index] * u_scalar ) /
+          ( v_vector[non_zero_v_index] - 
+            v_vector[non_zero_u_index] * u_scalar) );
+    u = ( ( point_diff_vector[non_zero_u_index]  - 
+            v * v_vector[non_zero_u_index]) /
+          u_vector[non_zero_u_index] );
+
+    uv.set(u,v);
+  }  
 
 
   template <class T>

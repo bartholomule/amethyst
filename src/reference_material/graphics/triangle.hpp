@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.5 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: triangle.hpp,v 1.6 2004/04/07 06:15:39 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple triangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template<class T>
@@ -196,15 +196,20 @@ namespace amethyst
     {
       point3<T> p = (temp_intersection.get_distance() * line.direction() + line.origin());
       coord2<T> uv;
-      if( plane<T>::extract_uv_for_point(p, uv) )
+
+      // Note that a non-checked version is being called, because the point
+      // *SHOULD* be on the plane (it hit it, why check it?).  This improves
+      // speed, and reduces artifacts with expanded error (a point that is on
+      // the plane would sometimes not show as being on the plane -- this is
+      // the case when a small epsilon and single-precision floats are used. 
+      plane<T>::extract_uv_for_point_nonchecked(p, uv);
+
+      if( (uv.x() > 0 && uv.y() > 0) &&
+          (uv.x() + uv.y() < 1) )
       {
-        if( (uv.x() > 0 && uv.y() > 0) &&
-            (uv.x() + uv.y() < 1) )
-        {
-          intersection = temp_intersection;
-          return true;
-        }
-      }      
+        intersection = temp_intersection;
+        return true;
+      }
     }
     return false;
   }
