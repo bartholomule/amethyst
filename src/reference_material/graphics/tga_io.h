@@ -14,6 +14,8 @@
 #include "image_io.h"
 #include <iostream>
 
+namespace amethyst {
+
 template <class T>
 class tga_io: public image_io<T>
 {
@@ -68,7 +70,12 @@ bool tga_io<T>::output(std::ostream& o, const raster<T>& source) const
   {
     for(x = 0; x < width; ++x)
     {
-      source(x,y).clipped_int_triplet(r,g,b);
+      const T& p = source(x,y);
+
+      r = byte(std::min<int>(std::max<int>(int(p.r() * 256), 0), 255) & 0xFF);
+      g = byte(std::min<int>(std::max<int>(int(p.g() * 256), 0), 255) & 0xFF);
+      b = byte(std::min<int>(std::max<int>(int(p.b() * 256), 0), 255) & 0xFF);
+
       o << b << g << r;
     }
   }
@@ -78,6 +85,9 @@ bool tga_io<T>::output(std::ostream& o, const raster<T>& source) const
 template <class T>
 bool tga_io<T>::output(std::ostream& o, const raster<T>& source, T gamma) const
 {
+  // FIXME!
+  return output(o, source);
+  /*
   byte r, g, b;
   int x, y;
   static byte main_header[12] = {0,0,2,0,0,0,0,0,0,0,0,0};
@@ -100,6 +110,7 @@ bool tga_io<T>::output(std::ostream& o, const raster<T>& source, T gamma) const
       o << b << g << r;
     }
   }
+  */
   return(o.good());
 }
 
@@ -107,7 +118,7 @@ bool tga_io<T>::output(std::ostream& o, const raster<T>& source, T gamma) const
 template <class T>
 magic_pointer<raster<T> > tga_io<T>::input(std::istream& i) const
 {
-  static magic_pointer<raster<T> > trash_raster = new raster<T>(1,1);
+  static magic_pointer<raster<T> > trash_raster(new raster<T>(1,1));
   byte version;
   byte b1, b2;
   byte r, g, b;
@@ -139,7 +150,7 @@ magic_pointer<raster<T> > tga_io<T>::input(std::istream& i) const
     return trash_raster;
   }
 
-  magic_pointer<raster<T> > dest_ptr = new raster<T>(width,height);
+  magic_pointer<raster<T> > dest_ptr(new raster<T>(width,height));
 
   raster<T>& dest = *dest_ptr;
   
@@ -148,9 +159,9 @@ magic_pointer<raster<T> > tga_io<T>::input(std::istream& i) const
     for(int x = 0; x < width; ++x)
     {
       i.get((char&)b).get((char&)g).get((char&)r);
-      dest(x,y).set(word(r)/T(256),
-		    word(g)/T(256),
-		    word(b)/T(256));
+      dest(x,y).set(word(r)/256.0,
+		    word(g)/256.0,
+		    word(b)/256.0);
     }
   }
   std::cout << "Loaded image of size " << width << "x" << height << std::endl;
@@ -158,6 +169,7 @@ magic_pointer<raster<T> > tga_io<T>::input(std::istream& i) const
   return dest_ptr;
 }
 
+} // namespace amethyst {
 
 #endif /* !defined(KH_TGA_OUT_H) */
 
