@@ -68,15 +68,16 @@ It's easy to think of elaborations of the above structure. I'll
 
                  /----T2----\
                 /      |     \
-        ISR => RE => IIR => T2b => EID
+        ISR => RE => IIR => IW => EID
 
     RE renders an ISR into an Internal Image Representation. RE is
-        the Rendering Image.
+        the Rendering Engine.
 
-    T2b translates an IIR into an External Image Description. An example
-        of an EIF would be TIFF, BMP, JPEG, PNG, pdf, ps etc.
+    IW translates an IIR into an External Image Description. An example
+        of an EIF would be TIFF, BMP, JPEG, PNG, pdf, ps etc. IW is
+        Image Writer.
 
-    This tells us T2b needs to be a plugin, so we can support output
+    This tells us IW needs to be a plugin, so we can support output
         to different external image descriptions. Note I don't say
         'file'; I could imagine an external image description being a
         sequence of opengl commands, writes to a framebuffer,
@@ -143,7 +144,7 @@ The primary drawback of the structures described here is that they
 
 The whole picture:              /----T2----\          
                                /      |     \         
-        ESSD  => SR => ISR => RE => IIR => T2b => EIDISR  
+        ESSD  => SR => ISR => RE => IIR => IW => EIDISR  
           |       |     |
         EIDs  => IT => IIRs
 
@@ -176,12 +177,12 @@ Naming Interfaces:
     ISR => RE : Rendering Engine Input Interface . 
         The interface the Rendering Engine uses to render the scene. 
 
-    IIR => T2b : Rendering Engine Output Interface .
+    IIR => IW : Rendering Engine Output Interface .
         The interface the Rendering Engine uses to output the scene.
 
-    T2b => EIDISR : Image Output Interface.
+    IW => EIDISR : Image Output Interface.
         The interface used to write the image. Ideally, this should
-        be contained within the T2b plugin, so that the plugin can
+        be contained within the IW plugin, so that the plugin can
         control the output source.
 
     EID => IT : Image Input Interface.
