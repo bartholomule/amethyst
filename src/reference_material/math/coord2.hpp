@@ -1,5 +1,5 @@
 /*
- * $Id: coord2.hpp,v 1.5 2004/04/07 05:10:06 kpharris Exp $
+ * $Id: coord2.hpp,v 1.6 2004/04/18 21:36:49 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -163,8 +163,8 @@ namespace amethyst
   {
     // No self-assignment comparison is done, because the compare/jump
     // should take longer than the assignment (for built-in types).
-    coords.direct.x = old_coord.direct.x;
-    coords.direct.y = old_coord.direct.y;
+    coords.direct.x = old_coord.coords.direct.x;
+    coords.direct.y = old_coord.coords.direct.y;
 
     return *this;
   }
