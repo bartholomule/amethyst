@@ -1,5 +1,5 @@
 /*
- * $Id: conditional_value.hpp,v 1.1 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: conditional_value.hpp,v 1.2 2004/08/16 16:04:24 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -22,6 +22,8 @@
 #if       !defined(AMETHYST__CONDITIONAL_VALUE_HPP)
 #define            AMETHYST__CONDITIONAL_VALUE_HPP
 
+#include <cassert>
+
 namespace amethyst
 { 
   template <class T>
@@ -37,7 +39,7 @@ namespace amethyst
    * A conditional value -- A value that has a precondition upon access.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class value_type,
