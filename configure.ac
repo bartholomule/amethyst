@@ -235,6 +235,8 @@ elif test $OPTIMIZATION_VAL != "no"; then
     then
       OPTIMIZE_EXPENSIVE=1
     fi
+    CFLAGS="$CFLAGS -O$OPTIMIZATION_LEVEL"
+    CXXFLAGS="$CFLAGS -O$OPTIMIZATION_LEVEL"
   fi
 else
   OPTIMIZATIONS_ALLOWED=0
@@ -340,6 +342,7 @@ AC_OUTPUT([ Makefile         \
             m4/Makefile      \
             src/Makefile     \
             src/utils/Makefile \
+            src/reference_material/Makefile \
             include/Makefile \
 	    test/Makefile 
           ],
