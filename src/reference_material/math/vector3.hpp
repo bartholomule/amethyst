@@ -1,5 +1,5 @@
 /*
- * $Id: vector3.hpp,v 1.1 2003/09/18 06:40:08 kpharris Exp $
+ * $Id: vector3.hpp,v 1.2 2004/02/08 23:55:30 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -254,6 +254,12 @@ namespace amethyst
     T squared_length = dotprod(v,v);
     return T(sqrt(double(squared_length)));
   }
+
+  template <class T>
+  T squared_length(const vector3<T>& v)
+  {
+    return dotprod(v,v);
+  }  
 
   // FIXME! Find an exception to throw...
   template <class T>
