@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.7 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: triangle.hpp,v 1.8 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple triangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.7 $
+   * @version $Revision: 1.8 $
    * 
    */
   template<class T>
@@ -84,7 +84,7 @@ namespace amethyst
      * textures will be applied.
      */ 
     virtual bool quick_intersection(const unit_line3<T>& line,
-                                    T& distance) const;
+				    T time, T& distance) const;
     
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
@@ -190,9 +190,9 @@ namespace amethyst
     point3<T> pu = plane<T>::get_origin() + plane<T>::get_u_vector();
     point3<T> pv = plane<T>::get_origin() + plane<T>::get_v_vector();
 
-    if( p.quick_intersection( unit_line3<T>(pp, pu), unused ) ||
-        p.quick_intersection( unit_line3<T>(pp, pv), unused ) ||
-        p.quick_intersection( unit_line3<T>(pu, pv), unused ) )
+    if( p.quick_intersection( unit_line3<T>(pp, pu), 0, unused ) ||
+        p.quick_intersection( unit_line3<T>(pp, pv), 0, unused ) ||
+        p.quick_intersection( unit_line3<T>(pu, pv), 0, unused ) )
     {
       return true;
     }
@@ -282,11 +282,11 @@ namespace amethyst
   }
 
   template <class T>
-  bool triangle<T>::quick_intersection(const unit_line3<T>& line, T& distance) const
+  bool triangle<T>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
   {
     T temp_distance;
     
-    if( plane<T>::quick_intersection(line, temp_distance) )
+    if( plane<T>::quick_intersection(line, time, temp_distance) )
     {
       point3<T> p = (temp_distance * line.direction() + line.origin());
       coord2<T> uv;

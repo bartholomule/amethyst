@@ -1,5 +1,5 @@
 /*
- * $Id: capabilities.hpp,v 1.1 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: capabilities.hpp,v 1.2 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -36,7 +36,9 @@ namespace amethyst
       HIT_CONTAINERS=4,
       NORMAL_CALCULATION=8,
       UV_CALCULATION=16,
-      LOCAL_SYSTEM_CALCULATION=32
+      LOCAL_SYSTEM_CALCULATION=32,
+      TIME_SAMPLING=64,
+      ALL=TIME_SAMPLING*2-1
     };
 
     capabilities my_capabilities;
@@ -75,7 +77,8 @@ namespace amethyst
         POLYGONIZATION=8,
         CONTAINER=16,
         IMPLICIT=32,
-        SIMPLE=64 // A simple shape with fast intersection test (sphere, plane, etc).
+        SIMPLE=64, // A simple shape with fast intersection test (sphere, plane, etc).
+	ALL=2*SIMPLE-1
     };
     capabilities my_capabilities;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: pinhole_camera.hpp,v 1.1 2004/04/18 21:21:06 kpharris Exp $
+ * $Id: pinhole_camera.hpp,v 1.2 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -26,6 +26,7 @@
 // Default include of parent class header
 // --------------------------------------
 #include "base_camera.hpp"
+#include "ray_parameters.hpp"
 
 #include <math/frame.hpp>
 
@@ -37,7 +38,7 @@ namespace amethyst
    * A pinhole camera.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
@@ -50,6 +51,7 @@ namespace amethyst
     coord2<T> ur_corner;
     T viewing_distance;
     coord2<T> vscreen_size;
+    interval<T> shutter; // Specifies the time the shutter is open.
 
   protected:
 
@@ -65,7 +67,8 @@ namespace amethyst
                    T virtual_screen_height,
                    T virtual_screen_distance,
                    size_t w,
-                   size_t h);
+                   size_t h,
+		   const interval<T>& shutter_open_time = interval<T>());
 
     /** Destructor */
     virtual ~pinhole_camera();
@@ -79,10 +82,10 @@ namespace amethyst
     /* FIXME! At some point in the future, these will need to have a more
        complete ray, which includes time, etc. */
     /* This one uses sample positions */
-    virtual unit_line3<T> get_ray(const coord2<T>& sample_point) const;
+    virtual ray_parameters<T> get_ray(const coord2<T>& sample_point, T time = 0) const;
 
     /* This one uses pixel positions */
-    virtual unit_line3<T> get_ray(const T& px, const T& py) const;
+    virtual ray_parameters<T> get_ray(const T& px, const T& py, T time = 0) const;
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
@@ -129,13 +132,15 @@ namespace amethyst
                                     T virtual_screen_height,
                                     T virtual_screen_distance,
                                     size_t w,
-                                    size_t h):
+                                    size_t h,
+				    const interval<T>& shutter_open_time):
     base_camera<T>(w,h),
     viewing_frame(eye, gaze, up),
     ll_corner(-virtual_screen_width / 2.0, -virtual_screen_height / 2.0),
     ur_corner( virtual_screen_width / 2.0,  virtual_screen_height / 2.0),
     viewing_distance(virtual_screen_distance),
-    vscreen_size(virtual_screen_width, virtual_screen_height)
+    vscreen_size(virtual_screen_width, virtual_screen_height),
+    shutter(shutter_open_time)
   {
   } // pinhole_camera()
   
@@ -184,7 +189,7 @@ namespace amethyst
   } // pinhole_camera::operator=(pinhole_camera)
 
   template<class T>  
-  unit_line3<T> pinhole_camera<T>::get_ray(const coord2<T>& sample_point) const
+  ray_parameters<T> pinhole_camera<T>::get_ray(const coord2<T>& sample_point, T time) const
   {
     // Note: this flips both x and y, so that it looks like y increases as you
     // move up the screen, and x increases towards the right.  This conversion
@@ -192,14 +197,28 @@ namespace amethyst
     point3<T> view_point( (ll_corner.x() + (T(1) - sample_point.x()) * vscreen_size.x()),
 			  (ll_corner.y() + (T(1) - sample_point.y()) * vscreen_size.y()),
 			  viewing_distance );
-    return unit_line3<T>( viewing_frame.origin(),
-                          (viewing_frame.inverse_transform(view_point) -
-			   viewing_frame.origin()));
+    unit_line3<T> line( viewing_frame.origin(),
+			(viewing_frame.inverse_transform(view_point) -
+			 viewing_frame.origin()));
+
+
+    if( !shutter.empty() )
+    {
+      T adjusted_time = shutter.begin() + time * (shutter.end() - shutter.begin());
+      //      std::cout << "Adjusted_time(" << time << ")=" << adjusted_time << std::endl;
+    
+      return ray_parameters<T>( line, adjusted_time );
+    }
+    else
+    {
+      //      std::cout << "time=" << time << std::endl;      
+      return ray_parameters<T>( line, time );
+    }
   }
 
   
   template<class T>  
-  unit_line3<T> pinhole_camera<T>::get_ray(const T& px, const T& py) const
+  ray_parameters<T> pinhole_camera<T>::get_ray(const T& px, const T& py, T time) const
   {
     // Flip x, so that it appears as though x increases to the right.
     T sx = (base_camera<T>::width() - px) / T(base_camera<T>::width() - 1);
@@ -210,9 +229,23 @@ namespace amethyst
 			  (ll_corner.y() + vscreen_size.y() * sy),
 			  viewing_distance);
 
-    return unit_line3<T>( viewing_frame.origin(),
-                          (viewing_frame.inverse_transform(view_point) -
-			   viewing_frame.origin()));
+    unit_line3<T> line( viewing_frame.origin(),
+			(viewing_frame.inverse_transform(view_point) -
+			 viewing_frame.origin()));
+
+
+    if( !shutter.empty() )
+    {
+      T adjusted_time = shutter.begin() + time * (shutter.end() - shutter.begin());
+      //      std::cout << "Adjusted_time(" << time << ")=" << adjusted_time << std::endl;
+    
+      return ray_parameters<T>( line, adjusted_time );
+    }
+    else
+    {
+      //      std::cout << "time=" << time << std::endl;      
+      return ray_parameters<T>( line, time );
+    }    
   }
 
   template <class T>

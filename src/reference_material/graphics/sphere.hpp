@@ -1,5 +1,5 @@
 /*
- * $Id: sphere.hpp,v 1.7 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: sphere.hpp,v 1.8 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -37,7 +37,7 @@ namespace amethyst
    * A sphere class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.7 $
+   * @version $Revision: 1.8 $
    * 
    */
   template<class T>
@@ -101,7 +101,7 @@ namespace amethyst
      * textures will be applied.
      */ 
     virtual bool quick_intersection(const unit_line3<T>& line,
-				    T& distance) const;
+				    T time, T& distance) const;
     
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
@@ -289,7 +289,7 @@ namespace amethyst
    */
   template <class T>
   bool sphere<T>::quick_intersection(const unit_line3<T>& line,
-				     T& distance) const
+				     T time, T& distance) const
   {
     // This is the fast hit test.
     vector3<T> o_c = line.origin() - center;

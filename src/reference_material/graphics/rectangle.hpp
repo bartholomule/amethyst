@@ -1,5 +1,5 @@
 /*
- * $Id: rectangle.hpp,v 1.2 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: rectangle.hpp,v 1.3 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple rectangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>
@@ -87,7 +87,7 @@ namespace amethyst
      * textures will be applied.
      */ 
     virtual bool quick_intersection(const unit_line3<T>& line,
-                                    T& distance) const;
+                                    T time, T& distance) const;
     
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
@@ -204,15 +204,15 @@ namespace amethyst
     point3<T> p3 = p2 + plane<T>::get_v_vector();
     point3<T> p4 = p1 + plane<T>::get_v_vector();
     
-    if( p.quick_intersection( unit_line3<T>(p1, p2), unused ) ||
-        p.quick_intersection( unit_line3<T>(p1, p4), unused ) ||
-        p.quick_intersection( unit_line3<T>(p2, p3), unused ) ||
-        p.quick_intersection( unit_line3<T>(p4, p3), unused ) ||
+    if( p.quick_intersection( unit_line3<T>(p1, p2), 0, unused ) ||
+        p.quick_intersection( unit_line3<T>(p1, p4), 0, unused ) ||
+        p.quick_intersection( unit_line3<T>(p2, p3), 0, unused ) ||
+        p.quick_intersection( unit_line3<T>(p4, p3), 0, unused ) ||
         // Just to be safe, check the diagonals.  This handles the case where
         // the rectangle is rotated 45 degrees so that the plane crosses
         // through two corner points. 
-        p.quick_intersection( unit_line3<T>(p2, p4), unused ) ||
-        p.quick_intersection( unit_line3<T>(p1, p3), unused ) )
+        p.quick_intersection( unit_line3<T>(p2, p4), 0, unused ) ||
+        p.quick_intersection( unit_line3<T>(p1, p3), 0, unused ) )
     {
       return true;
     }

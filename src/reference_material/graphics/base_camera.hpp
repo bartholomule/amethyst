@@ -1,5 +1,5 @@
 /*
- * $Id: base_camera.hpp,v 1.1 2004/04/18 21:21:06 kpharris Exp $
+ * $Id: base_camera.hpp,v 1.2 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -33,7 +33,7 @@ namespace amethyst
    * A base class for a camera.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
@@ -72,9 +72,9 @@ namespace amethyst
     /* FIXME! At some point in the future, these will need to have a more
        complete ray, which includes time, etc. */
     /* This sample point is in [0,1]^2 */
-    virtual unit_line3<T> get_ray(const coord2<T>& sample_point) const = 0;
+    virtual ray_parameters<T> get_ray(const coord2<T>& sample_point, T time = 0) const = 0;
     /* px, py are the pixel positions. */
-    virtual unit_line3<T> get_ray(const T& px, const T& py) const = 0;
+    virtual ray_parameters<T> get_ray(const T& px, const T& py, T time = 0) const = 0;
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     

@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.11 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: plane.hpp,v 1.12 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.11 $
+   * @version $Revision: 1.12 $
    * 
    */
   template<class T>
@@ -122,7 +122,7 @@ namespace amethyst
      * textures will be applied.
      */ 
     virtual bool quick_intersection(const unit_line3<T>& line,
-                                    T& distance) const;
+				    T time, T& distance) const;
     
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
@@ -400,7 +400,7 @@ namespace amethyst
   // Returns if the given line intersects the plane.
   template <class T>
   inline bool plane<T>::quick_intersection(const unit_line3<T>& line,
-                                           T& distance) const
+					   T time, T& distance) const
   {
     T ctheta = dotprod(line.direction(), normal);
     T t;

@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.7 2004/05/17 07:17:03 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.8 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -26,6 +26,7 @@
 // Default include of parent class header
 // --------------------------------------
 #include "shape.hpp"
+#include "capabilities.hpp"
 
 #include "quick_vector.hpp"
 #include <rc_pointer.hpp>
@@ -38,7 +39,7 @@ namespace amethyst
    * An aggregate (collection) of shapes.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.7 $
+   * @version $Revision: 1.8 $
    * 
    */
   template<class T>
@@ -84,12 +85,16 @@ namespace amethyst
                                  intersection_info<T>& intersection,
                                  const intersection_requirements& requirements = intersection_requirements()) const;
 
+    virtual bool intersects_ray(const ray_parameters<T>& ray,
+                                 intersection_info<T>& intersection,
+                                 const intersection_requirements& requirements = intersection_requirements()) const;    
+
     /**
      * A quick intersection test.  This will calculate nothing but the
      * distance. This is most useful for shadow tests, and other tests where no
      * textures will be applied.
      */ 
-    virtual bool quick_intersection(const unit_line3<T>& line, T& distance) const;    
+    virtual bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const;    
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
@@ -99,7 +104,22 @@ namespace amethyst
     virtual std::string name() const
     {
       return "aggregate";
-    }    
+    }
+
+    virtual intersection_capabilities get_intersection_capabilities() const
+    {
+      intersection_capabilities caps = intersection_capabilities::ALL;
+
+      // Checkme! Are any of these capabilities disjoint (like the ones in the object capabilities)?
+      for( typename shape_list_type::const_iterator iter = shape_list.begin();
+	   iter != shape_list.end();
+	   ++iter )
+      {
+	caps &= (*iter)->get_intersection_capabilities();
+      }
+      return caps;
+    }
+    virtual object_capabilities get_object_capabilities() const;
 
     void add(shape_pointer_type& sp);
     size_t size() const;
@@ -208,7 +228,7 @@ namespace amethyst
   }
 
   template <class T>
-  bool aggregate<T>::quick_intersection(const unit_line3<T>& line, T& distance) const
+  bool aggregate<T>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
   {
     bool hit_something = false;
     T closest = line.limits().end() + 1;
@@ -218,7 +238,7 @@ namespace amethyst
          ++iter )
     {
       T dist;
-      if( (*iter)->quick_intersection(line, dist) )
+      if( (*iter)->quick_intersection(line, time, dist) )
       {
         if( dist < closest )
         {
@@ -326,12 +346,106 @@ namespace amethyst
     return intersects_something;
   }
 
+
+  template <class T>
+  bool aggregate<T>::intersects_ray(const ray_parameters<T>& ray,
+				    intersection_info<T>& intersection,
+				    const intersection_requirements& requirements) const
+  {
+    bool intersects_something = false;
+
+    // Clear it out...
+    intersection = intersection_info<T>();
+    
+    for( typename shape_list_type::const_iterator iter = shape_list.begin();
+         ( iter != shape_list.end() );
+         ++iter )
+    {
+      intersection_info<T> temp_intersection;
+      if( (*iter)->intersects_ray(ray, temp_intersection, requirements) )
+      {
+
+        if( intersects_something && requirements.needs_containers() )
+        {
+          temp_intersection.append_container(this);
+        }
+
+        if( ! requirements.needs_all_hits() )
+        {
+          // This is the easy case, because the entire hit information is
+          // replaced if the hit is closer than the current (if any). 
+          if( !intersects_something )
+          {
+            intersects_something = true;
+            intersection = temp_intersection;
+          }
+          else
+          {
+            if( temp_intersection.get_first_distance() < intersection.get_first_distance() )
+            {
+              intersection = temp_intersection;
+            }
+            else
+            {
+              // The existing hit is closer...
+            }
+          }
+        } // !all hits
+        else
+        {
+          // This is the harder case, or at least messier case, because some of
+          // the information will need to be preserved (I've chosen the shape,
+          // the distance), for later comparison.
+          
+          // Append the complete intersection information, for later retrieval.
+          intersection.append_intersection(temp_intersection);
+          if( !intersects_something )
+          {
+            // Copy some of the values (distance, shape) to the main intersection container.
+            if( temp_intersection.have_shape() )
+            {
+              intersection.set_shape(temp_intersection.get_shape());
+            }
+            if( temp_intersection.have_distance() )
+            {
+              intersection.set_first_distance(temp_intersection.get_first_distance());
+            }
+          } // !intersects something
+          else // Do a comparison before assigning.
+          {
+            if( (temp_intersection.have_distance() && intersection.have_distance()) &&
+                (temp_intersection.get_first_distance() < intersection.get_first_distance()) )
+            {
+              intersection.set_first_distance(temp_intersection.get_first_distance());
+              // Copy some of the values (distance, shape, line) to the main intersection container.
+              if( temp_intersection.have_shape() )
+              {
+                intersection.set_shape(temp_intersection.get_shape());
+              }
+            } // this hit is closer than any preexisting hits.
+          } // prior hits
+        } // all hits required
+      } // if the shape intersects the line.
+    } // for each shape.
+    
+    return intersects_something;
+  }
+  
+
   template <class T>
   std::string aggregate<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
   {
     std::string retval;
+    std::string internal_tagging = indentation;
 
-    return retval;
+    if( prefix_with_classname )
+    {
+      internal_tagging += aggregate<T>::name() + "::";
+    }
+
+    retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
+    retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());        
+    return retval;    
   }
 
   template <class T>
@@ -339,7 +453,8 @@ namespace amethyst
                                       const std::string& level_indent) const
   {
     std::string ret_value = ( indent + "aggregate\n" +
-                              indent + "{\n" );
+                              indent + "{\n"  +
+			      aggregate<T>::internal_members(indent + level_indent, false) + "\n" );
 
     std::string next_level = indent + level_indent;
 
@@ -354,6 +469,45 @@ namespace amethyst
 
     return ret_value;
   }
+
+  template <class T>
+  object_capabilities aggregate<T>::get_object_capabilities() const
+  {
+    object_capabilities caps = object_capabilities::ALL;
+    caps &= ~object_capabilities::MOVABLE;
+    caps &= ~object_capabilities::SIMPLE;
+    caps |= object_capabilities::CONTAINER;
+    caps &= ~object_capabilities::IMPLICIT;    
+
+    for( typename shape_list_type::const_iterator iter = shape_list.begin();
+	 iter != shape_list.end();
+	 ++iter )
+    {
+      object_capabilities obj_caps = (*iter)->get_object_capabilities();
+
+      if( obj_caps & object_capabilities::INFINITE )
+      {
+	caps &= ~object_capabilities::BOUNDABLE;
+      }
+      if( obj_caps & object_capabilities::BOUNDABLE )
+      {
+	caps &= ~object_capabilities::INFINITE;
+      }
+      if( obj_caps & object_capabilities::MOVABLE )
+      {
+	caps |= object_capabilities::MOVABLE;
+      }
+      if( !(obj_caps & object_capabilities::POLYGONIZATION) )
+      {
+	caps &= ~object_capabilities::POLYGONIZATION;	  
+      }
+      if( obj_caps & object_capabilities::IMPLICIT )
+      {
+	caps |= object_capabilities::IMPLICIT;
+      }      
+    }
+    return caps;
+  }      
 
   template <class T>
   void aggregate<T>::add(shape_pointer_type& sp)

@@ -1,5 +1,5 @@
 /*
- * $Id: capabilities.cpp,v 1.1 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: capabilities.cpp,v 1.2 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -63,7 +63,11 @@ namespace amethyst
     if( *this & intersection_capabilities::LOCAL_SYSTEM_CALCULATION )
     {
       add_to_string_list(retval, "Local Coord System Calculation");
-    }    
+    }
+    if( *this & intersection_capabilities::TIME_SAMPLING )
+    {
+      add_to_string_list(retval, "Time Sampling");
+    }
 
     if( retval.empty() )
     {
@@ -102,6 +106,10 @@ namespace amethyst
     {
       retval += "L";
     }
+    if( *this & intersection_capabilities::TIME_SAMPLING )
+    {
+      retval += "T";
+    }    
   
     return retval;
   }

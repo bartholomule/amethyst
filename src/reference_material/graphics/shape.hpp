@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.8 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: shape.hpp,v 1.9 2004/06/01 03:59:31 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -28,6 +28,7 @@
 #include "intersection_info.hpp"
 #include "capabilities.hpp"
 #include "requirements.hpp"
+#include "ray_parameters.hpp"
 
 #include <string>
 #include <ostream>
@@ -43,7 +44,7 @@ namespace amethyst
    * The base class for a shape.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.8 $
+   * @version $Revision: 1.9 $
    * 
    */
   template<class T>
@@ -92,12 +93,27 @@ namespace amethyst
                                  const intersection_requirements& requirements = intersection_requirements()) const = 0;
 
     /**
+     * Returns if the given ray intersects the shape.
+     *
+     * The default behavior of this function is to ignore all ray parameters
+     * except for the line.  Anything that needs those must override this
+     * function.
+     *
+     * NOTE: This is the function that you will want to use most of the time,
+     * since subclasses may act on other properties from the ray (eg. movable
+     * objects).
+     *
+     */
+    virtual bool intersects_ray(const ray_parameters<T>& ray,
+				intersection_info<T>& intersection,
+				const intersection_requirements& requirements = intersection_requirements()) const;
+    
+    /**
      * A quick intersection test.  This will calculate nothing but the
      * distance. This is most useful for shadow tests, and other tests where no
      * textures will be applied.
      */ 
-    virtual bool quick_intersection(const unit_line3<T>& line,
-                                    T& distance) const = 0;
+    virtual bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const = 0;
     
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const = 0;
 
@@ -185,6 +201,20 @@ namespace amethyst
     }
     return false;
   } // shape::intersects_line(line3<T>,T)
+
+
+  template <class T>
+  bool shape<T>::intersects_ray(const ray_parameters<T>& ray,
+				intersection_info<T>& intersection,
+				const intersection_requirements& requirements) const
+  {
+    if( intersects_line(ray.get_line(), intersection, requirements) )
+    {
+      return true;
+    }
+    return false;
+  } // shape::intersects_ray(line3<T>,T)
+  
 
   template <class T>
   std::ostream& operator<<(std::ostream& o, const shape<T>& s)
