@@ -2,5 +2,6 @@
 .deps
 .libs
 Makefile
+Makefile.in
 gen-class
 gen-class-lgpl

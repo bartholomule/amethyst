@@ -5,3 +5,4 @@ figure_4_5
 .libs
 .deps
 Makefile
+Makefile.in

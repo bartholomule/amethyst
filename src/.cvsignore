@@ -4,8 +4,11 @@
 .deps
 .libs
 Makefile
+Makefile.in
 manygames_config.hpp
 barf
 barf.exe
 stamp-h1
+stamp-h.in
 amethyst_config.hpp
+amethyst_config.hpp.in

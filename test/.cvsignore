@@ -2,5 +2,6 @@
 .deps
 .libs
 Makefile
+Makefile.in
 test_raster
 test_rgbcolor
