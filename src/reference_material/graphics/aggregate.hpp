@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.2 2004/03/21 19:19:28 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.3 2004/03/21 23:25:02 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * An aggregate (collection) of shapes.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>
@@ -81,6 +81,8 @@ namespace amethyst
     
     virtual std::string to_string(const std::string& base_indentation,
 				  const std::string& level_indentation = "  ") const;
+
+    virtual std::string name() const { return "aggregate"; }    
 
     void add(shape_pointer_type& sp);
     size_t size() const;
@@ -193,6 +195,7 @@ namespace amethyst
 				     intersection_info<T>& intersection) const
   {
     bool intersects_something = false;
+
     for( typename shape_list_type::const_iterator iter = shape_list.begin();
 	 ( iter != shape_list.end() );
 	 ++iter )
@@ -210,6 +213,10 @@ namespace amethyst
 	  if( temp_intersection.get_distance() < intersection.get_distance() )
 	  {
 	    intersection = temp_intersection;
+	  }
+	  else
+	  {
+	    // The existing hit is closer...
 	  }
 	}
       }

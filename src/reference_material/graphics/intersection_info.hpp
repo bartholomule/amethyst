@@ -1,5 +1,5 @@
 /*
- * $Id: intersection_info.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
+ * $Id: intersection_info.hpp,v 1.4 2004/03/21 23:25:02 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -32,7 +32,7 @@ namespace amethyst
    * Information about an intersection (point-based intersection).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template<class T>
@@ -63,7 +63,7 @@ namespace amethyst
     const shape<T>* get_shape() const { return shape_hit; }
     T get_distance() const { return distance; }
     
-    void set_shape(shape<T>* s) { shape_hit = s; }
+    void set_shape(const shape<T>* s) { shape_hit = s; }
     void set_distance(T dist) { distance = dist; }
     
     

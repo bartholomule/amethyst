@@ -1,5 +1,5 @@
 /*
- * $Id: sphere.hpp,v 1.3 2004/03/20 06:29:49 kpharris Exp $
+ * $Id: sphere.hpp,v 1.4 2004/03/21 23:25:02 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -37,7 +37,7 @@ namespace amethyst
    * A sphere class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template<class T>
@@ -90,6 +90,8 @@ namespace amethyst
 
     virtual std::string to_string(const std::string& base_indentation,
 				  const std::string& level_indentation = "  ") const;
+
+    virtual std::string name() const { return "sphere"; }
     
   }; // class sphere
 

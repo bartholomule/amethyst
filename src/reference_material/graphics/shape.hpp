@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
+ * $Id: shape.hpp,v 1.5 2004/03/21 23:25:02 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -41,7 +41,7 @@ namespace amethyst
    * The base class for a shape.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
@@ -90,6 +90,8 @@ namespace amethyst
     
     virtual std::string to_string() const { return to_string(""); }
 
+    virtual std::string name() const { return "shape"; }
+    
   }; // class shape
 
 
