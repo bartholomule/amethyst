@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
+ * $Id: shape.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -28,7 +28,7 @@
 #include "intersection_info.hpp"
 
 #include <string>
-#include <iosfwd>
+#include <ostream>
 
 namespace amethyst
 { 
@@ -41,7 +41,7 @@ namespace amethyst
    * The base class for a shape.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template<class T>

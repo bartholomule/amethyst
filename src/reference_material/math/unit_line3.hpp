@@ -1,5 +1,5 @@
 /*
- * $Id: unit_line3.hpp,v 1.3 2004/03/20 06:20:43 kpharris Exp $
+ * $Id: unit_line3.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,7 +25,7 @@
 #include "line3.hpp"
 #include <limits>
 
-#include <iosfwd>
+#include <ostream>
 
 namespace amethyst
 { 
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple 3d line with a unit direction.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template<class T>

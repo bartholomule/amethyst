@@ -87,8 +87,7 @@
 
 #include "ref_count_object.hpp"
 
-#include <iostream>
-using std::ostream;
+#include <ostream>
 
 /**
  * A reference counted pointer class (rc_pointer is a much shorter name).
@@ -266,7 +265,7 @@ public:
   }  
   
   /** Stream insertion operator; these are always useful. */
-  friend ostream& operator<< <>(ostream& o, const rc_pointer<T,counter_type>& rcp);
+  friend std::ostream& operator<< <>(std::ostream& o, const rc_pointer<T,counter_type>& rcp);
 
   /** Get the reference counting object. */
   const counting_object& get_counts() const { return(counts); }
@@ -376,7 +375,7 @@ rcp_reinterpret_cast(const rc_pointer<T,counter_type>& old_rcp)
 
 /** Stream insertion operator.  Useful for debug. */
 template <class T, class counter_type>
-ostream& operator<<(ostream& o, const rc_pointer<T,counter_type>& rcp)
+std::ostream& operator<<(std::ostream& o, const rc_pointer<T,counter_type>& rcp)
 {
   o << "p=0x" << std::hex << int(rcp.data_pointer)
     << " c="  << std::dec << int(rcp.counts.reference_count())

@@ -1,5 +1,5 @@
 /*
- * $Id: coord3.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: coord3.hpp,v 1.3 2004/03/21 20:51:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -50,7 +50,7 @@
 */
 
 #include <cmath>
-#include <iosfwd>
+#include <ostream>
 
 namespace amethyst
 { 

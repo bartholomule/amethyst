@@ -1,5 +1,5 @@
 /*
- * $Id: coord2.hpp,v 1.3 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: coord2.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -41,7 +41,7 @@
 */
 
 #include <cmath>
-#include <iosfwd>
+#include <ostream>
 #include <algorithm>
 #include "../general/template_functions.hpp"
 

@@ -34,7 +34,7 @@
   01Mar2003 Changed comments to work with both doc++ and ccdoc.
 */
 
-#include <iosfwd>
+#include <ostream>
 #include <vector>
 #include <utility>
 

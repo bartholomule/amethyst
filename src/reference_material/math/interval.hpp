@@ -1,5 +1,5 @@
 /*
- * $Id: interval.hpp,v 1.3 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: interval.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -42,7 +42,7 @@
 */
 
 #include <algorithm>
-#include <iosfwd>
+#include <ostream>
 
 namespace amethyst
 { 
