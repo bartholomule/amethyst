@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.4 2004/04/12 02:58:21 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.5 2004/05/17 07:09:44 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -39,7 +39,9 @@
 
 namespace amethyst
 { 
-
+  template <class T>
+  class const_simple_iterator;
+  
   /**
    * A simple random_access iterator.
    */
@@ -113,6 +115,8 @@ namespace amethyst
     {
       return simple_iterator<T>(ptr - i);
     }
+
+    friend class const_simple_iterator<T>;
   private:
     T* ptr;
   };
@@ -128,6 +132,9 @@ namespace amethyst
     {
     }
     inline explicit const_simple_iterator(const T* p): ptr(p)
+    {
+    }
+    inline const_simple_iterator(const simple_iterator<T>& old) : ptr(old.ptr)
     {
     }
     inline const_simple_iterator(const const_simple_iterator<T>& old): ptr(old.ptr)
@@ -212,7 +219,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
