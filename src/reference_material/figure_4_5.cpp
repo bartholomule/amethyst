@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     {
       float_type a = (x + 0.5);
       float_type b = (y + 0.5);
-      unit_line3<float_type> r = camera.get_ray(a,b);
+      ray_parameters<float_type> r = camera.get_ray(a,b);
       //      cout<< "a,b=" << a << "," << b << endl;
 
       /*
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         cout << "ray.point_at_scaled(1)=" << r.point_at_scaled(float_type(1)) << endl;
       */
       
-      if( !sl.intersects_line(r, stuff, requirements) )
+      if( !sl.intersects_ray(r, stuff, requirements) )
       {
         image(x,y) = black;
       }
