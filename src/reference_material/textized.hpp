@@ -1,7 +1,7 @@
 /*
- * $Id: textized.hpp,v 1.1 2003/09/17 10:13:31 kpharris Exp $
+ * $Id: textized.hpp,v 1.2 2003/09/18 00:51:04 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__MANYGAMES__TEXTIZED_HPP__)
-#define            __MANYGAMES__TEXTIZED_HPP__
+#if       !defined(__AMETHYST__TEXTIZED_HPP__)
+#define            __AMETHYST__TEXTIZED_HPP__
 
 // Define this value to effectively remove internationalization
 #if !defined(ENABLE_NLS) || !ENABLE_NLS
@@ -42,4 +42,4 @@
 
 #endif /* defined(ENABLE_NLS) */
 
-#endif /* !defined(__MANYGAMES__TEXTIZED_HPP__) */
+#endif /* !defined(__AMETHYST__TEXTIZED_HPP__) */
