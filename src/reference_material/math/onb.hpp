@@ -1,5 +1,5 @@
 /*
- * $Id: onb.hpp,v 1.6 2004/04/18 21:35:24 kpharris Exp $
+ * $Id: onb.hpp,v 1.7 2004/05/17 07:06:32 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -50,6 +50,13 @@ namespace amethyst
   class onb
   {
   public:
+    inline onb():
+      u(1,0,0),
+      v(0,1,0),
+      w(0,0,1)
+    {
+    }
+    
     // An ONB where only the direction of w matters...
     inline onb(const vector3<T>& a):
       w(unit(a))
