@@ -1,5 +1,5 @@
 /*
- * $Id: frame.hpp,v 1.3 2004/04/07 05:10:06 kpharris Exp $
+ * $Id: frame.hpp,v 1.4 2004/04/18 21:35:24 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -44,6 +44,7 @@
 */
 
 #include "onb.hpp"
+#include <ostream>
 
 namespace amethyst
 {
@@ -218,7 +219,12 @@ namespace amethyst
                     outer_frame.inverse_transform(inner_frame.w()));
   } // get_combined_frame(frame, frame)
 
-
+  template <class T>
+  std::ostream& operator<<(std::ostream& o, const frame<T>& f)
+  {
+    o << "frame( " << f.o() << "," << f.basis() << " )";
+    return o;
+  }
 
 } // namespace amethyst
 

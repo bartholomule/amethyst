@@ -1,5 +1,5 @@
 /*
- * $Id: onb.hpp,v 1.5 2004/04/07 05:10:06 kpharris Exp $
+ * $Id: onb.hpp,v 1.6 2004/04/18 21:35:24 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -42,6 +42,7 @@
 #include "vector3.hpp"
 #include "point3.hpp"
 #include "vector_utils.hpp"
+#include <ostream>
 
 namespace amethyst
 {
@@ -58,7 +59,8 @@ namespace amethyst
     }
 
     // An ONB where the direction of u,v, and w matter...
-    // a and b define a plane, where a is in the direction of u.
+    // a and b define a plane, where a is in the direction of w, b is in the
+    // direction of v, and u is the normal to this plane.
     inline onb(const vector3<T>& a, const vector3<T>& b):
       v(unit(b)),
       w(unit(a))
@@ -159,6 +161,13 @@ namespace amethyst
     vector3<T> u, v, w;
   };
 
+  template <class T>
+  std::ostream& operator<<(std::ostream& o, const onb<T>& b)
+  {
+    o << "onb( " << b.get_u() << ", " << b.get_v() << ", " << b.get_w() << ")";
+    return o;
+  }
+  
 } // namespace amethyst
 
 #endif /* !defined(AMETHYST__ONB_HPP) */
