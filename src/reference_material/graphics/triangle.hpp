@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.2 2004/03/21 23:23:33 kpharris Exp $
+ * $Id: triangle.hpp,v 1.3 2004/03/21 23:55:38 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple triangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>
@@ -172,9 +172,9 @@ namespace amethyst
     point3<T> pu = plane<T>::get_origin() + plane<T>::get_u_vector();
     point3<T> pv = plane<T>::get_origin() + plane<T>::get_v_vector();
     
-    if( plane<T>::intersects_line( line3<T>(pp, pu), unused ) ||
-	plane<T>::intersects_line( line3<T>(pp, pv), unused ) ||
-	plane<T>::intersects_line( line3<T>(pu, pv), unused ) )
+    if( p.intersects_line( line3<T>(pp, pu), unused ) ||
+	p.intersects_line( line3<T>(pp, pv), unused ) ||
+	p.intersects_line( line3<T>(pu, pv), unused ) )
     {
       return true;
     }

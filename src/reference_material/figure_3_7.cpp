@@ -28,6 +28,8 @@ using std::endl;
 
 int main(int argc, char** argv)
 {
+  (void) argc;
+  (void) argv;
   aggregate<double> sl;
 
 

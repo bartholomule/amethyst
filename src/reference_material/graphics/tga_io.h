@@ -85,6 +85,7 @@ bool tga_io<T>::output(std::ostream& o, const raster<T>& source) const
 template <class T>
 bool tga_io<T>::output(std::ostream& o, const raster<T>& source, T gamma) const
 {
+  (void) gamma;
   // FIXME!
   return output(o, source);
   /*
