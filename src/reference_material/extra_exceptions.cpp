@@ -1,7 +1,7 @@
 /*
- * $Id: extra_exceptions.cpp,v 1.1 2003/09/17 10:13:31 kpharris Exp $
+ * $Id: extra_exceptions.cpp,v 1.2 2003/09/18 00:40:52 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -19,20 +19,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#include <manygames/extra_exceptions.hpp>
+#include "extra_exceptions.hpp"
 
 
-namespace manygames
+namespace amethyst
 { 
 
   //-----------------------------------------------
   // Default constructor for class size_mismatch
   //-----------------------------------------------
-  size_mismatch::size_mismatch(const std::string& __arg):
-    std::runtime_error(__arg)
+  size_mismatch::size_mismatch(const std::string& _arg):
+    std::runtime_error(_arg)
   {
   } // size_mismatch()
 
 
-} // namespace manygames
+} // namespace amethyst
 

@@ -1,7 +1,7 @@
 /*
- * $Id: extra_exceptions.hpp,v 1.1 2003/09/17 10:13:31 kpharris Exp $
+ * $Id: extra_exceptions.hpp,v 1.2 2003/09/18 00:40:52 kpharris Exp $
  *
- * Part of "Many Games" - A nearly infinitely expandable gaming framework
+ * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify 
@@ -19,12 +19,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(__MANYGAMES__EXTRA_EXCEPTIONS_HPP__)
-#define            __MANYGAMES__EXTRA_EXCEPTIONS_HPP__
+#if       !defined(__AMETHYST__EXTRA_EXCEPTIONS_HPP__)
+#define            __AMETHYST__EXTRA_EXCEPTIONS_HPP__
 
 #include <stdexcept>
 
-namespace manygames
+namespace amethyst
 { 
 
   /**
@@ -32,14 +32,14 @@ namespace manygames
    * Thrown to indicate a size error (for assignment of arrays, etc).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   class size_mismatch : public std::runtime_error
   {
   public:
     /** The constructor that is used when it is thrown with a string. */
-    explicit size_mismatch(const std::string& __arg);
+    explicit size_mismatch(const std::string& _arg);
   }; // class size_mismatch
 
   /*
@@ -47,8 +47,8 @@ namespace manygames
    */
   using std::out_of_range;
 
-} // namespace manygames
+} // namespace amethyst
 
 
-#endif /* !defined(__MANYGAMES__EXTRA_EXCEPTIONS_HPP__) */
+#endif /* !defined(__AMETHYST__EXTRA_EXCEPTIONS_HPP__) */
 
