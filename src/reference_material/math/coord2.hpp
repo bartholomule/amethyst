@@ -1,5 +1,5 @@
 /*
- * $Id: coord2.hpp,v 1.1 2003/09/18 01:32:38 kpharris Exp $
+ * $Id: coord2.hpp,v 1.2 2003/09/18 06:40:08 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -80,6 +80,8 @@ namespace amethyst
     inline coord2(T x, T y):coords(x,y) {}
     inline coord2(const coord2& old_coord):coords(old_coord.coords) {}
 
+    inline void set(T x, T y) { coords.direct.x = x; coords.direct.y = y; }
+    
     /* Accessors */
     inline T& operator[](int coord_index)
     {
