@@ -33,12 +33,12 @@
 /**
  * A simple class that I can place inside of any other class to keep a count of
  * the number of times an object has been copied.  This is meant to be used for
- * reference counting (as in magic_pointer.hpp), but may be able to be used
+ * reference counting (as in rc_pointer.hpp), but may be able to be used
  * for other purposes.
  *
  * Be sure to note the mutable count_pointer inside of the class.
  *
- * @see magic_pointer
+ * @see rc_pointer
  * @author Kevin Harris
  */
 template <class counter_type>

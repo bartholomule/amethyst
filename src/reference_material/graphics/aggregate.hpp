@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.1 2004/03/20 06:22:12 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.2 2004/03/21 19:19:28 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -28,7 +28,7 @@
 #include "shape.hpp"
 
 #include <vector>
-#include <magic_pointer.hpp>
+#include <rc_pointer.hpp>
 
 namespace amethyst
 { 
@@ -38,14 +38,14 @@ namespace amethyst
    * An aggregate (collection) of shapes.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    * 
    */
   template<class T>
   class aggregate : public shape<T>
   {
   public:
-    typedef magic_pointer<shape<T> > shape_pointer_type;
+    typedef rc_pointer<shape<T> > shape_pointer_type;
     typedef std::vector<shape_pointer_type> shape_list_type;
     
   private:

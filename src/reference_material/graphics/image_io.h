@@ -14,7 +14,7 @@
 #include <raster.hpp>
 #include <string>
 #include <fstream>
-#include <magic_pointer.hpp>
+#include <rc_pointer.hpp>
 
 namespace amethyst {
 
@@ -37,12 +37,12 @@ public:
   }
   virtual bool output(std::ostream& o, const raster<T>& source, T gamma) const = 0;
   virtual bool output(std::ostream& o, const raster<T>& source) const = 0;
-  magic_pointer<raster<T> > input(const std::string& filename) const
+  rc_pointer<raster<T> > input(const std::string& filename) const
   {
     std::ifstream i(filename.c_str());
     return input(i);
   }  
-  virtual magic_pointer<raster<T> > input(std::istream& i) const = 0;
+  virtual rc_pointer<raster<T> > input(std::istream& i) const = 0;
 protected:
 };
 

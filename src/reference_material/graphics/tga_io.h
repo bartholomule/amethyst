@@ -34,14 +34,14 @@ public:
     std::ofstream o(filename.c_str());    
     return output(o, source, gamma);
   }  
-  inline magic_pointer<raster<T> > input(const std::string& filename) const
+  inline rc_pointer<raster<T> > input(const std::string& filename) const
   {
     std::ifstream i(filename.c_str());
     return input(i);
   }
   virtual bool output(std::ostream& o,      const raster<T>& source) const;
   virtual bool output(std::ostream& o,      const raster<T>& source, T gamma) const;  
-  virtual magic_pointer<raster<T> > input(std::istream& i) const;  
+  virtual rc_pointer<raster<T> > input(std::istream& i) const;  
 
 private:
   typedef unsigned char byte;
@@ -116,9 +116,9 @@ bool tga_io<T>::output(std::ostream& o, const raster<T>& source, T gamma) const
 
 
 template <class T>
-magic_pointer<raster<T> > tga_io<T>::input(std::istream& i) const
+rc_pointer<raster<T> > tga_io<T>::input(std::istream& i) const
 {
-  static magic_pointer<raster<T> > trash_raster(new raster<T>(1,1));
+  static rc_pointer<raster<T> > trash_raster(new raster<T>(1,1));
   byte version;
   byte b1, b2;
   byte r, g, b;
@@ -150,7 +150,7 @@ magic_pointer<raster<T> > tga_io<T>::input(std::istream& i) const
     return trash_raster;
   }
 
-  magic_pointer<raster<T> > dest_ptr(new raster<T>(width,height));
+  rc_pointer<raster<T> > dest_ptr(new raster<T>(width,height));
 
   raster<T>& dest = *dest_ptr;
   

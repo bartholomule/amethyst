@@ -26,7 +26,6 @@
 
 #include <vector>
 #include <utils/random.h>
-#include <magic_pointer.h>
 
 using std::vector;
 
