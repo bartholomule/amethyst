@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.5 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.6 2004/04/18 21:29:36 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * An aggregate (collection) of shapes.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template<class T>
@@ -77,7 +77,10 @@ namespace amethyst
 
     /** Returns if the given line intersects the shape. */
     virtual bool intersects_line(const unit_line3<T>& line,
-				 intersection_info<T>& intersection) const;
+                                 intersection_info<T>& intersection) const;
+    
+    virtual bool intersects_line(const line3<T>& line,
+                                 intersection_info<T>& intersection) const;    
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
@@ -195,6 +198,13 @@ namespace amethyst
     return intersects_something;
   }
 
+  template <class T>
+  bool aggregate<T>::intersects_line(const line3<T>& line,
+                                     intersection_info<T>& intersection) const
+  {
+    return shape<T>::intersects_line(line, intersection);
+  }  
+  
   template <class T>
   bool aggregate<T>::intersects_line(const unit_line3<T>& line,
                                      intersection_info<T>& intersection) const
