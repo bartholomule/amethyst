@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.6 2004/03/27 19:33:28 kpharris Exp $
+ * $Id: shape.hpp,v 1.7 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -41,7 +41,7 @@ namespace amethyst
    * The base class for a shape.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    * 
    */
   template<class T>
@@ -75,25 +75,31 @@ namespace amethyst
     virtual bool intersects(const plane<T>& p) const = 0;
 
     /** Returns if the given line intersects the shape.  For performance
-	reasons, this may be overridden, as the default just converts the
-	line to a unit line, calls the unit version, and adjusts the
-	distance for the scaling. */
+        reasons, this may be overridden, as the default just converts the
+        line to a unit line, calls the unit version, and adjusts the
+        distance for the scaling. */
     virtual bool intersects_line(const line3<T>& line,
-				 intersection_info<T>& intersection) const;
-    
+                                 intersection_info<T>& intersection) const;
+
     /** Returns if the given line intersects the shape. */
     virtual bool intersects_line(const unit_line3<T>& line,
-				 intersection_info<T>& intersection) const = 0;
+                                 intersection_info<T>& intersection) const = 0;
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const = 0;
 
     virtual std::string to_string(const std::string& base_indentation,
-				  const std::string& level_indentation = "  ") const = 0;
-    
-    virtual std::string to_string() const { return to_string(""); }
+                                  const std::string& level_indentation = "  ") const = 0;
 
-    virtual std::string name() const { return "shape"; }
-    
+    virtual std::string to_string() const
+    {
+      return to_string("");
+    }
+
+    virtual std::string name() const
+    {
+      return "shape";
+    }
+
   }; // class shape
 
 
@@ -104,7 +110,7 @@ namespace amethyst
   template<class T>
   shape<T>::shape()
   {
-  
+
   } // shape()
 
   //---------------------------
@@ -113,7 +119,7 @@ namespace amethyst
   template<class T>
   shape<T>::~shape()
   {
-  
+
   } // ~shape()
 
   //---------------------------------
@@ -132,24 +138,24 @@ namespace amethyst
   shape<T>& shape<T>::operator= (const shape<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       // Insert assignment here. DELETEME
 
     }
-    return (*this);
+    return(*this);
   } // shape::operator=(shape)
 
   template <class T>
   bool shape<T>::intersects_line(const line3<T>& line,
-				 intersection_info<T>& intersection) const
+                                 intersection_info<T>& intersection) const
   {
     unit_line3<T> ul(line);
 
     if( intersects_line(ul, intersection) )
     {
       intersection.set_distance(intersection.get_distance() /
-				ul.normal_length());
+                                ul.normal_length());
       return true;
     }
     return false;
@@ -162,9 +168,8 @@ namespace amethyst
     o << s.to_string();
     return o;
   }  
-  
+
 } // namespace amethyst
 
 
 #endif /* !defined(AMETHYST__SHAPE_HPP) */
-

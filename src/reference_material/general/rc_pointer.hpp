@@ -1,20 +1,20 @@
 /*
-*  Copyright (C) 2000, 2001, 2003 Kevin Harris
-*
-*  This program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This program is distributed in the hope that it will be useful, but
-*  WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*  General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with this program; if not, write to the Free Software
-*  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ *  Copyright (C) 2000, 2001, 2003 Kevin Harris
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 #if       !defined(KH_RC_POINTER_HPP)
 #define            KH_RC_POINTER_HPP
 
@@ -67,21 +67,21 @@
 /*
   Revision History:
   14Feb2000 Created this file.  Added the unallocator and array unallocator.
-            Wrote the basic class.  wrote the new_array and new_object
-	    functions (to be used in simplifying life in some very specific
-	    cases). 
+  Wrote the basic class.  wrote the new_array and new_object
+  functions (to be used in simplifying life in some very specific
+  cases). 
   22Feb2000 Added a << operator (untested), which is conditionally included if
-            one of three things happens: the user includes <iostream> (at least
-	    GNU), includes <iosfwd> (at least GNU), or they define USE_STREAMS.
+  one of three things happens: the user includes <iostream> (at least
+  GNU), includes <iosfwd> (at least GNU), or they define USE_STREAMS.
   24Feb2000 Added comparison operators for reference counted pointers and for
-            pointers to whatever type is used.
+  pointers to whatever type is used.
   25Feb2000 Commented out the comparison operators, as there seems to be
-            something wrong with them that I can't find.
+  something wrong with them that I can't find.
   30Jul2001 Changed things to work with a newer (more compiant) compiler.
-            Duplicated the rcp_dynamic_cast and rcp_static_cast functions to
-	    return const pointers when their argument is a const pointer.
+  Duplicated the rcp_dynamic_cast and rcp_static_cast functions to
+  return const pointers when their argument is a const pointer.
   ??Aug2001 Added the ability to prevent automatic conversion to a pointer type
-            (NO_AUTO_PTR_CONV)
+  (NO_AUTO_PTR_CONV)
   20Mar2004 Changed the name (yet again), removed the unallocator (always use delete).
 */
 
@@ -172,7 +172,7 @@ public:
    */        
   rc_pointer<T,counter_type> copy_for_write()
   {
-    if( (counts.reference_count() > counter_type(1)) &&	!!data_pointer )
+    if( (counts.reference_count() > counter_type(1)) && !!data_pointer )
     {
       rc_pointer<T,counter_type> ptr = *this;
       

@@ -1,5 +1,5 @@
 /*
- * $Id: rgbcolor.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
+ * $Id: rgbcolor.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -49,7 +49,7 @@ namespace amethyst
    * class as an array of three ints.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template <class T>
@@ -76,18 +76,26 @@ namespace amethyst
      */        
     union rgbcolor_union
     {
-      rgbcolor_union() { }
+      rgbcolor_union()
+      {
+      }
       /** A constructor, to simplify things. */
       rgbcolor_union(T r, T g, T b)
       {
-	direct.r = r;
-	direct.g = g;
-	direct.b = b;	
+        direct.r = r;
+        direct.g = g;
+        direct.b = b; 
       }
       /** Operator for simplification of access. */
-      T& operator[](unsigned index)       { return array.components[index]; }
+      T& operator[](unsigned index)
+      {
+        return array.components[index];
+      }
       /** Operator for simplification of access. */
-      T  operator[](unsigned index) const { return array.components[index]; }
+      T  operator[](unsigned index) const
+      {
+        return array.components[index];
+      }
 
       rgbcolor_direct direct; ///< The directly accessible part
       rgbcolor_array  array;  ///< The array accessible part
@@ -98,13 +106,19 @@ namespace amethyst
 
   public:
     /** Default constructor (does nothing) */
-    rgbcolor() { }
-    
+    rgbcolor()
+    {
+    }
+
     /** Secondary constructor (initializes) */
-    rgbcolor(T r, T g, T b):rgb(r,g,b) { }    
+    rgbcolor(T r, T g, T b):rgb(r,g,b)
+    {
+    }    
 
     /** Destructor -- NON VIRTUAL! (does nothing) */
-    ~rgbcolor() { }
+    ~rgbcolor()
+    {
+    }
 
     /** Copy constructor */
     rgbcolor(const rgbcolor& old);
@@ -112,19 +126,43 @@ namespace amethyst
     /** Assignment operator */
     rgbcolor& operator= (const rgbcolor& old);
 
-    inline void set_r(T r) { rgb.direct.r = r; } ///< Set the red component
-    inline void set_g(T g) { rgb.direct.g = g; } ///< Set the green component
-    inline void set_b(T b) { rgb.direct.b = b; } ///< Set the blue component
-    inline T r() const { return rgb.direct.r; } ///< Get the red component
-    inline T g() const { return rgb.direct.g; } ///< Get the green component
-    inline T b() const { return rgb.direct.b; } ///< Get the blue component
+    inline void set_r(T r)
+    {
+      rgb.direct.r = r;
+    } ///< Set the red component
+    inline void set_g(T g)
+    {
+      rgb.direct.g = g;
+    } ///< Set the green component
+    inline void set_b(T b)
+    {
+      rgb.direct.b = b;
+    } ///< Set the blue component
+    inline T r() const
+    {
+      return rgb.direct.r;
+    } ///< Get the red component
+    inline T g() const
+    {
+      return rgb.direct.g;
+    } ///< Get the green component
+    inline T b() const
+    {
+      return rgb.direct.b;
+    } ///< Get the blue component
 
-    
-    
+
+
     /** Get the element specified.  No bounds checking is performed */
-    inline T& operator[](unsigned index)       { return rgb[index]; }    
+    inline T& operator[](unsigned index)
+    {
+      return rgb[index];
+    }    
     /** Get the element specified.  No bounds checking is performed */
-    inline T  operator[](unsigned index) const { return rgb[index]; }
+    inline T  operator[](unsigned index) const
+    {
+      return rgb[index];
+    }
 
     /** Set the components to the given values */
     void set(T r, T g, T b);
@@ -137,7 +175,7 @@ namespace amethyst
     rgbcolor& operator /=(U factor);          ///< Divide by factor (general)
     rgbcolor& operator +=(const rgbcolor& r); ///< Add the given to these
     rgbcolor& operator -=(const rgbcolor& r); ///< Sub the given from these
-    
+
   }; // class rgbcolor
 
   /** Copy constructor */
@@ -158,7 +196,7 @@ namespace amethyst
     rgb.direct.r = old.rgb.direct.r;
     rgb.direct.g = old.rgb.direct.g;
     rgb.direct.b = old.rgb.direct.b;
-    return (*this);    
+    return(*this);    
   } // rgbcolor::operator=(rgbcolor)
 
   /** Sets the data... */
@@ -189,7 +227,7 @@ namespace amethyst
     rgb.direct.b /= factor;
     return *this;
   } // rgbcolor::operator/=(T)
-  
+
   /** Multiplication by a factor/assign (general) */
   template <class T>
   template <class U>
@@ -241,7 +279,7 @@ namespace amethyst
     retval *= factor;
     return retval;
   } // operator*(T,rgbcolor)
-  
+
   /** Multiplication of a color by a factor (non-member, general) */
   template <class T, class U>
   rgbcolor<T> operator*(U factor, const rgbcolor<T>& r)
@@ -259,7 +297,7 @@ namespace amethyst
     retval += c2;
     return retval;
   } // operator+(rgbcolor,rgbcolor)
-  
+
   /** Subtraction of two colors. */
   template <class T>
   rgbcolor<T> operator-(const rgbcolor<T>& c1, const rgbcolor<T>& c2)
@@ -275,8 +313,8 @@ namespace amethyst
   {
     return rgbcolor<T>(-c.r(),-c.g(),-c.b());
   } // operator-(rgbcolor,rgbcolor)  
-  
-  
+
+
 } // namespace amethyst
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.4 2004/03/27 19:33:28 kpharris Exp $
+ * $Id: triangle.hpp,v 1.5 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple triangle class, which is based on the plane class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
@@ -71,7 +71,7 @@ namespace amethyst
 
     /** Returns if the given plane intersects the shape. */
     virtual bool intersects(const plane<T>& p) const;
-    
+
     /** Returns if the given line intersects the plane. */
     virtual bool intersects_line(const unit_line3<T>& line,
                                  intersection_info<T>& intersection) const;
@@ -80,8 +80,10 @@ namespace amethyst
     
     virtual std::string to_string(const std::string& indent,
                                   const std::string& level_indent = "  ") const;
-    virtual std::string name() const { return "triangle"; }
-    
+    virtual std::string name() const
+    {
+      return "triangle";
+    }
   }; // class triangle
 
 
@@ -93,7 +95,7 @@ namespace amethyst
   triangle<T>::triangle():
     plane<T>()
   {
-  
+
   } // triangle()
 
   template<class T>
@@ -104,14 +106,14 @@ namespace amethyst
   {
   } // triangle(point3,point3,point3)
 
-  
+
   //------------------------------
   // Destructor for class triangle
   //------------------------------
   template<class T>
   triangle<T>::~triangle()
   {
-  
+
   } // ~triangle()
 
   //------------------------------------
@@ -131,11 +133,11 @@ namespace amethyst
   triangle<T>& triangle<T>::operator= (const triangle<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       plane<T>::operator=(old);
     }
-    return (*this);
+    return(*this);
   } // triangle::operator=(triangle)
 
   template<class T>
@@ -152,7 +154,7 @@ namespace amethyst
     }
     return false;
   }
-  
+
   template<class T>
   bool triangle<T>::intersects(const sphere<T>& s) const
   {
@@ -165,7 +167,7 @@ namespace amethyst
     }
     return false;
   }
-  
+
   template<class T>
   bool triangle<T>::intersects(const plane<T>& p) const
   {
@@ -173,17 +175,17 @@ namespace amethyst
     const point3<T>& pp = plane<T>::get_origin();
     point3<T> pu = plane<T>::get_origin() + plane<T>::get_u_vector();
     point3<T> pv = plane<T>::get_origin() + plane<T>::get_v_vector();
-    
+
     if( p.intersects_line( line3<T>(pp, pu), unused ) ||
         p.intersects_line( line3<T>(pp, pv), unused ) ||
         p.intersects_line( line3<T>(pu, pv), unused ) )
     {
       return true;
     }
-    
+
     return false;
   }
-  
+
   template<class T>
   bool triangle<T>::intersects_line(const unit_line3<T>& line,
                                     intersection_info<T>& intersection) const
@@ -225,17 +227,14 @@ namespace amethyst
   std::string triangle<T>::to_string(const std::string& indent,
                                      const std::string& level_indent) const
   {
-    
     return ( indent + "triangle\n" +
              indent + "{\n" +
              plane<T>::internal_members(indent + level_indent, true) +
              triangle<T>::internal_members(indent + level_indent, false) +
              indent + "}" );
-    
   }
-  
+
 } // namespace amethyst
 
 
 #endif /* !defined(AMETHYST__TRIANGLE_HPP) */
-

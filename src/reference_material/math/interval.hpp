@@ -1,5 +1,5 @@
 /*
- * $Id: interval.hpp,v 1.5 2004/03/21 22:13:42 zorthluthik Exp $
+ * $Id: interval.hpp,v 1.6 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -31,13 +31,13 @@
   Complicated it some more (allowing backwards intervals)...
   08Jan2002 Added quite a few comments, before I forget what is going on.
   23Sep2003 Changed the structure a little, moving member functions outside,
-            setting some member functions to be templated.  Also, added the 
-            < and > operators.
+  setting some member functions to be templated.  Also, added the 
+  < and > operators.
   29Sep2003 Simplified things by removing the ability to be backwards
-            (reversing an earlier change).  Also, all references to comparison
-            of the given type by '>' were removed, so that only the '<'
-            operator must be provided for comparisons ( >, <, and
-            inside/outside ) to work. 
+  (reversing an earlier change).  Also, all references to comparison
+  of the given type by '>' were removed, so that only the '<'
+  operator must be provided for comparisons ( >, <, and
+  inside/outside ) to work. 
   
 */
 
@@ -97,7 +97,7 @@ namespace amethyst
       this->b = b;
       if( b < a )
       {
-	std::swap(this->a, this->b);
+        std::swap(this->a, this->b);
       }
       // This doesn't use the ==, as any swapping based on the < has already
       // been done, so if we test < again, and it fails, then it must be empty.
@@ -116,7 +116,7 @@ namespace amethyst
       }
       return((a < d) && (d < b));
     } // inside(T) const
-  
+
     //
     // Find out if a point is outside the interval (generic)
     //
@@ -132,7 +132,7 @@ namespace amethyst
       // must be defined for types used within an interval.
       return(!((a < d) && (d < b)));
     } // outside(T) const
-    
+
 
     //
     // Find out if two intervals overlap
@@ -141,66 +141,66 @@ namespace amethyst
     {
       if( empty() || i2.empty() )
       {
-	// If either one is empty, there can't be any overlap.
+        // If either one is empty, there can't be any overlap.
         return false;
       }
       if( (a < i2.a) && (i2.a < b) )
       {
-	// a-------b    <-- i1 (this)
-	//     a--b     <-- i2
-	//  OR
-	//     a---b    <-- i2
-	//  OR
-	//     a------b <-- i2
-	//
-	// i2.a is inside of i1 (this)
-	return true;
+        // a-------b    <-- i1 (this)
+        //     a--b     <-- i2
+        //  OR
+        //     a---b    <-- i2
+        //  OR
+        //     a------b <-- i2
+        //
+        // i2.a is inside of i1 (this)
+        return true;
       }
       else if( (i2.a < a) && (a < i2.b) )
       {
-	// a-------b    <-- i2
-	//     a--b     <-- i1 (this)
-	//  OR
-	//     a---b    <-- i1 (this)
-	//  OR
-	//     a------b <-- i1 (this)
-	//
-	// a is inside of i2
-	return true;
+        // a-------b    <-- i2
+        //     a--b     <-- i1 (this)
+        //  OR
+        //     a---b    <-- i1 (this)
+        //  OR
+        //     a------b <-- i1 (this)
+        //
+        // a is inside of i2
+        return true;
       }
       else if( (a < i2.b) && (i2.b < b) )
       {
-	//   a-------b    <-- i1 (this)
-	// a------b       <-- i2
-	//  OR
-	//   a----b       <-- i2
-	//  OR
-	//     a--b       <-- i2
-	//
-	// i2.b is inside of i1 (this)
-	return true;
+        //   a-------b    <-- i1 (this)
+        // a------b       <-- i2
+        //  OR
+        //   a----b       <-- i2
+        //  OR
+        //     a--b       <-- i2
+        //
+        // i2.b is inside of i1 (this)
+        return true;
       }
       else if( (i2.a < b) && (b < i2.b) )
       {
-	//   a-------b    <-- i2
-	// a------b       <-- i1 (this)
-	//  OR
-	//   a----b       <-- i1 (this)
-	//  OR
-	//     a--b       <-- i1 (this)
-	//
-	// b is inside of i2
-	return true;
+        //   a-------b    <-- i2
+        // a------b       <-- i1 (this)
+        //  OR
+        //   a----b       <-- i1 (this)
+        //  OR
+        //     a--b       <-- i1 (this)
+        //
+        // b is inside of i2
+        return true;
       }
       else if( ((a <= i2.a) && (i2.a <= a)) )
       {
-	// i1.a == i2.a -- There MUST be some overlap.
-	return true;
+        // i1.a == i2.a -- There MUST be some overlap.
+        return true;
       }
       else if( ((b <= i2.b) && (i2.b <= b)) )
       {
-	// i1.b == i2.b -- There MUST be some overlap.
-	return true;
+        // i1.b == i2.b -- There MUST be some overlap.
+        return true;
       }
       // The only remaining cases are:
       //
@@ -226,19 +226,28 @@ namespace amethyst
       {
         return false;
       }
-      return ((a <= i2.a) && (i2.b <= b));
+      return((a <= i2.a) && (i2.b <= b));
     } // subset(const interval&) const
 
-    bool empty() const { return is_empty; }
-    T begin() const { return a; }
-    T end()   const { return b; }
+    bool empty() const
+    {
+      return is_empty;
+    }
+    T begin() const
+    {
+      return a;
+    }
+    T end()   const
+    {
+      return b;
+    }
 
     void set(T begin, T end)
     {
       a = begin; b = end;
       if( b < a )
       {
-	std::swap(this->a, this->b);
+        std::swap(this->a, this->b);
       }
       // This doesn't use the ==, as any swapping based on the < has already
       // been done, so if we test < again, and it fails, then it must be empty.
@@ -254,7 +263,7 @@ namespace amethyst
   interval<T> get_overlap(const interval<T>& i1, const interval<T>& i2)
   {
     interval<T> result; // result interval (empty by default)
-  
+
     // If either interval is empty, return an empty interval, as there can't be
     // any overlap.
     if( i1.empty() || i2.empty() )
@@ -303,7 +312,7 @@ namespace amethyst
       // Both of these cases should work properly by just returning i1
       return i1;
     }
-    
+
     // If the the minimum component of i1 is less than i2, the entire region
     // from i1.begin() to i2.begin() is all that remains after subtraction.
     // That is, IFF they overlap, if not, then the subtraction is the same as
@@ -323,11 +332,11 @@ namespace amethyst
     }
     // FIXME! logic and implementation.  What case is left?
     /*
-    else
-    {
+      else
+      {
       return(interval<T>(std::min(i1.begin(),i2.begin()),
-			 std::max(i1.end(),i2.end())));
-    }
+      std::max(i1.end(),i2.end())));
+      }
     */
     // Return an empty interval...
     return interval<T>();
@@ -339,7 +348,7 @@ namespace amethyst
   // (interval, interval), (interval, template U), (template U, interval)
   //
   template <class T>
-  bool operator <(const interval<T>& t1, const interval<T>& t2)
+  inline bool operator <(const interval<T>& t1, const interval<T>& t2)
   {
     if( t1.empty() || t2.empty() )
     {
@@ -348,11 +357,11 @@ namespace amethyst
 
     // Note that the <= is actually correct here, as being ON the endpoint is
     // not being within the interval.    
-    return (t1.begin() <= t2.begin()) && (t1.end() <= t2.begin());
+    return(t1.begin() <= t2.begin()) && (t1.end() <= t2.begin());
   }
 
   template <class T>
-  bool operator >(const interval<T>& t1, const interval<T>& t2)
+  inline bool operator >(const interval<T>& t1, const interval<T>& t2)
   {
     if( t1.empty() || t2.empty() )
     {
@@ -361,11 +370,11 @@ namespace amethyst
 
     // Note that the <= is actually correct here, as being ON the endpoint is
     // not being within the interval.    
-    return (t2.begin() <= t1.begin()) && (t2.end() <= t1.begin());
+    return(t2.begin() <= t1.begin()) && (t2.end() <= t1.begin());
   }
 
   template <class T, class U>
-  bool operator <(const interval<T>& t1, const U& u)
+  inline bool operator <(const interval<T>& t1, const U& u)
   {
     if( t1.empty() )
     {
@@ -373,11 +382,11 @@ namespace amethyst
     }
     // Note that the <= is actually correct here, as being ON the endpoint is
     // not being within the interval.
-    return (t1.end() <= u);
+    return(t1.end() <= u);
   }
 
   template <class T, class U>
-  bool operator >(const interval<T>& t1, const U& u)
+  inline bool operator >(const interval<T>& t1, const U& u)
   {
     if( t1.empty() )
     {
@@ -385,11 +394,11 @@ namespace amethyst
     }
     // Note that the <= is actually correct here, as being ON the endpoint is
     // not being within the interval.
-    return (u <= t1.begin());
+    return(u <= t1.begin());
   }
 
   template <class T, class U>
-  bool operator <(const U& u, const interval<T>& t1)
+  inline bool operator <(const U& u, const interval<T>& t1)
   {
     if( t1.empty() )
     {
@@ -397,11 +406,11 @@ namespace amethyst
     }
     // Note that the <= is actually correct here, as being ON the endpoint is
     // not being within the interval.    
-    return (u <= t1.begin());
+    return(u <= t1.begin());
   }
 
   template <class T, class U>
-  bool operator >(const U& u, const interval<T>& t1)
+  inline bool operator >(const U& u, const interval<T>& t1)
   {
     if( t1.empty() )
     {
@@ -409,7 +418,7 @@ namespace amethyst
     }
     // Note that the <= is actually correct here, as being ON the endpoint is
     // not being within the interval.    
-    return (t1.end() <= u);
+    return(t1.end() <= u);
   }
 
 
@@ -419,7 +428,7 @@ namespace amethyst
     // Note: These should probably be changed to reflect the current behavior
     // of being non-inclusive in endpoints.
     o << "[";    
-    if(i.empty())
+    if( i.empty() )
     {
       o << "empty";
     }

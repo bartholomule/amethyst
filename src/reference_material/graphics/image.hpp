@@ -1,5 +1,5 @@
 /*
- * $Id: image.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
+ * $Id: image.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -59,7 +59,7 @@ namespace amethyst
    * </font>
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * @see raster
    * @see rgbcolor
    * 
@@ -78,7 +78,7 @@ namespace amethyst
 
     /** Size-specified constructor.  Creates a width by height sized image */
     image(unsigned width, unsigned height);
-    
+
     /** Destructor */
     virtual ~image();
 
@@ -96,7 +96,7 @@ namespace amethyst
   template <class T>
   image<T>::image(): raster<rgbcolor<T> >()
   {
-  
+
   } // image()
 
   //--------------------------------------------
@@ -106,7 +106,7 @@ namespace amethyst
   image<T>::image(unsigned width, unsigned height):
     raster<rgbcolor<T> >(width, height)
   {
-  
+
   } // image(w,h)  
 
   //---------------------------
@@ -115,7 +115,7 @@ namespace amethyst
   template <class T>
   image<T>::~image()
   {
-  
+
   } // ~image()
 
   //---------------------------------
@@ -135,16 +135,16 @@ namespace amethyst
   image<T>& image<T>::operator= (const image<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       // The class currently has no members, but if they are added, they need
       // to be assigned here. 
-      
+
       raster<rgbcolor<T> >::operator=(old);
     }
-    return (*this);
+    return(*this);
   } // image::operator=(image)
-  
+
 } // namespace amethyst
 
 

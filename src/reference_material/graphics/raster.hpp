@@ -1,5 +1,5 @@
 /*
- * $Id: raster.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
+ * $Id: raster.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -39,7 +39,7 @@ namespace amethyst
    * have iterators (at this time).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template <class T>
@@ -51,7 +51,7 @@ namespace amethyst
     unsigned width, height;
     /** The actual raster data. */
     T* raster_data;
-    
+
   public:
     /** Default constructor */
     raster() throw();
@@ -90,7 +90,7 @@ namespace amethyst
      * @throws out_of_range if y is out of range (height).
      */
     scanline<T> operator[](unsigned y) throw(out_of_range);
-    
+
     /**
      * Get the scanline at the given row (y)
      * @param y The row of the scanline.
@@ -106,7 +106,7 @@ namespace amethyst
      * @returns a new raster that contains the data from the specified region.
      */
     raster<T> sub_raster(unsigned x1, unsigned y1,
-			 unsigned x2, unsigned y2) const throw(out_of_range); 
+                         unsigned x2, unsigned y2) const throw(out_of_range); 
 
     /**
      * Resize the current raster to the given width and height.  If preserve is
@@ -122,7 +122,7 @@ namespace amethyst
      * 
      */
     void resize(unsigned width, unsigned height,
-		int cx, int cy, const T& fill);
+                int cx, int cy, const T& fill);
 
     /**
      *
@@ -144,16 +144,28 @@ namespace amethyst
      */
     template <class U>
     U reinterpret();
-    
+
     /** Get the width of the raster */
-    unsigned get_width()  const { return width; }
+    unsigned get_width()  const
+    {
+      return width;
+    }
     /** Get the height of the raster */
-    unsigned get_height() const { return height; }
+    unsigned get_height() const
+    {
+      return height;
+    }
     /** Get the number of pixels in the raster */
-    unsigned get_numpixels() const { return width * height; } 
+    unsigned get_numpixels() const
+    {
+      return width * height;
+    } 
     /** Return if the raster has no data. */
-    bool empty() const { return (raster_data == NULL); }
-    
+    bool empty() const
+    {
+      return(raster_data == NULL);
+    }
+
   }; // class raster
 
 
@@ -173,14 +185,14 @@ namespace amethyst
    * row number be changed.
    *
    * @author Kevin Harris
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    */
   template <class T>
   class scanline
   {
   public:
     friend class raster<T>;
-    
+
     /**
      * Return an element of the raster.
      * @param x The index of the element on this scanline.
@@ -197,7 +209,7 @@ namespace amethyst
      * @returns The element requested.
      */      
     const T& operator[](unsigned x) const throw(out_of_range);
-    
+
     /**
      * Tricky assignment operator, will copy one row (scanline) of any raster
      * to another (if they are the same size).
@@ -212,7 +224,7 @@ namespace amethyst
      *   the same.
      */  
     scanline& operator=(const scanline& line) throw(size_mismatch);
-    
+
   private:
     /**
      * The constructor that only class raster can invoke.
@@ -222,7 +234,7 @@ namespace amethyst
      * @param row The row that this scanline represents within the raster.
      */
     scanline(raster<T>& ras, unsigned row);
-    
+
     /**
      * The reference to the class which created this particular instance.
      * Once this is set in the constructor, it will not ever be changed.
@@ -234,12 +246,12 @@ namespace amethyst
      */
     unsigned my_row;
   }; // class scanline
-  
-  
+
+
   // **********************************************************************
   // Member functions for class raster
   // **********************************************************************
-  
+
   //--------------------------------------
   // Default constructor for class raster
   //--------------------------------------
@@ -249,7 +261,7 @@ namespace amethyst
     raster_data(NULL)
   {
   } // raster()
-  
+
   //--------------------------------------
   // Default constructor for class raster
   //--------------------------------------
@@ -270,7 +282,7 @@ namespace amethyst
       height = 0;
     }
   } // raster(unsigned,unsigned)
-  
+
   //-----------------------------
   // Destructor for class raster
   //-----------------------------
@@ -301,10 +313,10 @@ namespace amethyst
 
       if( old.raster_data )
       {
-	for(unsigned i = 0; i < linear_size; ++i)
-	{
-	  raster_data[i] = old.raster_data[i];
-	}
+        for( unsigned i = 0; i < linear_size; ++i )
+        {
+          raster_data[i] = old.raster_data[i];
+        }
       }
     }
     else
@@ -315,7 +327,7 @@ namespace amethyst
   } // raster(raster)
 
 
- 
+
   //--------------------------------------
   // Assignment operator for class raster
   //--------------------------------------
@@ -323,7 +335,7 @@ namespace amethyst
   raster<T>& raster<T>::operator= (const raster<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       delete[] raster_data;
 
@@ -335,25 +347,25 @@ namespace amethyst
       // crept into the old copy.
       if( (linear_size > 0) && old.raster_data )
       {
-	raster_data = new T[linear_size];
+        raster_data = new T[linear_size];
 
-	for(unsigned i = 0; i < linear_size; ++i)
-	{
-	  raster_data[i] = old.raster_data[i];
-	}
+        for( unsigned i = 0; i < linear_size; ++i )
+        {
+          raster_data[i] = old.raster_data[i];
+        }
       }
       else
       {
-	raster_data = NULL;
-	width = 0;
-	height = 0;
+        raster_data = NULL;
+        width = 0;
+        height = 0;
       }
     }
-    return (*this);
+    return(*this);
   } // raster::operator=(raster)
 
   template<class T>
-  T& raster<T>::operator()(unsigned x, unsigned y) throw(out_of_range)
+  inline T& raster<T>::operator()(unsigned x, unsigned y) throw(out_of_range)
   {
     if( (x < width) && (y < height) )
     {
@@ -363,13 +375,13 @@ namespace amethyst
     {
       char buffer[1024];
       snprintf(buffer,1024,"raster<T>::op()(%d,%d): %s", x, y,
-	       intl("index is out of range"));
+               intl("index is out of range"));
       throw out_of_range(std::string(buffer));
     }
   }
-  
+
   template <class T>
-  const T& raster<T>::operator()(unsigned x, unsigned y) const
+  inline const T& raster<T>::operator()(unsigned x, unsigned y) const
     throw(out_of_range)
   {
     if( (x < width) && (y < height) )
@@ -380,13 +392,13 @@ namespace amethyst
     {
       char buffer[1024];
       snprintf(buffer,1024,"raster<T>::op()(%d,%d)const: %s", x, y,
-	       intl("index is out of range"));
+               intl("index is out of range"));
       throw out_of_range(std::string(buffer));
     }    
   }
 
   template <class T>
-  scanline<T> raster<T>::operator[](unsigned y) throw(out_of_range)
+  inline scanline<T> raster<T>::operator[](unsigned y) throw(out_of_range)
   {
     if( y < height )
     {
@@ -396,13 +408,13 @@ namespace amethyst
     {
       char buffer[1024];
       snprintf(buffer,1024,"raster<T>::op[](%d): %s", y,
-	       intl("index is out of range"));
+               intl("index is out of range"));
       throw out_of_range(std::string(buffer));
     }    
   }
 
   template <class T>
-  const scanline<T> raster<T>::operator[](unsigned y) const
+  inline const scanline<T> raster<T>::operator[](unsigned y) const
     throw(out_of_range)
   {
     if( y < height )
@@ -413,46 +425,46 @@ namespace amethyst
     {
       char buffer[1024];
       snprintf(buffer,1024,"raster<T>::op[](%d)const: %s", y,
-	       intl("index is out of range"));
+               intl("index is out of range"));
       throw out_of_range(std::string(buffer));
     }    
   }
 
   template <class T>
   raster<T> raster<T>::sub_raster(unsigned x1, unsigned y1,
-				  unsigned x2, unsigned y2) const
+                                  unsigned x2, unsigned y2) const
     throw(out_of_range)
   {
     if( (x2 < width) && (y2 < height) )
     {
       if( (x1 < x2) && (y1 < y2) )
       {
-	// Both of these add 1, because it is inclusive...
-	unsigned x_range = x2 - x1 + 1; 
-	unsigned y_range = y2 - y1 + 1;
+        // Both of these add 1, because it is inclusive...
+        unsigned x_range = x2 - x1 + 1; 
+        unsigned y_range = y2 - y1 + 1;
 
-	raster<T> ret_ras(x_range, y_range);
+        raster<T> ret_ras(x_range, y_range);
 
-	for(unsigned y = 0; y < y_range; ++y)
-	{
-	  for(unsigned x = 0; x < x_range; ++x)
-	  {
-	    unsigned source = (x + x1) + ((y + y1) * width);
-	    ret_ras.raster_data[x + y * x_range] = raster_data[source];
-	  }
-	}
-	return ret_ras;
+        for( unsigned y = 0; y < y_range; ++y )
+        {
+          for( unsigned x = 0; x < x_range; ++x )
+          {
+            unsigned source = (x + x1) + ((y + y1) * width);
+            ret_ras.raster_data[x + y * x_range] = raster_data[source];
+          }
+        }
+        return ret_ras;
       }
       else
       {
-	throw out_of_range(std::string("raster<T>::sub_raster(...): ") +
-			   intl("dimensions are incorrectly ordered"));
+        throw out_of_range(std::string("raster<T>::sub_raster(...): ") +
+                           intl("dimensions are incorrectly ordered"));
       }
     }
     else
     {
       throw out_of_range(std::string("raster<T>::sub_raster(...): ") +
-			 intl("index is out of range"));			 
+                         intl("index is out of range"));       
     }
   }
 
@@ -463,7 +475,7 @@ namespace amethyst
     unsigned old_height = this->height;
     T* old_data = raster_data;
 
-    
+
     // If there is no change in size, do nothing but return.
     if( (width == old_width) && (height == old_height) )
     {
@@ -489,22 +501,22 @@ namespace amethyst
     {
       unsigned max_x = my_min(old_width, width);
       unsigned max_y = my_min(old_height, height);
-      for(unsigned y = 0; y < max_y; ++y)
+      for( unsigned y = 0; y < max_y; ++y )
       {
-	for(unsigned x = 0; x < max_x; ++x)
-	{
-	  raster_data[(y * width) + x] = old_data[(y * old_width) + x];
-	}
+        for( unsigned x = 0; x < max_x; ++x )
+        {
+          raster_data[(y * width) + x] = old_data[(y * old_width) + x];
+        }
       }
     }
-    
+
     // Delete the old data (if any). Deleting NULL should be safe.
     delete[] old_data;
   }
 
   template <class T>
   void raster<T>::resize(unsigned width, unsigned height,
-			 int cx, int cy, const T& fill)
+                         int cx, int cy, const T& fill)
   {
     unsigned old_width = this->width;
     unsigned old_height = this->height;
@@ -514,7 +526,7 @@ namespace amethyst
 
     // If there is no change, return, doing nothing.
     if( (old_width == width) && (old_height == height) &&
-	(old_mid_x == cx) && (old_mid_y == cy) )
+        (old_mid_x == cx) && (old_mid_y == cy) )
     {
       return;
     }
@@ -532,7 +544,7 @@ namespace amethyst
       this->height = 0;
       raster_data = NULL;
     }
-    
+
     // If it is possible to preserve data, copy as much as possible, and fill
     // the rest.
     if( old_data && raster_data )
@@ -551,16 +563,16 @@ namespace amethyst
       int x_shift = -olx;
       int y_shift = -oly;
       // Copy any useful data.
-      for(unsigned y = min_y; y < max_y; ++y)
+      for( unsigned y = min_y; y < max_y; ++y )
       {
-	unsigned old_y = y + y_shift;
-	unsigned old_lin_y = old_y * old_width;
-	unsigned lin_y = y * width;
-	for(unsigned x = min_x; x < max_x; ++x)
-	{
-	  unsigned old_x = x + x_shift;
-	  raster_data[lin_y + x] = old_data[old_lin_y + old_x];
-	}
+        unsigned old_y = y + y_shift;
+        unsigned old_lin_y = old_y * old_width;
+        unsigned lin_y = y * width;
+        for( unsigned x = min_x; x < max_x; ++x )
+        {
+          unsigned old_x = x + x_shift;
+          raster_data[lin_y + x] = old_data[old_lin_y + old_x];
+        }
       }
 
       // Now that the data is copied, fill the rest of the raster in the
@@ -584,72 +596,72 @@ namespace amethyst
       //
       // Note that the loops will not execute, and a maximum of 4 useless tests
       // will be performed, if the entire raster was filled with old data.
-      
+
       // (1) Fill above the copied rectangle, if it needs it...
-      for(unsigned y = 0; y < min_y; ++y)
+      for( unsigned y = 0; y < min_y; ++y )
       {
-	for(unsigned x = 0; x < width; ++x)
-	{
-	  raster_data[(y * width) + x] = fill;
-	}
+        for( unsigned x = 0; x < width; ++x )
+        {
+          raster_data[(y * width) + x] = fill;
+        }
       }
       // (2) Fill below the copied rectangle, if it needs it...
-      for(unsigned y = max_y; y < height; ++y)
+      for( unsigned y = max_y; y < height; ++y )
       {
-	for(unsigned x = 0; x < width; ++x)
-	{
-	  raster_data[(y * width) + x] = fill;
-	}
+        for( unsigned x = 0; x < width; ++x )
+        {
+          raster_data[(y * width) + x] = fill;
+        }
       }
       // (3) Fill the gap on the left (if any)
       if( min_x > 0 )
       {
-	for(unsigned y = min_y; y < max_y; ++y)
-	{
-	  for(unsigned x = 0; x < min_x; ++x)
-	  {
-	    raster_data[(y * width) + x] = fill;
-	  }
-	}
+        for( unsigned y = min_y; y < max_y; ++y )
+        {
+          for( unsigned x = 0; x < min_x; ++x )
+          {
+            raster_data[(y * width) + x] = fill;
+          }
+        }
       }
       // (4) Fill the gap on the right (if any)
       if( max_x < width )
       {
-	for(unsigned y = min_y; y < max_y; ++y)
-	{	
-	  for(unsigned x = max_x; x < width; ++x)
-	  {
-	    raster_data[(y * width) + x] = fill;
-	  }
-	}
+        for( unsigned y = min_y; y < max_y; ++y )
+        {
+          for( unsigned x = max_x; x < width; ++x )
+          {
+            raster_data[(y * width) + x] = fill;
+          }
+        }
       }
     }
     else
     {
       // Preservation is not possible, fill everything.
       unsigned max_linear = this->width * this->height;
-      for(unsigned i = 0; i < max_linear; ++i)
+      for( unsigned i = 0; i < max_linear; ++i )
       {
-	raster_data[i] = fill;
+        raster_data[i] = fill;
       }
     }
-    
+
     // Delete the old data (if any). Deleting NULL should be safe.
     delete[] old_data;
   }
-  
+
 
   template <class T>
   template <class U>
-  U raster<T>::reinterpret()
+  inline U raster<T>::reinterpret()
   {
     return reinterpret_cast<U>(raster_data);
   }
-  
+
   // **********************************************************************
   // Member functions for class raster::scanline
   // **********************************************************************
-  
+
   //------------------------------------------------------------------
   // The one and only constructor for raster's internal class scanline
   // Note: this is a non-public constructor...
@@ -662,7 +674,7 @@ namespace amethyst
   }
 
   template <class T>
-  T& scanline<T>::operator[](unsigned x) throw(out_of_range)
+  inline T& scanline<T>::operator[](unsigned x) throw(out_of_range)
   {
     if( x < my_raster.get_width() )
     {
@@ -672,13 +684,13 @@ namespace amethyst
     {
       char buffer[1024];
       snprintf(buffer,1024,"raster<T>::scanline::op[](%d): %s", x,
-	       intl("index is out of range"));
+               intl("index is out of range"));
       throw out_of_range(std::string(buffer));
-    }	
+    } 
   } // scanline::operator[](x)
 
   template <class T>
-  const T& scanline<T>::operator[](unsigned x) const throw(out_of_range)
+  inline const T& scanline<T>::operator[](unsigned x) const throw(out_of_range)
   {
     if( x < my_raster.get_width() )
     {
@@ -688,9 +700,9 @@ namespace amethyst
     {
       char buffer[1024];
       snprintf(buffer,1024,"raster<T>::scanline::op[](%d)const: %s", x,
-	       intl("index is out of range"));
+               intl("index is out of range"));
       throw out_of_range(std::string(buffer));
-    }	
+    } 
   } // scanline::operator[](x) const  
 
   template <class T>
@@ -701,20 +713,20 @@ namespace amethyst
     {
       if( line.my_raster.get_width() == my_raster.get_width() )
       {
-	for(unsigned i = 0; i < my_raster.get_width(); ++i)
-	{
-	  my_raster(i, my_row) = line.my_raster(i, line.my_row);
-	}
+        for( unsigned i = 0; i < my_raster.get_width(); ++i )
+        {
+          my_raster(i, my_row) = line.my_raster(i, line.my_row);
+        }
       }
       else
       {
-	throw size_mismatch(std::string("raster::scanline::op=(scanline): ") +
-			    intl("raster widths are different"));
+        throw size_mismatch(std::string("raster::scanline::op=(scanline): ") +
+                            intl("raster widths are different"));
       }
     }
-    return *this;	  
+    return *this;   
   } // scanline::operator=(scanline)
-  
+
 } // namespace amethyst
 
 

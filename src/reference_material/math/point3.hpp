@@ -1,5 +1,5 @@
 /*
- * $Id: point3.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: point3.hpp,v 1.3 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -41,7 +41,7 @@
   20jan1999 Added a default constructor.
   18May2001 "Templatized" the class...
   17Sep2003 Changed the inheritence from public to private.  Added accessors,
-            fixed implementation to use those accessors.  
+  fixed implementation to use those accessors.  
 */
 
 #include "coord3.hpp"
@@ -55,31 +55,60 @@ namespace amethyst
   {
   public:
     typedef T base;
-    
-    inline point3(): coord3<T>() {}
-    inline point3(T x, T y, T z): coord3<T>(x,y,z){}
-    inline explicit point3(const coord3<T>& c): coord3<T>(c) {}
-    inline point3(const point3<T>& c): coord3<T>(c) {}  
 
-    inline void set(T x, T y, T z) { coord3<T>::set(x,y,z); }
-  
+    inline point3(): coord3<T>()
+    {
+    }
+    inline point3(T x, T y, T z): coord3<T>(x,y,z)
+    {
+    }
+    inline explicit point3(const coord3<T>& c): coord3<T>(c)
+    {
+    }
+    inline point3(const point3<T>& c): coord3<T>(c)
+    {
+    }  
+
+    inline void set(T x, T y, T z)
+    {
+      coord3<T>::set(x,y,z);
+    }
+
     /* Accessors */
     inline T& operator[](int coord_index)
     {
       return(coord3<T>::operator[](coord_index));
     }
-  
+
     inline T  operator[](int coord_index) const
     {
       return(coord3<T>::operator[](coord_index));
     }
 
-    T& x()       { return(coord3<T>::x()); }
-    T  x() const { return(coord3<T>::x()); }
-    T& y()       { return(coord3<T>::y()); }
-    T  y() const { return(coord3<T>::y()); }
-    T& z()       { return(coord3<T>::z()); }
-    T  z() const { return(coord3<T>::z()); }  
+    T& x()
+    {
+      return(coord3<T>::x());
+    }
+    T  x() const
+    {
+      return(coord3<T>::x());
+    }
+    T& y()
+    {
+      return(coord3<T>::y());
+    }
+    T  y() const
+    {
+      return(coord3<T>::y());
+    }
+    T& z()
+    {
+      return(coord3<T>::z());
+    }
+    T  z() const
+    {
+      return(coord3<T>::z());
+    }  
 
     point3<T>& operator=(const point3<T>& p);
     point3<T>& operator+=(const vector3<T>& v1);
@@ -88,65 +117,65 @@ namespace amethyst
   }; // class point3
 
   template <class T>
-  point3<T>& point3<T>::operator=(const point3<T>& p)
+  inline point3<T>& point3<T>::operator=(const point3<T>& p)
   {
     set(p.x(), p.y(), p.z());
     return(*this);
   }
 
   template <class T>
-  point3<T>& point3<T>::operator+=(const vector3<T>& v1)
+  inline point3<T>& point3<T>::operator+=(const vector3<T>& v1)
   {
     set(x() + v1.x(),
-	y() + v1.y(),
-	z() + v1.z());
+        y() + v1.y(),
+        z() + v1.z());
     return(*this);
   }
 
   template <class T>
-  point3<T>& point3<T>::operator-=(const vector3<T>& v1)
+  inline point3<T>& point3<T>::operator-=(const vector3<T>& v1)
   {
     set(x() - v1.x(),
-	y() - v1.y(),
-	z() - v1.z());
+        y() - v1.y(),
+        z() - v1.z());
     return(*this);
   }  
-  
+
 
   template <class T>
   inline vector3<T> operator-(const point3<T>& p1, const point3<T>& p2)
   {
     return vector3<T>(p1.x() - p2.x(),
-		      p1.y() - p2.y(),
-		      p1.z() - p2.z());
+                      p1.y() - p2.y(),
+                      p1.z() - p2.z());
   }
   template <class T>
   inline point3<T>  operator+(const point3<T>& p1, const vector3<T>& v1)
   {
     return point3<T>(p1.x() + v1.x(),
-		     p1.y() + v1.y(),
-		     p1.z() + v1.z());
+                     p1.y() + v1.y(),
+                     p1.z() + v1.z());
   }
   template <class T>
   inline point3<T>  operator-(const point3<T>& p1, const vector3<T>& v1)
   {
     return point3<T>(p1.x() - v1.x(),
-		     p1.y() - v1.y(),
-		     p1.z() - v1.z());
+                     p1.y() - v1.y(),
+                     p1.z() - v1.z());
   }
   template <class T>
   inline point3<T>  operator+(const vector3<T>& v1, const point3<T>& p1)
   {
     return point3<T>(p1.x() + v1.x(),
-		     p1.y() + v1.y(),
-		     p1.z() + v1.z());
+                     p1.y() + v1.y(),
+                     p1.z() + v1.z());
   }
   template <class T>
   inline point3<T>  operator-(const vector3<T>& v1, const point3<T>& p1)
   {
     return point3<T>(v1.x() - p1.x(),
-		     v1.y() - p1.y(),
-		     v1.z() - p1.z());
+                     v1.y() - p1.y(),
+                     v1.z() - p1.z());
   }  
 
   template <class T>
@@ -155,7 +184,7 @@ namespace amethyst
     o << "(" << p.x() << "," << p.y() << "," << p.z() << ")";
     return(o);
   }
-  
+
 } // namespace amethyst
 
 #endif /* !defined(AMETHYST__POINT3_HPP) */

@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.7 2004/03/27 19:33:28 kpharris Exp $
+ * $Id: plane.hpp,v 1.8 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * A plane in 3d.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.7 $
+   * @version $Revision: 1.8 $
    * 
    */
   template<class T>
@@ -53,9 +53,9 @@ namespace amethyst
     vector3<T> v_vector;
     int non_zero_u_index;
     int non_zero_v_index;
-    
+
   protected:
-    
+
   public:
     /** Default constructor */
     plane();
@@ -70,7 +70,7 @@ namespace amethyst
     plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v);
     /** Quinary (pos, vec, vec, vec) constructor */
     plane(const point3<T>& p, const vector3<T>& normal, const vector3<T>& vec_u, const vector3<T>& vec_v);
-    
+
     /** Destructor */
     virtual ~plane();
 
@@ -80,11 +80,23 @@ namespace amethyst
     /** Assignment operator */
     plane& operator= (const plane& old);
 
-    const point3<T>& get_origin() const { return defining_point; }
-    const vector3<T>& get_normal() const { return normal; }
-    const vector3<T>& get_u_vector() const { return u_vector; }
-    const vector3<T>& get_v_vector() const { return v_vector; }
-    
+    const point3<T>& get_origin() const
+    {
+      return defining_point;
+    }
+    const vector3<T>& get_normal() const
+    {
+      return normal;
+    }
+    const vector3<T>& get_u_vector() const
+    {
+      return u_vector;
+    }
+    const vector3<T>& get_v_vector() const
+    {
+      return v_vector;
+    }
+
     /** Returns if the given point is inside the shape. */
     virtual bool inside(const point3<T>& p) const;
 
@@ -96,7 +108,7 @@ namespace amethyst
 
     /** Returns if the given line intersects the sphere. */
     virtual bool intersects_line(const line3<T>& line, intersection_info<T>& intersection) const;
-    
+
     /** Returns if the given line intersects the plane. */
     virtual bool intersects_line(const unit_line3<T>& line,
                                  intersection_info<T>& intersection) const;
@@ -106,13 +118,16 @@ namespace amethyst
     virtual std::string to_string(const std::string& base_indentation,
                                   const std::string& level_indentation = "  ") const;
 
-    virtual std::string name() const { return "plane"; }
-    
+    virtual std::string name() const
+    {
+      return "plane";
+    }
+
     bool extract_uv_for_point(const point3<T>& point, coord2<T>& uv) const;
 
   private:
     void setup_non_zero_indices();
-    
+
   }; // class plane
 
 
@@ -130,7 +145,7 @@ namespace amethyst
     non_zero_u_index(0),
     non_zero_v_index(0)
   {
-    
+
   } // plane()
 
   //---------------------------------------------------------
@@ -165,7 +180,7 @@ namespace amethyst
     u_vector = crossprod(v_vector, normal);
 
     setup_non_zero_indices();
-    
+
   } // plane(point3,vector3,vector3)
 
   //---------------------------------------------------------
@@ -181,7 +196,7 @@ namespace amethyst
     normal = unit(crossprod(u_vector, v_vector));
 
     setup_non_zero_indices();
-    
+
   } // plane(point3,point3,point3)    
 
   //---------------------------------------------------------
@@ -196,18 +211,18 @@ namespace amethyst
     u_vector(vec_u),
     v_vector(vec_v)
   {
-    
+
     setup_non_zero_indices();
-    
+
   } // plane(point3,vector3,vector3,vector3)
-  
+
   //---------------------------
   // Destructor for class plane
   //---------------------------
   template<class T>
   plane<T>::~plane()
   {
-  
+
   } // ~plane()
 
   //---------------------------------
@@ -233,7 +248,7 @@ namespace amethyst
   plane<T>& plane<T>::operator= (const plane<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       defining_point = old.defining_point;
       normal = old.normal;
@@ -242,32 +257,31 @@ namespace amethyst
 
       non_zero_u_index = old.non_zero_u_index;
       non_zero_v_index = old.non_zero_v_index;
-        
       shape<T>::operator=(old);
     }
-    return (*this);
+    return(*this);
   } // plane::operator=(plane)
-  
+
   // Returns if the given point is inside the shape.
   template <class T>
-  bool plane<T>:: inside(const point3<T>& p) const
+  inline bool plane<T>::inside(const point3<T>& p) const
   {
     T dist = dotprod(p - defining_point, normal);
-    return (dist < AMETHYST_EPSILON) && (dist > -AMETHYST_EPSILON);
+    return(dist < AMETHYST_EPSILON) && (dist > -AMETHYST_EPSILON);
   }
-  
+
   // Returns if the given sphere intersects the shape.
   template <class T>
-  bool plane<T>:: intersects(const sphere<T>& s) const
+  inline bool plane<T>::intersects(const sphere<T>& s) const
   {
     T dist = dotprod(s.get_center() - defining_point, normal);
     T max_dist = s.get_radius() + AMETHYST_EPSILON;
-    return (dist < max_dist) && (dist > -max_dist);
+    return(dist < max_dist) && (dist > -max_dist);
   }
-  
+
   // Returns if the given plane intersects the shape.
   template <class T>
-  bool plane<T>:: intersects(const plane<T>& p) const
+  inline bool plane<T>::intersects(const plane<T>& p) const
   {
     T normal_proj = dotprod(normal, p.normal);
 
@@ -299,8 +313,8 @@ namespace amethyst
 
   // Returns if the given line intersects the plane.
   template <class T>
-  bool plane<T>::intersects_line(const unit_line3<T>& line,
-                                 intersection_info<T>& intersection) const
+  inline bool plane<T>::intersects_line(const unit_line3<T>& line,
+                                        intersection_info<T>& intersection) const
   {
     T ctheta = dotprod(line.direction(), normal);
     T t;
@@ -325,19 +339,19 @@ namespace amethyst
            -ctheta);
     }
 
-    if(line.inside(t))
+    if( line.inside(t) )
     {
       intersection.set(this, t);
       return true;
     }
-    
+
     return false;
   }
 
   // Returns if the given line intersects the plane.
   template <class T>
-  bool plane<T>::intersects_line(const line3<T>& line,
-                                 intersection_info<T>& intersection) const
+  inline bool plane<T>::intersects_line(const line3<T>& line,
+                                        intersection_info<T>& intersection) const
   {
     T ctheta = ( dotprod(line.direction(), normal) /
                  length(line.direction()) );
@@ -356,12 +370,12 @@ namespace amethyst
            -ctheta);
     }
 
-    if(line.inside(t))
+    if( line.inside(t) )
     {
       intersection.set(this, t);
       return true;
     }
-    
+
     return false;
   }
 
@@ -399,12 +413,12 @@ namespace amethyst
   template <class T>
   void plane<T>::setup_non_zero_indices()
   {
-    for(non_zero_u_index = 0; non_zero_u_index < 3; ++non_zero_u_index)
+    for( non_zero_u_index = 0; non_zero_u_index < 3; ++non_zero_u_index )
     {
       if(fabs(u_vector[non_zero_u_index]) > AMETHYST_EPSILON)
         break;
     }
-    for(non_zero_v_index = 0; non_zero_v_index < 3; ++non_zero_v_index)
+    for( non_zero_v_index = 0; non_zero_v_index < 3; ++non_zero_v_index )
     {
       if(non_zero_v_index == non_zero_u_index) continue;
       if(fabs(v_vector[non_zero_v_index]) > AMETHYST_EPSILON)
@@ -413,8 +427,8 @@ namespace amethyst
   }
 
   template<class T>
-  bool plane<T>::extract_uv_for_point(const point3<T>& point,
-                                      coord2<T>& uv) const
+  inline bool plane<T>::extract_uv_for_point(const point3<T>& point,
+                                             coord2<T>& uv) const
   {
     if( plane<T>::inside(point) )
     {
@@ -431,22 +445,21 @@ namespace amethyst
             u_vector[non_zero_u_index] );
 
       uv.set(u,v);
-      
+
       return true;
     }
     return false;
   }
 
-  
+
   template <class T>
   bool intersects(const sphere<T>& s, const plane<T>& p)
   {
     return p.intersects(s);
   }
 
-  
+
 } // namespace amethyst
 
 
 #endif /* !defined(AMETHYST__PLANE_HPP) */
-

@@ -1,5 +1,5 @@
 /*
- * $Id: line3.hpp,v 1.3 2004/03/20 06:20:43 kpharris Exp $
+ * $Id: line3.hpp,v 1.4 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -30,13 +30,13 @@
 
 namespace amethyst
 { 
-  
+
   /**
    * 
    * A simple 3d line.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   template<class T>
@@ -56,9 +56,9 @@ namespace amethyst
     line3();
 
     line3(const point3<T>& o, const vector3<T>& v,
-	 const interval<T>& limits = interval<T>( std::numeric_limits<T>::min(),
-						  std::numeric_limits<T>::max() ));
-						  
+          const interval<T>& limits = interval<T>( std::numeric_limits<T>::min(),
+                                                   std::numeric_limits<T>::max() ));
+
     line3(const point3<T>& p1, const point3<T>& p2);
 
     /** Destructor */
@@ -70,23 +70,50 @@ namespace amethyst
     /** Assignment operator */
     line3& operator= (const line3& old);
 
-    point3<T> o() const { return line_origin; }
-    point3<T> origin() const { return line_origin; }
-    
-    vector3<T> v() const { return line_direction; }
-    vector3<T> direction() const { return line_direction; }
+    point3<T> o() const
+    {
+      return line_origin;
+    }
+    point3<T> origin() const
+    {
+      return line_origin;
+    }
 
-    point3<T> minimum() const { return (line_origin +
-					line_limits.begin() * direction()); }
-    point3<T> maximum() const { return (line_origin +
-					line_limits.end() * direction()); }    
+    vector3<T> v() const
+    {
+      return line_direction;
+    }
+    vector3<T> direction() const
+    {
+      return line_direction;
+    }
 
-    bool infinite() const { return infinite_limits; }
+    point3<T> minimum() const
+    {
+      return(line_origin +
+             line_limits.begin() * direction());
+    }
+    point3<T> maximum() const
+    {
+      return(line_origin +
+             line_limits.end() * direction());
+    }    
 
-    interval<T> limits() const { return line_limits; }
+    bool infinite() const
+    {
+      return infinite_limits;
+    }
 
-    bool inside(T t) const { return line_limits.inside(t); }
-    
+    interval<T> limits() const
+    {
+      return line_limits;
+    }
+
+    bool inside(T t) const
+    {
+      return line_limits.inside(t);
+    }
+
   }; // class line3
 
 
@@ -99,15 +126,15 @@ namespace amethyst
     line_origin(),
     line_direction(),
     line_limits( -std::numeric_limits<T>::max(),
-		 std::numeric_limits<T>::max ),
+                 std::numeric_limits<T>::max ),
     infinite_limits(true)
   {
-  
+
   } // line3()
 
   template<class T>
   line3<T>::line3(const point3<T>& o, const vector3<T>& v,
-			    const interval<T>& limits):
+                  const interval<T>& limits):
     line_origin(o),
     line_direction(v),
     line_limits(limits)
@@ -116,7 +143,7 @@ namespace amethyst
     // but if they set it to something other than the default, this should
     // fail, so this wouldn't be infinite.
     infinite_limits = ( (line_limits.begin() <= -std::numeric_limits<T>::max()) &&
-			(line_limits.end() >= std::numeric_limits<T>::max()) );
+                        (line_limits.end() >= std::numeric_limits<T>::max()) );
 
   } // line3()
 
@@ -125,12 +152,12 @@ namespace amethyst
     line_origin(p1),
     line_direction(p2 - p1),
     line_limits( std::numeric_limits<T>::min(),
-		 T(1) - std::numeric_limits<T>::epsilon() ),
+                 T(1) - std::numeric_limits<T>::epsilon() ),
     infinite_limits(false)
   {
 
   } // line3()  
-  
+
 
   //--------------------------
   // Destructor for class line3
@@ -138,7 +165,7 @@ namespace amethyst
   template<class T>
   line3<T>::~line3()
   {
-  
+
   } // ~line3()
 
   //--------------------------------
@@ -161,14 +188,14 @@ namespace amethyst
   line3<T>& line3<T>::operator= (const line3<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       line_origin = old.line_origin;
       line_direction = old.line_direction;
       line_limits = old.line_limits;
       infinite_limits = old.infinite_limits;
     }
-    return (*this);
+    return(*this);
   } // line3::operator=(line3)
 
   template <class T>
@@ -177,7 +204,7 @@ namespace amethyst
     o << "|" << l.o() << ", " << l.v() << "|";
     return o;
   }
-  
+
 } // namespace amethyst
 
 

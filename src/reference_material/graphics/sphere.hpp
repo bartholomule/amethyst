@@ -1,5 +1,5 @@
 /*
- * $Id: sphere.hpp,v 1.5 2004/03/27 19:33:28 kpharris Exp $
+ * $Id: sphere.hpp,v 1.6 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -37,7 +37,7 @@ namespace amethyst
    * A sphere class.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template<class T>
@@ -49,7 +49,7 @@ namespace amethyst
     point3<T> center;
     T radius;
     T radius_squared;
-    
+
   protected:
 
   public:
@@ -58,7 +58,7 @@ namespace amethyst
 
     /** Secondary (sized) constructor */
     sphere(const point3<T>& c, T rad);
-    
+
     /** Destructor */
     virtual ~sphere();
 
@@ -69,9 +69,15 @@ namespace amethyst
     sphere& operator= (const sphere& old);
 
 
-    point3<T> get_center() const { return center; }
-    T get_radius() const { return radius; }        
-    
+    point3<T> get_center() const
+    {
+      return center;
+    }
+    T get_radius() const
+    {
+      return radius;
+    }        
+
     /** Returns if the given point is inside the sphere. */
     virtual bool inside(const point3<T>& p) const;
 
@@ -83,7 +89,7 @@ namespace amethyst
 
     /** Returns if the given line intersects the sphere. */
     //    virtual bool intersects_line(const line3<T>& line, intersection_info<T>& intersection) const;
-    
+
     /** Returns if the given line intersects the sphere. */
     virtual bool intersects_line(const unit_line3<T>& line,
                                  intersection_info<T>& intersection) const;
@@ -93,8 +99,10 @@ namespace amethyst
     virtual std::string to_string(const std::string& base_indentation,
                                   const std::string& level_indentation = "  ") const;
 
-    virtual std::string name() const { return "sphere"; }
-    
+    virtual std::string name() const
+    {
+      return "sphere";
+    }
   }; // class sphere
 
 
@@ -109,7 +117,7 @@ namespace amethyst
     radius(0),
     radius_squared(0)
   {
-  
+
   } // sphere()
 
   //----------------------------------------
@@ -134,7 +142,7 @@ namespace amethyst
   template<class T>
   sphere<T>::~sphere()
   {
-  
+
   } // ~sphere()
 
   //----------------------------------
@@ -157,7 +165,7 @@ namespace amethyst
   sphere<T>& sphere<T>::operator= (const sphere<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       center = old.center;
       radius = old.radius;
@@ -165,7 +173,7 @@ namespace amethyst
 
       shape<T>::operator=(old);
     }
-    return (*this);
+    return(*this);
   } // sphere::operator=(sphere)
 
 
@@ -174,21 +182,21 @@ namespace amethyst
   bool sphere<T>::inside(const point3<T>& p) const
   {
     // The epsilon adjusted radius is (r^2 + 2*r*E + E^2)
-    return ( squared_length(p - center) <
-             (radius_squared +
-              2 * radius * AMETHYST_EPSILON +
-              AMETHYST_EPSILON * AMETHYST_EPSILON) );
+    return( squared_length(p - center) <
+            (radius_squared +
+             2 * radius * AMETHYST_EPSILON +
+             AMETHYST_EPSILON * AMETHYST_EPSILON) );
   }
-  
+
   // Returns if the given sphere intersects the sphere.
   template<class T>  
   bool sphere<T>::intersects(const sphere<T>& s) const
   {
     T combined_radius = s.radius + radius + AMETHYST_EPSILON;
-    return ( squared_length(s.center - center) <
-             (combined_radius * combined_radius) );
+    return( squared_length(s.center - center) <
+            (combined_radius * combined_radius) );
   }
-  
+
   // Returns if the given plane intersects the shape.
   template<class T>  
   bool sphere<T>::intersects(const plane<T>& p) const
@@ -217,7 +225,7 @@ namespace amethyst
       // the addition (as the square root will always be positive). 
       T t1 = (-B - sqrtd) / (2 * A);
 
-      if(line.inside(t1))
+      if( line.inside(t1) )
       {
         intersection.set(this, t1);
         return true;
@@ -226,7 +234,7 @@ namespace amethyst
       {
         // The first side (although a hit), wasn't inside the range.
         T t2 = (-B + sqrtd) / (2 * A);
-        if(line.inside(t2))
+        if( line.inside(t2) )
         {
           intersection.set(this, t2);
           return true;
@@ -255,17 +263,15 @@ namespace amethyst
 
   template <class T>
   std::string sphere<T>::to_string(const std::string& indent,
-                                  const std::string& level_indent) const
+                                   const std::string& level_indent) const
   {
     return ( indent + "sphere\n" +
              indent + "{\n" +
              sphere<T>::internal_members(indent + level_indent, false) +
              indent + "}" );
-             
   }  
-  
+
 } // namespace amethyst
 
 
 #endif /* !defined(AMETHYST__SPHERE_HPP) */
-

@@ -1,5 +1,5 @@
 /*
- * $Id: coord2.hpp,v 1.4 2004/03/21 20:51:06 kpharris Exp $
+ * $Id: coord2.hpp,v 1.5 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -33,11 +33,11 @@
   Revision history:
   17Jan1999 Wrote this file, did some basic testing.
   20jan1999 Added a default constructor for the coord2 class.
-            Added a default constructor for the union in the coord2 class.
+  Added a default constructor for the union in the coord2 class.
   25jan1999 Added a unary - operator, and an invert function.
   18May2001 "Templatized" the class...
   17Sep2003 Reordered the class, made it a part of namespace amethyst, changed
-            extension to .hpp, added a GPL heading.
+  extension to .hpp, added a GPL heading.
 */
 
 #include <cmath>
@@ -53,18 +53,35 @@ namespace amethyst
   {
   private:
     /* class that has 2 Ts stored directly */
-    struct coord2_direct { T x; T y; };
+    struct coord2_direct
+    {
+      T x; T y;
+    };
     /* class that has 2 Ts stored in an array */
-    struct coord2_array { T coords[2]; };
+    struct coord2_array
+    {
+      T coords[2];
+    };
     /* union to allow accesses to both indirectly through an array, and directly
        through a name, without adding any extra processing time or space
        requirements */ 
     union  coord2_union
     {
-      coord2_union() {}
-      coord2_union(T x, T y) { direct.x = x; direct.y = y; }
-      T& operator[](int index)       { return(array.coords[index]); }
-      T  operator[](int index) const { return(array.coords[index]); }
+      coord2_union()
+      {
+      }
+      coord2_union(T x, T y)
+      {
+        direct.x = x; direct.y = y;
+      }
+      T& operator[](int index)
+      {
+        return(array.coords[index]);
+      }
+      T  operator[](int index) const
+      {
+        return(array.coords[index]);
+      }
       coord2_direct direct;
       coord2_array  array;
     };
@@ -73,30 +90,54 @@ namespace amethyst
     coord2_union coords;
 
   public:
-    enum COORD_VALUES {X = 0, Y = 1};
+    enum COORD_VALUES
+      {
+        X = 0, Y = 1
+      };
     typedef T base;
-    
-    coord2() {}
-    inline coord2(T x, T y):coords(x,y) {}
-    inline coord2(const coord2& old_coord):coords(old_coord.coords) {}
 
-    inline void set(T x, T y) { coords.direct.x = x; coords.direct.y = y; }
-    
+    coord2()
+    {
+    }
+    inline coord2(T x, T y):coords(x,y)
+    {
+    }
+    inline coord2(const coord2& old_coord):coords(old_coord.coords)
+    {
+    }
+
+    inline void set(T x, T y)
+    {
+      coords.direct.x = x; coords.direct.y = y;
+    }
+
     /* Accessors */
     inline T& operator[](int coord_index)
     {
       return(coords[coord_index]);
     }
-  
+
     inline T  operator[](int coord_index) const
     {
       return(coords[coord_index]);
     }
 
-    T& x()       { return(coords.direct.x); }
-    T  x() const { return(coords.direct.x); }
-    T& y()       { return(coords.direct.y); }
-    T  y() const { return(coords.direct.y); }
+    T& x()
+    {
+      return(coords.direct.x);
+    }
+    T  x() const
+    {
+      return(coords.direct.x);
+    }
+    T& y()
+    {
+      return(coords.direct.y);
+    }
+    T  y() const
+    {
+      return(coords.direct.y);
+    }
 
 
     coord2& operator=(const coord2& old_coord);
@@ -128,7 +169,7 @@ namespace amethyst
     return *this;
   }
 
-  
+
   template <class T>
   inline coord2<T>& coord2<T>::operator+=(const coord2<T>& p2)
   {
@@ -156,7 +197,7 @@ namespace amethyst
 
     return *this;    
   }
-  
+
   template <class T>
   inline coord2<T>& coord2<T>::operator*=(T factor)
   {
@@ -165,7 +206,7 @@ namespace amethyst
 
     return *this;
   }
-  
+
   template <class T>
   inline coord2<T>& coord2<T>::operator/=(T factor)
   {
@@ -194,7 +235,7 @@ namespace amethyst
 
     return *this;
   }
-  
+
 
   /* non-member math functions (also inlined for an attempt at some speed) */
   template <class T>
@@ -228,7 +269,7 @@ namespace amethyst
   {
     coord2<T> p(p1); p *= d;  return(p);
   }
-  
+
   template <class T, class U>
   inline coord2<T> operator*(U d, const coord2<T>& p1)
   {
@@ -239,15 +280,15 @@ namespace amethyst
   inline coord2<T> operator*(const coord2<T>& p1, const coord2<T>& p2)
   {
     return(coord2<T>(p1.x() * p2.x(),
-		     p1.y() * p2.y()));
+                     p1.y() * p2.y()));
   }
-  
+
   template <class T, class U>
   inline coord2<T> operator/(const coord2<T>& p1, U d)
   {
     coord2<T> p(p1); p /= d;  return(p);
   }
-  
+
   /* Unary minus */
   template <class T>
   inline coord2<T> operator-(const coord2<T>& p1)
@@ -262,19 +303,19 @@ namespace amethyst
   {
     return( (c1.x()*c2.x()) + (c1.y()*c2.c.y()));  
   }
-  
+
   template <class T>
   inline T length(const coord2<T>& c)
   {
     return(c.length());
   }
-  
+
   template <class T>
   inline coord2<T> unit(const coord2<T>& c)
   {
     return(c/c.length());
   }
-  
+
   template <class T>
   inline coord2<T> invert(const coord2<T>& c)
   {
@@ -282,23 +323,23 @@ namespace amethyst
   }
 
   template <class T>
-  T average(const coord2<T>& c)
+  inline T average(const coord2<T>& c)
   {
     return((c.x() + c.y()) / 2);
   }
 
   template <class T>
-  T max(const coord2<T>& c)
+  inline T max(const coord2<T>& c)
   {
     return(std::max(c.x(), c.y()));
   }  
 
   template <class T>
-  coord2<T> abs_vector(const coord2<T>& v)
+  inline coord2<T> abs_vector(const coord2<T>& v)
   {
     return coord2<T>(my_abs(v.x()), my_abs(v.y()));
   }
-  
+
   template <class T>
   std::ostream& operator << (std::ostream& o, const coord2<T>& c)
   {
@@ -309,7 +350,3 @@ namespace amethyst
 } // namespace amethyst
 
 #endif /* !defined(AMETHYST__COORD2_HPP) */
-
-
-
-

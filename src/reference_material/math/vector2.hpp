@@ -1,5 +1,5 @@
 /*
- * $Id: vector2.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: vector2.hpp,v 1.3 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -44,28 +44,49 @@ namespace amethyst
   {
   public:
     typedef T base;
-  
-    inline vector2() : coord2<T>() {}
-    inline vector2(T x, T y): coord2<T>(x,y){}
-    inline vector2(const coord2<T>& c): coord2<T>(c) {}
 
-    inline void set(T x, T y) { coord2<T>::set(x,y); }
-    
+    inline vector2() : coord2<T>()
+    {
+    }
+    inline vector2(T x, T y): coord2<T>(x,y)
+    {
+    }
+    inline vector2(const coord2<T>& c): coord2<T>(c)
+    {
+    }
+
+    inline void set(T x, T y)
+    {
+      coord2<T>::set(x,y);
+    }
+
     /* Accessors */
     inline T& operator[](int coord_index)
     {
       return(coord2<T>::operator[](coord_index));
     }
-  
+
     inline T  operator[](int coord_index) const
     {
       return(coord2<T>::operator[](coord_index));
     }
 
-    T& x()       { return(coord2<T>::x()); }
-    T  x() const { return(coord2<T>::x()); }
-    T& y()       { return(coord2<T>::y()); }
-    T  y() const { return(coord2<T>::y()); }
+    T& x()
+    {
+      return(coord2<T>::x());
+    }
+    T  x() const
+    {
+      return(coord2<T>::x());
+    }
+    T& y()
+    {
+      return(coord2<T>::y());
+    }
+    T  y() const
+    {
+      return(coord2<T>::y());
+    }
 
     vector2<T>& operator=(const vector2<T>& v2);
     vector2<T>& operator+=(const vector2<T>& v1);
@@ -77,7 +98,7 @@ namespace amethyst
     inline vector2<T>& operator*=(U factor);
     template <class U>
     inline vector2<T>& operator/=(U factor);      
-  
+
   }; // class vector2;
 
   template <class T>
@@ -86,7 +107,7 @@ namespace amethyst
     set( p2.x(), p2.y() );
     return(*this);
   }
-  
+
   template <class T>
   inline vector2<T>& vector2<T>::operator+=(const vector2<T>& p2)
   {
@@ -124,7 +145,7 @@ namespace amethyst
   inline vector2<T>& vector2<T>::operator*=(U factor)
   {
     set( T(x() * factor),
-	 T(y() * factor) );
+         T(y() * factor) );
     return *this;
   }
 
@@ -133,11 +154,11 @@ namespace amethyst
   inline vector2<T>& vector2<T>::operator/=(U factor)
   {
     set( T(x() / factor),
-	 T(y() / factor) );
+         T(y() / factor) );
     return *this;
   }  
-  
-  
+
+
   template <class T>
   inline vector2<T> operator-(const vector2<T>& v1)
   {
@@ -145,7 +166,7 @@ namespace amethyst
   }
 
   template <class T>
-  vector2<T> operator*(const vector2<T>& v, T d)
+  inline vector2<T> operator*(const vector2<T>& v, T d)
   {
     vector2<T> temp(v);
     temp *= d;
@@ -153,7 +174,7 @@ namespace amethyst
   }
 
   template <class T>
-  vector2<T> operator*(T d, const vector2<T>& v)
+  inline vector2<T> operator*(T d, const vector2<T>& v)
   {
     vector2<T> temp(v);
     temp *= d;
@@ -161,7 +182,7 @@ namespace amethyst
   }
 
   template <class T, class U>
-  vector2<T> operator*(const vector2<T>& v, U factor)
+  inline vector2<T> operator*(const vector2<T>& v, U factor)
   {
     vector2<T> temp(v);
     temp *= factor;
@@ -169,7 +190,7 @@ namespace amethyst
   }
 
   template <class T, class U>
-  vector2<T> operator*(U factor, const vector2<T>& v)
+  inline vector2<T> operator*(U factor, const vector2<T>& v)
   {
     vector2<T> temp(v);
     temp *= factor;
@@ -177,7 +198,7 @@ namespace amethyst
   }  
 
   template <class T>
-  vector2<T> operator/(const vector2<T>& v, T factor)
+  inline vector2<T> operator/(const vector2<T>& v, T factor)
   {
     vector2<T> temp(v);
     temp /= factor;
@@ -185,15 +206,15 @@ namespace amethyst
   }
 
   template <class T, class U>
-  vector2<T> operator/(const vector2<T>& v, U factor)
+  inline vector2<T> operator/(const vector2<T>& v, U factor)
   {
     vector2<T> temp(v);
     temp /= factor;
     return temp;
   }
-  
+
   template <class T>
-  vector2<T> operator-(const vector2<T>& v1, const vector2<T>& v2)
+  inline vector2<T> operator-(const vector2<T>& v1, const vector2<T>& v2)
   {
     vector2<T> temp(v1);
     temp -= v2;
@@ -201,7 +222,7 @@ namespace amethyst
   }
 
   template <class T>
-  vector2<T> operator+(const vector2<T>& v1, const vector2<T>& v2)
+  inline vector2<T> operator+(const vector2<T>& v1, const vector2<T>& v2)
   {
     vector2<T> temp(v1);
     temp += v2;
@@ -209,14 +230,14 @@ namespace amethyst
   }
 
   template <class T>
-  T dotprod(const vector2<T>& v1, const vector2<T>& v2)
+  inline T dotprod(const vector2<T>& v1, const vector2<T>& v2)
   {
     return((v1.x() * v2.x()) +
-	   (v1.y() * v2.y()));
+           (v1.y() * v2.y()));
   }
-  
+
   template <class T>
-  T length(const vector2<T>& v)
+  inline T length(const vector2<T>& v)
   {
     T squared_length = dotprod(v,v);
     return T(sqrt(squared_length));
@@ -224,7 +245,7 @@ namespace amethyst
 
   // FIXME! Find an exception to throw...
   template <class T>
-  vector2<T> unit(const vector2<T>& v)
+  inline vector2<T> unit(const vector2<T>& v)
   {
     T len = length(v);
     // FIXME! Check the squared length >= 0
@@ -242,16 +263,16 @@ namespace amethyst
   {
     return((v.x() + v.y()) / 2);
   }  
-  
+
   template <class T>
   std::ostream& operator << (std::ostream& o, const vector2<T>& v)
   {
     o << "<" << v.x() << "," << v.y() << ">";
     return(o);
   }
-  
+
 } // namespace amethyst
-  
+
 #endif /* !defined(AMETHYST__VECTOR2_HPP) */
 
 

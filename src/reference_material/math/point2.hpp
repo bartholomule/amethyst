@@ -1,5 +1,5 @@
 /*
- * $Id: point2.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: point2.hpp,v 1.3 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -35,7 +35,7 @@
   02feb1999 Fixed the broken constructor.
   18May2001 "Templatized" the class...
   17Sep2003 Changed the inheritence from public to private.  Added accessors,
-            fixed implementation to use those accessors.    
+  fixed implementation to use those accessors.    
 */
 
 #include "coord2.hpp"
@@ -49,29 +49,52 @@ namespace amethyst
   {
   public:
     typedef T base;
-    
-    inline point2():coord2<T>() {}
-    inline point2(T x, T y): coord2<T>(x,y){}
-    inline explicit point2(const coord2<T>& c): coord2<T>(c) {}
-    inline point2(const point2<T>& p): coord2<T>(p) {}    
 
-    inline void set(T x, T y) { coord2<T>::set(x,y); }
-    
+    inline point2():coord2<T>()
+    {
+    }
+    inline point2(T x, T y): coord2<T>(x,y)
+    {
+    }
+    inline explicit point2(const coord2<T>& c): coord2<T>(c)
+    {
+    }
+    inline point2(const point2<T>& p): coord2<T>(p)
+    {
+    }    
+
+    inline void set(T x, T y)
+    {
+      coord2<T>::set(x,y);
+    }
+
     /* Accessors */
     inline T& operator[](int coord_index)
     {
       return(coord2<T>::operator[](coord_index));
     }
-  
+
     inline T  operator[](int coord_index) const
     {
       return(coord2<T>::operator[](coord_index));
     }
 
-    T& x()       { return(coord2<T>::x()); }
-    T  x() const { return(coord2<T>::x()); }
-    T& y()       { return(coord2<T>::y()); }
-    T  y() const { return(coord2<T>::y()); }
+    T& x()
+    {
+      return(coord2<T>::x());
+    }
+    T  x() const
+    {
+      return(coord2<T>::x());
+    }
+    T& y()
+    {
+      return(coord2<T>::y());
+    }
+    T  y() const
+    {
+      return(coord2<T>::y());
+    }
 
     point2<T>& operator=(const point2<T>& p);
     point2<T>& operator+=(const vector2<T>& v1);
@@ -80,26 +103,26 @@ namespace amethyst
   }; // class point2
 
   template <class T>
-  point2<T>& point2<T>::operator=(const point2<T>& p)
+  inline point2<T>& point2<T>::operator=(const point2<T>& p)
   {
     set( p.x(), p.y() );
 
     return *this;
   }
-  
+
   template <class T>
-  point2<T>& point2<T>::operator+=(const vector2<T>& v1)
+  inline point2<T>& point2<T>::operator+=(const vector2<T>& v1)
   {
     set( x() + v1.x(),
-	 y() + v1.y() );
+         y() + v1.y() );
     return *this;
   }
 
   template <class T>
-  point2<T>& point2<T>::operator-=(const vector2<T>& v1)
+  inline point2<T>& point2<T>::operator-=(const vector2<T>& v1)
   {
     set( x() - v1.x(),
-	 y() - v1.y() );    
+         y() - v1.y() );    
     return *this;
   }  
 
@@ -108,7 +131,7 @@ namespace amethyst
   {
     return vector2<T>(p1.x() - p2.x(), p1.y() - p2.y());
   }
-  
+
   template <class T>
   inline point2<T>  operator+(const point2<T>& p1, const vector2<T>& v1)
   {
@@ -128,7 +151,7 @@ namespace amethyst
     return(o);
   }
 
-  
+
 } // namespace amethyst
 
 #endif /* !defined(AMETHYST__POINT2_HPP) */

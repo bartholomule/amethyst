@@ -1,20 +1,20 @@
 /*
-*  Copyright (C) 2000, 2001 Kevin Harris
-*
-*  This program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This program is distributed in the hope that it will be useful, but
-*  WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*  General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with this program; if not, write to the Free Software
-*  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ *  Copyright (C) 2000, 2001 Kevin Harris
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 #if       !defined(KH_REF_COUNT_OBJECT_HPP)
 #define            KH_REF_COUNT_OBJECT_HPP
 
@@ -26,10 +26,10 @@
   Revision History:
   02Jan2000 Created this file, wrote the reference_counting_object class
   14Feb2000 Changed the class to be templated on the counting type (ie. int,
-            long, short, char, etc.), changed all of the printf statements to
-	    only occur when KH_DEBUG_RCO is defined.
+  long, short, char, etc.), changed all of the printf statements to
+  only occur when KH_DEBUG_RCO is defined.
   01Mar2003 Changed/added comments to work with both doc++ and ccdoc.
- */
+*/
 /**
  * A simple class that I can place inside of any other class to keep a count of
  * the number of times an object has been copied.  This is meant to be used for
@@ -92,16 +92,16 @@ reference_counting_object<counter_type>::~reference_counting_object()
   printf("%s", __PRETTY_FUNCTION__);
 #endif
   if(count_pointer != NULL)
-    {
+  {
 #if defined(KH_DEBUG_RCO)      
-      printf(" -- count=%d", (int)*count_pointer);
+    printf(" -- count=%d", (int)*count_pointer);
 #endif      
-      if(--*count_pointer == 0)
-	{
-	  delete count_pointer;
-	  count_pointer = NULL;
-	}
+    if(--*count_pointer == 0)
+    {
+      delete count_pointer;
+      count_pointer = NULL;
     }
+  }
 #if defined(KH_DEBUG_RCO)  
   printf("\n");
 #endif
@@ -115,12 +115,12 @@ reference_counting_object<counter_type>::reference_counting_object(const referen
 #endif
   count_pointer = rco.count_pointer;
   if(count_pointer != NULL)
-    {
-      ++*count_pointer;
+  {
+    ++*count_pointer;
 #if defined(KH_DEBUG_RCO)
-      printf(" -- new count=%d", *count_pointer);
+    printf(" -- new count=%d", *count_pointer);
 #endif
-    }
+  }
 #if defined(KH_DEBUG_RCO)  
   printf("\n");
 #endif
@@ -139,7 +139,7 @@ reference_counting_object<counter_type>& reference_counting_object<counter_type>
     // Decrement the current count
     if(count_pointer != NULL)
       if(--*count_pointer == 0)
-	delete count_pointer;
+        delete count_pointer;
     
     // Increment the count for the new object
     count_pointer = rco.count_pointer;

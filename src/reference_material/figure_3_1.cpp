@@ -81,6 +81,8 @@ int main(int argc, char** argv)
   }
   tga_io<color> output;
 
-  output.output("figure_3_1.tga", image);
+  tga_io<color>::use_streambuf dummy;
+  
+  output.output("figure_3_1.tga", image, dummy);
   return 0; 
 }

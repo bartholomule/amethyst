@@ -1,5 +1,5 @@
 /*
- * $Id: image_converter.hpp,v 1.3 2004/03/20 06:27:06 kpharris Exp $
+ * $Id: image_converter.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -52,8 +52,8 @@ namespace amethyst
   {
     rgbcolor<double> temp = convert_color<double>(color);
     temp.set(std::pow(temp.r(), gamma),
-	     std::pow(temp.g(), gamma),
-	     std::pow(temp.b(), gamma));
+             std::pow(temp.g(), gamma),
+             std::pow(temp.b(), gamma));
     return convert_color<U>(temp);
   }  
   
@@ -69,7 +69,7 @@ namespace amethyst
     {
       for(unsigned x = 0; x < result.get_width(); ++x)
       {
-	result(x,y) = convert_color<U>(img(x,y));
+        result(x,y) = convert_color<U>(img(x,y));
       }
     }
     return result;
@@ -88,7 +88,7 @@ namespace amethyst
     {
       for(unsigned x = 0; x < result.get_width(); ++x)
       {
-	result(x,y) = gamma_convert_color<U>(img(x,y), gamma);
+        result(x,y) = gamma_convert_color<U>(img(x,y), gamma);
       }
     }
     return result;    
@@ -111,4 +111,3 @@ namespace amethyst
 
 
 #endif /* !defined(AMETHYST__IMAGE_CONVERTER_HPP) */
-

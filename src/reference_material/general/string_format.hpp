@@ -1,5 +1,5 @@
 /*
- * $Id: string_format.hpp,v 1.3 2004/03/20 06:33:46 kpharris Exp $
+ * $Id: string_format.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -82,8 +82,8 @@ namespace amethyst
   // argument offset of the next arg to be printed.  Right now, it will only do
   // the base as hex if an [xX] is present before the argument index. 
   size_t extract_next_arg(const std::string& format,
-			  size_t base_offset, size_t& num_eaten,
-			  int& base, int& width, int& precision)
+                          size_t base_offset, size_t& num_eaten,
+                          int& base, int& width, int& precision)
   {
     width = 0;
     precision = -1;
@@ -127,58 +127,58 @@ namespace amethyst
     if( !format.empty() )
     {
       for( size_t next_percent = format.find('%');
-	   next_percent != string::npos;
-	   next_percent = format.find('%', next_percent) )
+           next_percent != string::npos;
+           next_percent = format.find('%', next_percent) )
       {
-	// Copy the stuff straight across.
-	result += format.substr(current_offset, next_percent - current_offset);
-	current_offset = next_percent;
+        // Copy the stuff straight across.
+        result += format.substr(current_offset, next_percent - current_offset);
+        current_offset = next_percent;
 
-	unsigned diff = format.length() - current_offset;
+        unsigned diff = format.length() - current_offset;
 
-	if( diff > 1 )
-	{
-	  int base, width, precision;
-	  size_t num_eaten;
-	  size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
+        if( diff > 1 )
+        {
+          int base, width, precision;
+          size_t num_eaten;
+          size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
 
-	  if( arg_to_use != bad_arg )
-	  {
-	    switch( arg_to_use )
-	    {
-	    case 1:
-	      result += convert_to_string(arg1, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    default:
-	      result += ( "[!!Bad Argument (" +
-			  format.substr(current_offset, num_eaten) +
-			  ")!!]" );
-	      current_offset += num_eaten;
-	      break;
-	    }
-	    next_percent += num_eaten;
-	  }
-	  else if( format[current_offset+1] == '%' )
-	  {
-	    result += "%";
-	    current_offset += 2;
-	    next_percent += 2;
-	  }
-	  else
-	  {
-	    ++next_percent;
-	    // It'll get output the next loop around. 
-	  }
-	}
-	else
-	{
-	  ++next_percent;
-	}
+          if( arg_to_use != bad_arg )
+          {
+            switch( arg_to_use )
+            {
+            case 1:
+              result += convert_to_string(arg1, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            default:
+              result += ( "[!!Bad Argument (" +
+                          format.substr(current_offset, num_eaten) +
+                          ")!!]" );
+              current_offset += num_eaten;
+              break;
+            }
+            next_percent += num_eaten;
+          }
+          else if( format[current_offset+1] == '%' )
+          {
+            result += "%";
+            current_offset += 2;
+            next_percent += 2;
+          }
+          else
+          {
+            ++next_percent;
+            // It'll get output the next loop around. 
+          }
+        }
+        else
+        {
+          ++next_percent;
+        }
       } // while there are still percents.
       if( current_offset < format.length() )
       {
-	result += format.substr(current_offset);
+        result += format.substr(current_offset);
       }
     }
     return result;
@@ -195,62 +195,62 @@ namespace amethyst
     if( !format.empty() )
     {
       for( size_t next_percent = format.find('%');
-	   next_percent != string::npos;
-	   next_percent = format.find('%', next_percent) )
+           next_percent != string::npos;
+           next_percent = format.find('%', next_percent) )
       {
-	// Copy the stuff straight across.
-	result += format.substr(current_offset, next_percent - current_offset);
-	current_offset = next_percent;
+        // Copy the stuff straight across.
+        result += format.substr(current_offset, next_percent - current_offset);
+        current_offset = next_percent;
 
-	unsigned diff = format.length() - current_offset;
+        unsigned diff = format.length() - current_offset;
 
-	if( diff > 1 )
-	{
-	  int base, width, precision;
-	  size_t num_eaten;
-	  size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
+        if( diff > 1 )
+        {
+          int base, width, precision;
+          size_t num_eaten;
+          size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
 
-	  if( arg_to_use != bad_arg )
-	  {
-	    switch( arg_to_use )
-	    {
-	    case 1:
-	      result += convert_to_string(arg1, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 2:
-	      result += convert_to_string(arg2, base, width, precision);
-	      current_offset += num_eaten;
-	      break;	      
-	    default:
-	      result += ( "[!!Bad Argument (" +
-			  format.substr(current_offset, num_eaten) +
-			  ")!!]" );
-	      current_offset += num_eaten;
-	      break;
-	    }
-	    next_percent += num_eaten;
-	  }
-	  else if( format[current_offset+1] == '%' )
-	  {
-	    result += "%";
-	    current_offset += 2;
-	    next_percent += 2;
-	  }
-	  else
-	  {
-	    ++next_percent;
-	    // It'll get output the next loop around. 
-	  }
-	}
-	else
-	{
-	  ++next_percent;
-	}
+          if( arg_to_use != bad_arg )
+          {
+            switch( arg_to_use )
+            {
+            case 1:
+              result += convert_to_string(arg1, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 2:
+              result += convert_to_string(arg2, base, width, precision);
+              current_offset += num_eaten;
+              break;          
+            default:
+              result += ( "[!!Bad Argument (" +
+                          format.substr(current_offset, num_eaten) +
+                          ")!!]" );
+              current_offset += num_eaten;
+              break;
+            }
+            next_percent += num_eaten;
+          }
+          else if( format[current_offset+1] == '%' )
+          {
+            result += "%";
+            current_offset += 2;
+            next_percent += 2;
+          }
+          else
+          {
+            ++next_percent;
+            // It'll get output the next loop around. 
+          }
+        }
+        else
+        {
+          ++next_percent;
+        }
       } // while there are still percents.
       if( current_offset < format.length() )
       {
-	result += format.substr(current_offset);
+        result += format.substr(current_offset);
       }
     }
     return result;
@@ -267,66 +267,66 @@ namespace amethyst
     if( !format.empty() )
     {
       for( size_t next_percent = format.find('%');
-	   next_percent != string::npos;
-	   next_percent = format.find('%', next_percent) )
+           next_percent != string::npos;
+           next_percent = format.find('%', next_percent) )
       {
-	// Copy the stuff straight across.
-	result += format.substr(current_offset, next_percent - current_offset);
-	current_offset = next_percent;
+        // Copy the stuff straight across.
+        result += format.substr(current_offset, next_percent - current_offset);
+        current_offset = next_percent;
 
-	unsigned diff = format.length() - current_offset;
+        unsigned diff = format.length() - current_offset;
 
-	if( diff > 1 )
-	{
-	  int base, width, precision;
-	  size_t num_eaten;
-	  size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
+        if( diff > 1 )
+        {
+          int base, width, precision;
+          size_t num_eaten;
+          size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
 
-	  if( arg_to_use != bad_arg )
-	  {
-	    switch( arg_to_use )
-	    {
-	    case 1:
-	      result += convert_to_string(arg1, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 2:
-	      result += convert_to_string(arg2, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 3:
-	      result += convert_to_string(arg3, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    default:
-	      result += ( "[!!Bad Argument (" +
-			  format.substr(current_offset, num_eaten) +
-			  ")!!]" );
-	      current_offset += num_eaten;
-	      break;
-	    }
-	    next_percent += num_eaten;
-	  }
-	  else if( format[current_offset+1] == '%' )
-	  {
-	    result += "%";
-	    current_offset += 2;
-	    next_percent += 2;
-	  }
-	  else
-	  {
-	    ++next_percent;
-	    // It'll get output the next loop around. 
-	  }
-	}
-	else
-	{
-	  ++next_percent;
-	}
+          if( arg_to_use != bad_arg )
+          {
+            switch( arg_to_use )
+            {
+            case 1:
+              result += convert_to_string(arg1, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 2:
+              result += convert_to_string(arg2, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 3:
+              result += convert_to_string(arg3, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            default:
+              result += ( "[!!Bad Argument (" +
+                          format.substr(current_offset, num_eaten) +
+                          ")!!]" );
+              current_offset += num_eaten;
+              break;
+            }
+            next_percent += num_eaten;
+          }
+          else if( format[current_offset+1] == '%' )
+          {
+            result += "%";
+            current_offset += 2;
+            next_percent += 2;
+          }
+          else
+          {
+            ++next_percent;
+            // It'll get output the next loop around. 
+          }
+        }
+        else
+        {
+          ++next_percent;
+        }
       } // while there are still percents.
       if( current_offset < format.length() )
       {
-	result += format.substr(current_offset);
+        result += format.substr(current_offset);
       }
     }
     return result;
@@ -343,70 +343,70 @@ namespace amethyst
     if( !format.empty() )
     {
       for( size_t next_percent = format.find('%');
-	   next_percent != string::npos;
-	   next_percent = format.find('%', next_percent) )
+           next_percent != string::npos;
+           next_percent = format.find('%', next_percent) )
       {
-	// Copy the stuff straight across.
-	result += format.substr(current_offset, next_percent - current_offset);
-	current_offset = next_percent;
+        // Copy the stuff straight across.
+        result += format.substr(current_offset, next_percent - current_offset);
+        current_offset = next_percent;
 
-	unsigned diff = format.length() - current_offset;
+        unsigned diff = format.length() - current_offset;
 
-	if( diff > 1 )
-	{
-	  int base, width, precision;
-	  size_t num_eaten;
-	  size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
+        if( diff > 1 )
+        {
+          int base, width, precision;
+          size_t num_eaten;
+          size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
 
-	  if( arg_to_use != bad_arg )
-	  {
-	    switch( arg_to_use )
-	    {
-	    case 1:
-	      result += convert_to_string(arg1, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 2:
-	      result += convert_to_string(arg2, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 3:
-	      result += convert_to_string(arg3, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 4:
-	      result += convert_to_string(arg4, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    default:
-	      result += ( "[!!Bad Argument (" +
-			  format.substr(current_offset, num_eaten) +
-			  ")!!]" );
-	      current_offset += num_eaten;
-	      break;
-	    }
-	    next_percent += num_eaten;
-	  }
-	  else if( format[current_offset+1] == '%' )
-	  {
-	    result += "%";
-	    current_offset += 2;
-	    next_percent += 2;
-	  }
-	  else
-	  {
-	    ++next_percent;
-	    // It'll get output the next loop around. 
-	  }
-	}
-	else
-	{
-	  ++next_percent;
-	}
+          if( arg_to_use != bad_arg )
+          {
+            switch( arg_to_use )
+            {
+            case 1:
+              result += convert_to_string(arg1, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 2:
+              result += convert_to_string(arg2, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 3:
+              result += convert_to_string(arg3, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 4:
+              result += convert_to_string(arg4, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            default:
+              result += ( "[!!Bad Argument (" +
+                          format.substr(current_offset, num_eaten) +
+                          ")!!]" );
+              current_offset += num_eaten;
+              break;
+            }
+            next_percent += num_eaten;
+          }
+          else if( format[current_offset+1] == '%' )
+          {
+            result += "%";
+            current_offset += 2;
+            next_percent += 2;
+          }
+          else
+          {
+            ++next_percent;
+            // It'll get output the next loop around. 
+          }
+        }
+        else
+        {
+          ++next_percent;
+        }
       } // while there are still percents.
       if( current_offset < format.length() )
       {
-	result += format.substr(current_offset);
+        result += format.substr(current_offset);
       }
     }
     return result;
@@ -423,74 +423,74 @@ namespace amethyst
     if( !format.empty() )
     {
       for( size_t next_percent = format.find('%');
-	   next_percent != string::npos;
-	   next_percent = format.find('%', next_percent) )
+           next_percent != string::npos;
+           next_percent = format.find('%', next_percent) )
       {
-	// Copy the stuff straight across.
-	result += format.substr(current_offset, next_percent - current_offset);
-	current_offset = next_percent;
+        // Copy the stuff straight across.
+        result += format.substr(current_offset, next_percent - current_offset);
+        current_offset = next_percent;
 
-	unsigned diff = format.length() - current_offset;
+        unsigned diff = format.length() - current_offset;
 
-	if( diff > 1 )
-	{
-	  int base, width, precision;
-	  size_t num_eaten;
-	  size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
+        if( diff > 1 )
+        {
+          int base, width, precision;
+          size_t num_eaten;
+          size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
 
-	  if( arg_to_use != bad_arg )
-	  {
-	    switch( arg_to_use )
-	    {
-	    case 1:
-	      result += convert_to_string(arg1, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 2:
-	      result += convert_to_string(arg2, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 3:
-	      result += convert_to_string(arg3, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 4:
-	      result += convert_to_string(arg4, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 5:
-	      result += convert_to_string(arg5, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    default:
-	      result += ( "[!!Bad Argument (" +
-			  format.substr(current_offset, num_eaten) +
-			  ")!!]" );
-	      current_offset += num_eaten;
-	      break;
-	    }
-	    next_percent += num_eaten;
-	  }
-	  else if( format[current_offset+1] == '%' )
-	  {
-	    result += "%";
-	    current_offset += 2;
-	    next_percent += 2;
-	  }
-	  else
-	  {
-	    ++next_percent;
-	    // It'll get output the next loop around. 
-	  }
-	}
-	else
-	{
-	  ++next_percent;
-	}
+          if( arg_to_use != bad_arg )
+          {
+            switch( arg_to_use )
+            {
+            case 1:
+              result += convert_to_string(arg1, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 2:
+              result += convert_to_string(arg2, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 3:
+              result += convert_to_string(arg3, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 4:
+              result += convert_to_string(arg4, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 5:
+              result += convert_to_string(arg5, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            default:
+              result += ( "[!!Bad Argument (" +
+                          format.substr(current_offset, num_eaten) +
+                          ")!!]" );
+              current_offset += num_eaten;
+              break;
+            }
+            next_percent += num_eaten;
+          }
+          else if( format[current_offset+1] == '%' )
+          {
+            result += "%";
+            current_offset += 2;
+            next_percent += 2;
+          }
+          else
+          {
+            ++next_percent;
+            // It'll get output the next loop around. 
+          }
+        }
+        else
+        {
+          ++next_percent;
+        }
       } // while there are still percents.
       if( current_offset < format.length() )
       {
-	result += format.substr(current_offset);
+        result += format.substr(current_offset);
       }
     }
     return result;
@@ -507,78 +507,78 @@ namespace amethyst
     if( !format.empty() )
     {
       for( size_t next_percent = format.find('%');
-	   next_percent != string::npos;
-	   next_percent = format.find('%', next_percent) )
+           next_percent != string::npos;
+           next_percent = format.find('%', next_percent) )
       {
-	// Copy the stuff straight across.
-	result += format.substr(current_offset, next_percent - current_offset);
-	current_offset = next_percent;
+        // Copy the stuff straight across.
+        result += format.substr(current_offset, next_percent - current_offset);
+        current_offset = next_percent;
 
-	unsigned diff = format.length() - current_offset;
+        unsigned diff = format.length() - current_offset;
 
-	if( diff > 1 )
-	{
-	  int base, width, precision;
-	  size_t num_eaten;
-	  size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
+        if( diff > 1 )
+        {
+          int base, width, precision;
+          size_t num_eaten;
+          size_t arg_to_use = extract_next_arg(format, current_offset, num_eaten, base, width, precision);
 
-	  if( arg_to_use != bad_arg )
-	  {
-	    switch( arg_to_use )
-	    {
-	    case 1:
-	      result += convert_to_string(arg1, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 2:
-	      result += convert_to_string(arg2, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 3:
-	      result += convert_to_string(arg3, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 4:
-	      result += convert_to_string(arg4, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 5:
-	      result += convert_to_string(arg5, base, width, precision);
-	      current_offset += num_eaten;
-	      break;
-	    case 6:
-	      result += convert_to_string(arg6, base, width, precision);
-	      current_offset += num_eaten;
-	      break;	      
-	    default:
-	      result += ( "[!!Bad Argument (" +
-			  format.substr(current_offset, num_eaten) +
-			  ")!!]" );
-	      current_offset += num_eaten;
-	      break;
-	    }
-	    next_percent += num_eaten;
-	  }
-	  else if( format[current_offset+1] == '%' )
-	  {
-	    result += "%";
-	    current_offset += 2;
-	    next_percent += 2;
-	  }
-	  else
-	  {
-	    ++next_percent;
-	    // It'll get output the next loop around. 
-	  }
-	}
-	else
-	{
-	  ++next_percent;
-	}
+          if( arg_to_use != bad_arg )
+          {
+            switch( arg_to_use )
+            {
+            case 1:
+              result += convert_to_string(arg1, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 2:
+              result += convert_to_string(arg2, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 3:
+              result += convert_to_string(arg3, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 4:
+              result += convert_to_string(arg4, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 5:
+              result += convert_to_string(arg5, base, width, precision);
+              current_offset += num_eaten;
+              break;
+            case 6:
+              result += convert_to_string(arg6, base, width, precision);
+              current_offset += num_eaten;
+              break;          
+            default:
+              result += ( "[!!Bad Argument (" +
+                          format.substr(current_offset, num_eaten) +
+                          ")!!]" );
+              current_offset += num_eaten;
+              break;
+            }
+            next_percent += num_eaten;
+          }
+          else if( format[current_offset+1] == '%' )
+          {
+            result += "%";
+            current_offset += 2;
+            next_percent += 2;
+          }
+          else
+          {
+            ++next_percent;
+            // It'll get output the next loop around. 
+          }
+        }
+        else
+        {
+          ++next_percent;
+        }
       } // while there are still percents.
       if( current_offset < format.length() )
       {
-	result += format.substr(current_offset);
+        result += format.substr(current_offset);
       }
     }
     return result;
@@ -588,4 +588,3 @@ namespace amethyst
 
 
 #endif /* !defined(AMETHYST__STRING_FORMAT_HPP) */
-

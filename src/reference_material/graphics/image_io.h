@@ -16,35 +16,40 @@
 #include <fstream>
 #include <rc_pointer.hpp>
 
-namespace amethyst {
-
-template <class T>
-class image_io
+namespace amethyst
 {
-public:
-  image_io() { }
-  virtual ~image_io() { }
 
-  bool output(const std::string& filename, const raster<T>& source) const
+  template <class T>
+  class image_io
   {
-    std::ofstream o(filename.c_str());
-    return output(o, source);    
-  }
-  bool output(const std::string& filename, const raster<T>& source, T gamma) const
-  {
-    std::ofstream o(filename.c_str());
-    return output(o, source, gamma);    
-  }
-  virtual bool output(std::ostream& o, const raster<T>& source, T gamma) const = 0;
-  virtual bool output(std::ostream& o, const raster<T>& source) const = 0;
-  rc_pointer<raster<T> > input(const std::string& filename) const
-  {
-    std::ifstream i(filename.c_str());
-    return input(i);
-  }  
-  virtual rc_pointer<raster<T> > input(std::istream& i) const = 0;
-protected:
-};
+  public:
+    image_io()
+    {
+    }
+    virtual ~image_io()
+    {
+    }
+
+    bool output(const std::string& filename, const raster<T>& source) const
+    {
+      std::ofstream o(filename.c_str());
+      return output(o, source);    
+    }
+    bool output(const std::string& filename, const raster<T>& source, T gamma) const
+    {
+      std::ofstream o(filename.c_str());
+      return output(o, source, gamma);    
+    }
+    virtual bool output(std::ostream& o, const raster<T>& source, T gamma) const = 0;
+    virtual bool output(std::ostream& o, const raster<T>& source) const = 0;
+    rc_pointer<raster<T> > input(const std::string& filename) const
+    {
+      std::ifstream i(filename.c_str());
+      return input(i);
+    }  
+    virtual rc_pointer<raster<T> > input(std::istream& i) const = 0;
+  protected:
+  };
 
 } // namespace amethyst
 

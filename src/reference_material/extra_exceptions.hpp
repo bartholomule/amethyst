@@ -1,5 +1,5 @@
 /*
- * $Id: extra_exceptions.hpp,v 1.3 2004/02/14 06:55:17 kpharris Exp $
+ * $Id: extra_exceptions.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -32,7 +32,7 @@ namespace amethyst
    * Thrown to indicate a size error (for assignment of arrays, etc).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    * 
    */
   class size_mismatch : public std::runtime_error
@@ -44,7 +44,7 @@ namespace amethyst
 
   /*
     Import the out_of_range class into this namespace.
-   */
+  */
   using std::out_of_range;
 
 } // namespace amethyst

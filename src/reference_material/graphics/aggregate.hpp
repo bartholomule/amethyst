@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.4 2004/03/27 19:33:28 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.5 2004/04/07 05:10:05 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
    * An aggregate (collection) of shapes.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template<class T>
@@ -47,7 +47,7 @@ namespace amethyst
   public:
     typedef rc_pointer<shape<T> > shape_pointer_type;
     typedef std::vector<shape_pointer_type> shape_list_type;
-    
+
   private:
     shape_list_type shape_list;
 
@@ -82,9 +82,12 @@ namespace amethyst
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
     
     virtual std::string to_string(const std::string& base_indentation,
-				  const std::string& level_indentation = "  ") const;
+                                  const std::string& level_indentation = "  ") const;
 
-    virtual std::string name() const { return "aggregate"; }    
+    virtual std::string name() const
+    {
+      return "aggregate";
+    }    
 
     void add(shape_pointer_type& sp);
     size_t size() const;
@@ -101,7 +104,7 @@ namespace amethyst
   aggregate<T>::aggregate():
     shape<T>()
   {
-  
+
   } // aggregate()
 
   //-------------------------------
@@ -110,7 +113,7 @@ namespace amethyst
   template<class T>
   aggregate<T>::~aggregate()
   {
-  
+
   } // ~aggregate()
 
   //-------------------------------------
@@ -131,13 +134,13 @@ namespace amethyst
   aggregate<T>& aggregate<T>::operator= (const aggregate<T>& old)
   {
     // Generic check for self-assignment
-    if( &old != this)
+    if( &old != this )
     {
       shape_list = old.shape_list;
 
       shape<T>::operator=(old);
     }
-    return (*this);
+    return(*this);
   } // aggregate::operator=(aggregate)
 
 
@@ -146,30 +149,30 @@ namespace amethyst
   {
     bool inside_something = false;
     for( typename shape_list_type::const_iterator iter = shape_list.begin();
-	 ( ( iter != shape_list.end() ) &&
-	   !inside_something );
-	 ++iter )
+         ( ( iter != shape_list.end() ) &&
+           !inside_something );
+         ++iter )
     {
       if( (*iter)->inside(p) )
       {
-	inside_something = true;
+        inside_something = true;
       }
     }
     return inside_something;
   }
-  
+
   template <class T>
   bool aggregate<T>::intersects(const sphere<T>& s) const
   {
     bool intersects_something = false;
     for( typename shape_list_type::const_iterator iter = shape_list.begin();
-	 ( ( iter != shape_list.end() ) &&
-	   !intersects_something );
-	 ++iter )
+         ( ( iter != shape_list.end() ) &&
+           !intersects_something );
+         ++iter )
     {
       if( (*iter)->intersects(s) )
       {
-	intersects_something = true;
+        intersects_something = true;
       }
     }
     return intersects_something;
@@ -180,52 +183,52 @@ namespace amethyst
   {
     bool intersects_something = false;
     for( typename shape_list_type::const_iterator iter = shape_list.begin();
-	 ( ( iter != shape_list.end() ) &&
-	   !intersects_something );
-	 ++iter )
+         ( ( iter != shape_list.end() ) &&
+           !intersects_something );
+         ++iter )
     {
       if( (*iter)->intersects(p) )
       {
-	intersects_something = true;
+        intersects_something = true;
       }
     }
     return intersects_something;
   }
-  
+
   template <class T>
   bool aggregate<T>::intersects_line(const unit_line3<T>& line,
-				     intersection_info<T>& intersection) const
+                                     intersection_info<T>& intersection) const
   {
     bool intersects_something = false;
 
     for( typename shape_list_type::const_iterator iter = shape_list.begin();
-	 ( iter != shape_list.end() );
-	 ++iter )
+         ( iter != shape_list.end() );
+         ++iter )
     {
       intersection_info<T> temp_intersection;
       if( (*iter)->intersects_line(line, temp_intersection) )
       {
-	if( !intersects_something )
-	{
-	  intersects_something = true;
-	  intersection = temp_intersection;
-	}
-	else
-	{
-	  if( temp_intersection.get_distance() < intersection.get_distance() )
-	  {
-	    intersection = temp_intersection;
-	  }
-	  else
-	  {
-	    // The existing hit is closer...
-	  }
-	}
+        if( !intersects_something )
+        {
+          intersects_something = true;
+          intersection = temp_intersection;
+        }
+        else
+        {
+          if( temp_intersection.get_distance() < intersection.get_distance() )
+          {
+            intersection = temp_intersection;
+          }
+          else
+          {
+            // The existing hit is closer...
+          }
+        }
       }
     }
     return intersects_something;
   }
-  
+
   template <class T>
   std::string aggregate<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
   {
@@ -236,20 +239,20 @@ namespace amethyst
 
   template <class T>
   std::string aggregate<T>::to_string(const std::string& indent,
-				      const std::string& level_indent) const
+                                      const std::string& level_indent) const
   {
     std::string ret_value = ( indent + "aggregate\n" +
-			      indent + "{\n" );
+                              indent + "{\n" );
 
     std::string next_level = indent + level_indent;
 
     for( typename shape_list_type::const_iterator iter = shape_list.begin();
-	 iter != shape_list.end();
-	 ++iter )
+         iter != shape_list.end();
+         ++iter )
     {
       ret_value += (*iter)->to_string(next_level, level_indent) + "\n";
     }
-    
+
     ret_value += ( indent + "}" );
 
     return ret_value;
@@ -272,15 +275,14 @@ namespace amethyst
   {
     return shape_list[index];
   }
-  
+
   template <class T>
   const typename aggregate<T>::shape_pointer_type& aggregate<T>::operator[](size_t index) const
   {
     return shape_list[index];
   }
-  
+
 } // namespace amethyst
 
 
 #endif /* !defined(AMETHYST__AGGREGATE_HPP) */
-

@@ -1,5 +1,5 @@
 /*
- * $Id: onb.hpp,v 1.4 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: onb.hpp,v 1.5 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -35,8 +35,8 @@
   18May2001 Created this file.  Wrote constructors, accessors, and functions to
   convert to/from the ONB.
   18Sep2003 Set a namespace, renamed the file (hpp instead of h), added another
-            constructor, changed the internal types to be vector3 instead of
-            coord3.  
+  constructor, changed the internal types to be vector3 instead of
+  coord3.  
 */
 
 #include "vector3.hpp"
@@ -56,7 +56,7 @@ namespace amethyst
       v = perp_vector(w);
       u = crossprod(v,w);
     }
-  
+
     // An ONB where the direction of u,v, and w matter...
     // a and b define a plane, where a is in the direction of u.
     inline onb(const vector3<T>& a, const vector3<T>& b):
@@ -73,18 +73,18 @@ namespace amethyst
       w(unit(c))
     {
     }
-    
+
     inline onb(const onb<T>& o): u(o.u), v(o.v), w(o.w)
     {
     }
-  
+
     inline onb<T>& operator=(const onb<T>& o)
     {
-      if(&o != this)
+      if( &o != this )
       {
-	u = o.u;
-	v = o.v;
-	w = o.w;
+        u = o.u;
+        v = o.v;
+        w = o.w;
       }
       return(*this);
     }  
@@ -95,7 +95,7 @@ namespace amethyst
       vector3<T> cv(c);
       return coord3<T>(dotprod(cv,u),dotprod(cv,v),dotprod(cv,w));
     }
-    
+
     // Take an external point, and convert to one for this ONB
     inline point3<T> into_onb(const point3<T>& c) const
     {
@@ -108,14 +108,14 @@ namespace amethyst
     {
       return vector3<T>(dotprod(c,u),dotprod(c,v),dotprod(c,w));
     }
-    
+
     // Take an internal coord, and convert to one for a 'global' ONB.
     inline coord3<T> outof_onb(const coord3<T>& c) const
     {
       vector3<T> cv(u * c.x() + v * c.y() + w * c.z());
       return( coord3<T>(cv.x(), cv.y(), cv.z()) );
     }
-    
+
     // Take an internal point, and convert to one for a 'global' ONB.
     inline point3<T> outof_onb(const point3<T>& c) const
     {
@@ -126,21 +126,39 @@ namespace amethyst
     // Take an internal vector, and convert to one for a 'global' ONB.
     inline vector3<T> outof_onb(const vector3<T>& c) const
     {
-      return (u * c.x() + v * c.y() + w * c.z());
+      return(u * c.x() + v * c.y() + w * c.z());
     }
 
-    inline const vector3<T>& get_u() const { return u; }
-    inline const vector3<T>& get_v() const { return v; }
-    inline const vector3<T>& get_w() const { return w; }
-  
-    inline vector3<T>& get_u() { return u; }
-    inline vector3<T>& get_v() { return v; }
-    inline vector3<T>& get_w() { return w; }    
-  
+    inline const vector3<T>& get_u() const
+    {
+      return u;
+    }
+    inline const vector3<T>& get_v() const
+    {
+      return v;
+    }
+    inline const vector3<T>& get_w() const
+    {
+      return w;
+    }
+
+    inline vector3<T>& get_u()
+    {
+      return u;
+    }
+    inline vector3<T>& get_v()
+    {
+      return v;
+    }
+    inline vector3<T>& get_w()
+    {
+      return w;
+    }    
+
   private:
     vector3<T> u, v, w;
   };
 
 } // namespace amethyst
-  
+
 #endif /* !defined(AMETHYST__ONB_HPP) */

@@ -1,5 +1,5 @@
 /*
- * $Id: vector_utils.hpp,v 1.2 2004/02/14 06:55:18 kpharris Exp $
+ * $Id: vector_utils.hpp,v 1.3 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -68,8 +68,8 @@ namespace amethyst
     {
       if(my_abs(v[i]) < min_abs)
       {
-	min_index = i;
-	min_abs = my_abs(v[min_index]);
+        min_index = i;
+        min_abs = my_abs(v[min_index]);
       }
     }
     return(min_index);

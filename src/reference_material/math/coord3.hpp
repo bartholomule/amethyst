@@ -1,5 +1,5 @@
 /*
- * $Id: coord3.hpp,v 1.3 2004/03/21 20:51:06 kpharris Exp $
+ * $Id: coord3.hpp,v 1.4 2004/04/07 05:10:06 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -33,20 +33,20 @@
 /*
   Revision history:
   17Jan1999 Wrote this file, did some basic testing added the dot product,
-            cross product, length, and unit functions.
+  cross product, length, and unit functions.
   20jan1999 Added a default constructor for the coord3 class and the
-            coord3_union union. 
+  coord3_union union. 
   25jan1999 Added a unary - operator, and an invert function.
   05Mar1999 Added the * operator for two coord3s. It will take the
-            componentwise product. 
+  componentwise product. 
   02Apr1999 Added the constructor to take a single double, it is intended to
-            init the coord to a given value. 
+  init the coord to a given value. 
   22Apr1999 Added the average function.
-            Added the *= operator that takes two coord3s.
+  Added the *= operator that takes two coord3s.
   18May2001 Started changing this for use in a newer tracer, as per "Realistic
-            Raytracing" by Peter Shirley, "Templatized" the class...
+  Raytracing" by Peter Shirley, "Templatized" the class...
   17Sep2003 Reordered the class, made it a part of namespace amethyst, changed
-            extension to .hpp, added a GPL heading.
+  extension to .hpp, added a GPL heading.
 */
 
 #include <cmath>
@@ -59,33 +59,61 @@ namespace amethyst
   {
   private:
     /* class that has 3 Ts stored directly */
-    struct coord3_direct { T x; T y; T z; };
+    struct coord3_direct
+    {
+      T x; T y; T z;
+    };
     /* class that has 3 Ts stored in an array */
-    struct coord3_array { T coords[3]; };
+    struct coord3_array
+    {
+      T coords[3];
+    };
     /* union to allow accesses to both indirectly through an array, and directly
        through a name, without adding any extra processing time or space
        requirements */ 
     union  coord3_union
     {
-      coord3_union() {}
-      coord3_union(T x, T y, T z) { direct.x = x; direct.y = y; direct.z = z; }
-      inline T& operator[](unsigned index)       { return(array.coords[index]); }
-      inline T  operator[](unsigned index) const { return(array.coords[index]); }
+      coord3_union()
+      {
+      }
+      coord3_union(T x, T y, T z)
+      {
+        direct.x = x; direct.y = y; direct.z = z;
+      }
+      inline T& operator[](unsigned index)
+      {
+        return(array.coords[index]);
+      }
+      inline T  operator[](unsigned index) const
+      {
+        return(array.coords[index]);
+      }
       coord3_direct direct;
       coord3_array  array;
     };
 
     /* The internal coordinates of this class */
     coord3_union coords;
-  
+
   public:
-    enum COORD_VALUES {X = 0, Y = 1, Z = 2};
+    enum COORD_VALUES
+      {
+        X = 0, Y = 1, Z = 2
+      };
     typedef T base;
 
-    coord3() {}
-    inline coord3(T u):coords(u,u,u) {}
-    inline coord3(T x, T y, T z):coords(x,y,z) {}
-    inline coord3(const coord3& old_coord):coords(old_coord.coords) {}
+    coord3()
+    {
+    }
+    inline coord3(T u):coords(u,u,u)
+    {
+    }
+    inline coord3(T x, T y, T z):coords(x,y,z)
+    {
+    }
+    inline coord3(const coord3& old_coord):coords(old_coord.coords)
+    {
+    }
 
     inline void set(T x, T y, T z)
     {
@@ -93,24 +121,42 @@ namespace amethyst
       coords.direct.y = y;
       coords.direct.z = z;    
     }
-  
+
     /* Accessors */
     inline T& operator[](unsigned coord_index)
     {
       return(coords[coord_index]);
     }
-  
+
     inline T  operator[](unsigned coord_index) const
     {
       return(coords[coord_index]);
     }
 
-    T& x()       { return(coords.direct.x); }
-    T  x() const { return(coords.direct.x); }
-    T& y()       { return(coords.direct.y); }
-    T  y() const { return(coords.direct.y); }
-    T& z()       { return(coords.direct.z); }
-    T  z() const { return(coords.direct.z); }
+    T& x()
+    {
+      return(coords.direct.x);
+    }
+    T  x() const
+    {
+      return(coords.direct.x);
+    }
+    T& y()
+    {
+      return(coords.direct.y);
+    }
+    T  y() const
+    {
+      return(coords.direct.y);
+    }
+    T& z()
+    {
+      return(coords.direct.z);
+    }
+    T  z() const
+    {
+      return(coords.direct.z);
+    }
 
     coord3& operator= (const coord3& old_coord);
     coord3& operator+=(const coord3& p2);
@@ -122,14 +168,14 @@ namespace amethyst
     coord3& operator*=(U factor);
     template <class U>
     coord3& operator/=(U factor);        
-    
+
     inline T length() const
     {
       return T(sqrt(double((x() * x()) +
-			   (y() * y()) +
-			   (z() * z()))));
+                           (y() * y()) +
+                           (z() * z()))));
     }  
-  
+
   };
 
   template <class T>
@@ -144,7 +190,7 @@ namespace amethyst
     return *this;
   }
 
-  
+
   template <class T>
   inline coord3<T>& coord3<T>::operator+=(const coord3<T>& p2)
   {
@@ -172,7 +218,7 @@ namespace amethyst
     coords.direct.z *= p2.coords.direct.z;
     return *this;    
   }
-  
+
   template <class T>
   inline coord3<T>& coord3<T>::operator*=(T factor)
   {
@@ -181,7 +227,7 @@ namespace amethyst
     coords.direct.z *= factor;
     return *this;
   }
-  
+
   template <class T>
   inline coord3<T>& coord3<T>::operator/=(T factor)
   {
@@ -217,43 +263,43 @@ namespace amethyst
   {
     coord3<T> p(p1); p += p2; return(p);
   }
-  
+
   template <class T>
   inline coord3<T> operator-(const coord3<T>& p1, const coord3<T>& p2)
   {
     coord3<T> p(p1); p -= p2; return(p);
   }
-  
+
   template <class T>
   inline coord3<T> operator*(const coord3<T>& p1, T factor)
   {
     coord3<T> p(p1); p *= factor;  return(p);
   }
-  
+
   template <class T>
   inline coord3<T> operator*(T factor, const coord3<T>& p1)
   {
     coord3<T> p(p1); p *= factor;  return(p);
   }
-  
+
   template <class T, class U>
   inline coord3<T> operator*(const coord3<T>& p1, U factor)
   {
     coord3<T> p(p1); p *= factor;  return(p);
   }
-  
+
   template <class T, class U>
   inline coord3<T> operator*(U factor, const coord3<T>& p1)
   {
     coord3<T> p(p1); p *= factor;  return(p);
   }
-  
+
   template <class T>
   inline coord3<T> operator*(const coord3<T>& p1, const coord3<T>& p2)
   {
     return(coord3<T>(p1.x() * p2.x(),
-		     p1.y() * p2.y(),
-		     p1.z() * p2.z()));
+                     p1.y() * p2.y(),
+                     p1.z() * p2.z()));
   }
   template <class T>
   inline coord3<T> operator/(const coord3<T>& p1, T factor)
@@ -266,7 +312,7 @@ namespace amethyst
   {
     coord3<T> p(p1); p /= factor;  return(p);
   }
-  
+
   // Unary minus 
   template <class T>
   inline coord3<T> operator-(const coord3<T>& p1)
@@ -286,8 +332,8 @@ namespace amethyst
   inline coord3<T> crossprod(const coord3<T>& c1, const coord3<T>& c2)
   {
     return( coord3<T>((c1.y()*c2.z()) - (c2.y()*c1.z()),
-		      (c2.x()*c1.z()) - (c1.x()*c2.z()),
-		      (c1.x()*c2.y()) - (c2.x()*c1.y())));  
+                      (c2.x()*c1.z()) - (c1.x()*c2.z()),
+                      (c1.x()*c2.y()) - (c2.x()*c1.y())));  
   }
 
   template <class T>
@@ -316,7 +362,3 @@ namespace amethyst
 } // namespace amethyst
 
 #endif /* !defined(AMETHYST__COORD3_HPP) */
-
-
-
-
