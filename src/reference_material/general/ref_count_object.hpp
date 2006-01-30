@@ -22,6 +22,9 @@
 #include <cstdio>
 #endif
 
+// for NULL
+#include <cstddef>
+
 /*
   Revision History:
   02Jan2000 Created this file, wrote the reference_counting_object class
