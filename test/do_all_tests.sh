@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: do_all_tests.sh,v 1.1 2003/09/16 09:04:06 kpharris Exp $
+# $Id: do_all_tests.sh,v 1.2 2006/01/30 11:19:07 kpharris Exp $
 # This is a script to perform the tests which are provided in this directory.
 # To be displayed correctly, the last two lines of each test source file must
 # contain a C++ comment (description), and a newline. If this is not present,
@@ -32,7 +32,7 @@ EOF
   then
 cat <<EOF
   do_all_tests.sh automated test execution script
-  Version \$Revision: 1.1 $
+  Version \$Revision: 1.2 $
   Copyright (C) 2003 Kevin Harris
 
   This program is free software; you can redistribute it and/or modify
@@ -59,10 +59,10 @@ EOF
 done
 
 echo "--------------------------------------------"
-echo "|  Beginning tests for project 'manygames' |"
+echo "|  Beginning tests for project 'amethyst'  |"
 echo "--------------------------------------------"
 
-for test_cpp in *.cpp
+for test_cpp in ./*.cpp
 do
   # Extract an executable name
   test_name=`basename $test_cpp .cpp`
@@ -88,9 +88,9 @@ do
     # Handle execution, redirecting output if a quiet flag was given.
     if [ $quiet -eq 0 ]
     then
-      $test_name
+      `dirname $test_cpp`/$test_name
     else
-      $test_name > /dev/null 2>/dev/null
+      `dirname $test_cpp`/$test_name > /dev/null 2>/dev/null
     fi
 
     # Check the return code, printing a success or failure.
