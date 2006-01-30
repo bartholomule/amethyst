@@ -1,3 +1,4 @@
+SUBDIRS = general
 EXTRA_DIST = 
 INCLUDES = -I@top_srcdir@/include -I@top_srcdir@/src/reference_material -I@top_srcdir@/src/reference_material/graphics -I@top_srcdir@/src/reference_material/general -I@top_srcdir@/src/reference_material/math
 #lib_LTLIBRARIES = libmanygames.la
