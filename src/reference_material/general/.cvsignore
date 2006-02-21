@@ -1,0 +1,7 @@
+*.tga
+.libs
+.deps
+Makefile
+Makefile.in
+*.lo
+lib*.la
