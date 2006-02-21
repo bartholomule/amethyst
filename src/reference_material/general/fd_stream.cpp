@@ -1,5 +1,5 @@
 /*
- * $Id: fd_stream.cpp,v 1.1 2006/01/30 11:24:53 kpharris Exp $
+ * $Id: fd_stream.cpp,v 1.2 2006/02/21 00:59:31 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2006 Kevin Harris
@@ -24,7 +24,6 @@
 #include <cstdio>
 #include <ios>
 
-
 namespace amethyst
 {
 
@@ -33,7 +32,7 @@ namespace amethyst
 	 * A private class for handling the streambuf operations.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.1 $
+	 * @version $Revision: 1.2 $
 	 *
 	 */
 	class fd_ostreambuf : public std::streambuf
@@ -55,7 +54,9 @@ namespace amethyst
 		{
 			if( c != EOF )
 			{
-				if( write(fd, &c, sizeof(char))  == sizeof(char) )
+				char c2=char(c);
+				int count_written = write(fd, &c2, sizeof(char));
+				if( count_written  == sizeof(char) )
 				{
 					return 1;
 				}
