@@ -1,5 +1,5 @@
 /*
- * $Id: base_logger.cpp,v 1.1 2006/01/30 11:24:53 kpharris Exp $
+ * $Id: base_logger.cpp,v 1.2 2006/02/21 01:12:25 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2006 Kevin Harris
@@ -119,7 +119,7 @@ namespace amethyst
 			MutexLock ml(output_lock);
 #endif // HAVE_CCPP_THREADS
 			std::string formatted_text = formatter->format_message(message);
-			(*output_stream) << formatted_text;
+			(*output_stream) << formatted_text << std::endl;
 		}
 	}
 
