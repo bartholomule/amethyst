@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.1 2006/03/27 02:56:35 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.2 2006/03/27 04:24:36 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -30,6 +30,9 @@
 
 // Include for std::distance
 #include <algorithm>
+
+// Include for easy conversion
+#include <vector>
 
 /**
  * The size (bytes) to increment after this size has been reached.  Before
@@ -222,7 +225,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    *
    */
   template<class T>
@@ -259,6 +262,12 @@ namespace amethyst
      */
     void increase_storage(size_t desired, resize_type size_method = E_ABSOLUTE_RESIZE);
 
+    /**
+     * Initialize from iterators.  Requires that the current storage is empty.
+     */
+     template <class iter_type>
+     void initialize_from_iterators(iter_type first, iter_type last);
+
   protected:
 
   public:
@@ -270,6 +279,9 @@ namespace amethyst
 
     /** Tertiary constructor (sized/initialized) */
     quick_vector(size_t size, const T& initial_value);
+
+    /** Create a vector from an std::vector. */
+    quick_vector(const std::vector<T>& vec);
 
     /** Create a vector from an iterator set. */
     template <class iter_type>
@@ -321,6 +333,9 @@ namespace amethyst
     /* push_back is for interface compat with std::vector. It just forwards to append.*/
     void push_back(const T& val);
     void push_back(const quick_vector<T>& vec);
+
+    /* Conversion to a std::vector */
+    operator std::vector<T>() const;
 
   }; // class quick_vector
 
@@ -433,12 +448,28 @@ namespace amethyst
     end_pointer(NULL),
     storage_end(NULL)
   {
+    initialize_from_iterators(first, last);
+  }
+
+  template<class T>
+  inline quick_vector<T>::quick_vector(const std::vector<T>& vec):
+    data_pointer(NULL),
+    end_pointer(NULL),
+    storage_end(NULL)
+  {
+    initialize_from_iterators(vec.begin(), vec.end());
+  }
+
+  template<class T>
+  template <class iter_type>
+  inline void quick_vector<T>::initialize_from_iterators(iter_type first, iter_type last)
+  {
     increase_storage(std::distance(first, last), E_ABSOLUTE_RESIZE);
 #if defined(AMETHYST_EXCEPTION_SAFETY)
     try
 #endif
     {
-		for( end_pointer = data_pointer; first != last; ++first, ++end_pointer )
+      for( end_pointer = data_pointer; first != last; ++first, ++end_pointer )
       {
         new(end_pointer) T(*first);
       }
@@ -453,6 +484,15 @@ namespace amethyst
       throw;
     }
 #endif
+  }
+
+  template<class T>
+  inline quick_vector<T>::operator std::vector<T>() const
+  {
+    // Initializing with the data pointer like this is MUCH faster than using
+    // the iterators of the quick_vector.  Perhaps the iterators could be
+    // improved someday so it wouldn't make much difference.
+    return std::vector<T>(data_pointer, data_pointer + size());
   }
 
 
@@ -654,31 +694,32 @@ namespace amethyst
     append(vec);
   }
 
-	template <class T>
-	bool operator==(const quick_vector<T>& vec1, const quick_vector<T>& vec2)
-	{
-		if( vec1.size() != vec2.size() )
-		{
-			return false;
-		}
-		typename quick_vector<T>::const_iterator iter1 = vec1.begin();
-		typename quick_vector<T>::const_iterator iter2 = vec2.begin();
-		while( iter1 != vec1.end() )
-		{
-			if( *iter1 != *iter2 )
-			{
-				return false;
-			}
-			++iter1;
-			++iter2;
-		}
-		return true;
-	}
-	template <class T>
-	bool operator!=(const quick_vector<T>& vec1, const quick_vector<T>& vec2)
-	{
-		return !(vec1 == vec2);
-	}
+  template <class T>
+  bool operator==(const quick_vector<T>& vec1, const quick_vector<T>& vec2)
+  {
+    if( vec1.size() != vec2.size() )
+    {
+      return false;
+    }
+    typename quick_vector<T>::const_iterator iter1 = vec1.begin();
+    typename quick_vector<T>::const_iterator iter2 = vec2.begin();
+    while( iter1 != vec1.end() )
+    {
+      if( *iter1 != *iter2 )
+      {
+        return false;
+      }
+      ++iter1;
+      ++iter2;
+    }
+    return true;
+  }
+
+  template <class T>
+  bool operator!=(const quick_vector<T>& vec1, const quick_vector<T>& vec2)
+  {
+    return !(vec1 == vec2);
+  }
 
   /**
    * Send a vector to a stream with simple formatting {  } or { a } or
@@ -687,16 +728,19 @@ namespace amethyst
   template <class T>
   std::ostream& operator <<(std::ostream& o, const quick_vector<T>& vt)
   {
-    int i;
+    size_t i;
     o << "{ ";
     // output all of the elements that need a trailing comma (if any)
-    for(i = 0; i < int(vt.size())-1; ++i)
+    if( vt.size() > 0 )
     {
-      o << vt[i];
-      o << ", ";
+      for(i = 0; i < (vt.size() - 1); ++i)
+      {
+        o << vt[i];
+        o << ", ";
+      }
     }
     // print out the remaining elements (if any)
-    if(i < int(vt.size()))
+    if( i < vt.size() )
     {
       o << vt[i];
     }
