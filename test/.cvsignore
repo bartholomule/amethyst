@@ -5,3 +5,5 @@ Makefile
 Makefile.in
 test_raster
 test_rgbcolor
+test_tokenizer
+test_fd_stream
