@@ -1,21 +1,21 @@
 /*
- * $Id: quick_vector.hpp,v 1.6 2004/06/01 03:52:08 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.7 2006/03/27 02:54:59 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
  *
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or    
- * (at your option) any later version.                                  
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
@@ -28,6 +28,9 @@
 // Include for the iterator base classes.
 #include <iterator>
 
+// Include for std::distance
+#include <algorithm>
+
 /**
  * The size (bytes) to increment after this size has been reached.  Before
  * this size, the size will be repeatedly doubled.  Note that for some types,
@@ -38,17 +41,17 @@
 #endif /* !defined(AMETHYST_VECTOR_INCREMENT_SIZE) */
 
 namespace amethyst
-{ 
+{
   template <class T>
   class const_simple_iterator;
-  
+
   /**
    * A simple random_access iterator.
    */
   template <class T>
   class simple_iterator : public std::iterator<std::random_access_iterator_tag,T,size_t,T*,T&>
   {
-  public: 
+  public:
     inline simple_iterator(): ptr(NULL)
     {
     }
@@ -66,15 +69,15 @@ namespace amethyst
       ptr = old.ptr;
       return *this;
     }
-    
+
     inline T* operator->() { return ptr; }
     inline T& operator*() { return *ptr; }
-    inline simple_iterator operator++() 
+    inline simple_iterator operator++()
     {
       ++ptr;
       return *this;
     }
-    inline simple_iterator operator++(int) 
+    inline simple_iterator operator++(int)
     {
       simple_iterator temp(*this);
       ++ptr;
@@ -92,12 +95,12 @@ namespace amethyst
     {
       return ptr < it.ptr;
     }
-    inline simple_iterator<T> operator--() 
+    inline simple_iterator<T> operator--()
     {
       --ptr;
       return *this;
     }
-    inline simple_iterator<T> operator--(int) 
+    inline simple_iterator<T> operator--(int)
     {
       simple_iterator<T> temp(*this);
       --ptr;
@@ -148,15 +151,15 @@ namespace amethyst
       ptr = old.ptr;
       return *this;
     }
-    
+
     inline const T* operator->() const { return ptr; }
     inline const T& operator*() const { return *ptr; }
-    inline const_simple_iterator operator++() 
+    inline const_simple_iterator operator++()
     {
       ++ptr;
       return *this;
     }
-    inline const_simple_iterator operator++(int) 
+    inline const_simple_iterator operator++(int)
     {
       const_simple_iterator temp(*this);
       ++ptr;
@@ -173,13 +176,13 @@ namespace amethyst
     inline bool operator<(const const_simple_iterator& it) const
     {
       return ptr < it.ptr;
-    }    
-    inline const_simple_iterator<T> operator--() 
+    }
+    inline const_simple_iterator<T> operator--()
     {
       --ptr;
       return *this;
     }
-    inline const_simple_iterator<T> operator--(int) 
+    inline const_simple_iterator<T> operator--(int)
     {
       const_simple_iterator<T> temp(*this);
       --ptr;
@@ -196,14 +199,14 @@ namespace amethyst
     inline const_simple_iterator<T> operator-(size_t i) const
     {
       return const_simple_iterator<T>(ptr - i);
-    }    
+    }
   private:
     const T* ptr;
   };
 
 
   /**
-   * 
+   *
    * A quick vector (appenendable only, directly accessible).  This is intended
    * to give a little faster speed over the STL vector.  The size of it cannot
    * be decreased, except by assigning another smaller vector to it.
@@ -217,10 +220,10 @@ namespace amethyst
    * any elements which have already been initialized.  For built-in types
    * (int, float, etc), this exception safety is not required, and speed will
    * be gained by NOT defining this value.
-   * 
+   *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
-   * 
+   * @version $Revision: 1.7 $
+   *
    */
   template<class T>
   class quick_vector
@@ -232,7 +235,7 @@ namespace amethyst
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
     typedef T value_type;
     typedef T& reference;
-    
+
   private:
     T* data_pointer;
     T* end_pointer;
@@ -250,12 +253,12 @@ namespace amethyst
     void remove_storage();
 
     enum resize_type { E_ABSOLUTE_RESIZE, E_NORMAL_RESIZE };
-    
+
     /**
      * Increase the storage space in the vector.
      */
     void increase_storage(size_t desired, resize_type size_method = E_ABSOLUTE_RESIZE);
-    
+
   protected:
 
   public:
@@ -264,9 +267,13 @@ namespace amethyst
 
     /** Secondary constructor (sized) */
     quick_vector(size_t size);
-    
+
     /** Tertiary constructor (sized/initialized) */
     quick_vector(size_t size, const T& initial_value);
+
+    /** Create a vector from an iterator set. */
+    template <class iter_type>
+    quick_vector(iter_type first, iter_type last);
 
     /** Destructor */
     virtual ~quick_vector();
@@ -302,7 +309,7 @@ namespace amethyst
     inline iterator end() { return iterator(end_pointer); }
     inline const_iterator begin() const { return const_iterator(data_pointer); }
     inline const_iterator end() const { return const_iterator(end_pointer); }
-    
+
     inline reverse_iterator rbegin() { return reverse_iterator(end()); }
     inline reverse_iterator rend() { return reverse_iterator(begin()); }
     inline const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
@@ -314,7 +321,7 @@ namespace amethyst
     /* push_back is for interface compat with std::vector. It just forwards to append.*/
     void push_back(const T& val);
     void push_back(const quick_vector<T>& vec);
-    
+
   }; // class quick_vector
 
 
@@ -346,7 +353,7 @@ namespace amethyst
   }
 
   template<class T>
-  inline void quick_vector<T>::remove_storage()  
+  inline void quick_vector<T>::remove_storage()
   {
     destroy_data();
     delete[] reinterpret_cast<char*>(data_pointer);
@@ -354,7 +361,7 @@ namespace amethyst
     end_pointer = NULL;
     storage_end = NULL;
   }
-  
+
   //-------------------------------------------
   // Secondary constructor for class quick_vector
   //-------------------------------------------
@@ -366,7 +373,7 @@ namespace amethyst
   {
     increase_storage(size);
 
-#if defined(AMETHYST_EXCEPTION_SAFETY)    
+#if defined(AMETHYST_EXCEPTION_SAFETY)
     try
 #endif
     {
@@ -380,7 +387,7 @@ namespace amethyst
     {
       // Clean up any pre-constructed items.
       remove_storage();
-      
+
       // Rethrow the exception.
       throw;
     }
@@ -396,7 +403,7 @@ namespace amethyst
     data_pointer(NULL),
     end_pointer(NULL),
     storage_end(NULL)
-  { 
+  {
     increase_storage(size, E_ABSOLUTE_RESIZE);
 #if defined(AMETHYST_EXCEPTION_SAFETY)
     try
@@ -418,6 +425,35 @@ namespace amethyst
     }
 #endif
   } // quick_vector()
+
+  template<class T>
+  template <class iter_type>
+  inline quick_vector<T>::quick_vector(iter_type first, iter_type last):
+    data_pointer(NULL),
+    end_pointer(NULL),
+    storage_end(NULL)
+  {
+    increase_storage(std::distance(first, last), E_ABSOLUTE_RESIZE);
+#if defined(AMETHYST_EXCEPTION_SAFETY)
+    try
+#endif
+    {
+		for( end_pointer = data_pointer; first != last; ++first, ++end_pointer )
+      {
+        new(end_pointer) T(*first);
+      }
+    }
+#if defined(AMETHYST_EXCEPTION_SAFETY)
+    catch(...)
+    {
+      // Clean up any pre-constructed items.
+      remove_storage();
+
+      // Rethrow the exception.
+      throw;
+    }
+#endif
+  }
 
 
   //----------------------------------
@@ -448,7 +484,7 @@ namespace amethyst
         next_power <<= 1;
       }
       desired_size = next_power;
-      
+
       increase_storage(desired_size);
 
 #if defined(AMETHYST_EXCEPTION_SAFETY)
@@ -467,7 +503,7 @@ namespace amethyst
       {
         // Cleanup any already constructed items...
         remove_storage();
-        
+
         // Rethrow the exception.
         throw;
       }
@@ -495,7 +531,7 @@ namespace amethyst
         next_power <<= 1;
       }
       desired_size = next_power;
-      
+
       // Increase the storage (if required) to hold all of the data to be
       // copied.
       increase_storage(desired_size);
@@ -566,7 +602,7 @@ namespace amethyst
 
         throw;
       }
-#endif      
+#endif
       remove_storage();
       data_pointer = new_ptr;
       end_pointer = new_end;
@@ -581,10 +617,10 @@ namespace amethyst
     if( end_pointer >= storage_end )
     {
       size_t new_size = size() + 1;
-      
+
       increase_storage(new_size, E_NORMAL_RESIZE);
     }
-    new(end_pointer++) T(val);    
+    new(end_pointer++) T(val);
   }
 
   template <class T>
@@ -599,7 +635,7 @@ namespace amethyst
     }
 
     const T* copy_end = vec.end_pointer;
-    
+
     for( const T* copy_iter = vec.data_pointer; copy_iter != copy_end; ++copy_iter, ++end_pointer)
     {
       new(end_pointer) T(*copy_iter);
@@ -611,12 +647,38 @@ namespace amethyst
   {
     append(val);
   }
-  
+
   template<class T>
   inline void quick_vector<T>::push_back(const quick_vector<T>& vec)
   {
     append(vec);
   }
+
+	template <class T>
+	bool operator==(const quick_vector<T>& vec1, const quick_vector<T>& vec2)
+	{
+		if( vec1.size() != vec2.size() )
+		{
+			return false;
+		}
+		typename quick_vector<T>::const_iterator iter1 = vec1.begin();
+		typename quick_vector<T>::const_iterator iter2 = vec2.begin();
+		while( iter1 != vec1.end() )
+		{
+			if( *iter1 != *iter2 )
+			{
+				return false;
+			}
+			++iter1;
+			++iter2;
+		}
+		return true;
+	}
+	template <class T>
+	bool operator!=(const quick_vector<T>& vec1, const quick_vector<T>& vec2)
+	{
+		return !(vec1 == vec2);
+	}
 
   /**
    * Send a vector to a stream with simple formatting {  } or { a } or
@@ -641,7 +703,7 @@ namespace amethyst
     o << " }";
     return(o);
   }
-  
+
 } // namespace amethyst
 
 
