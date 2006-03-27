@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.2 2006/03/27 04:24:36 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.3 2006/03/27 07:29:19 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -225,7 +225,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    *
    */
   template<class T>
@@ -268,6 +268,8 @@ namespace amethyst
      template <class iter_type>
      void initialize_from_iterators(iter_type first, iter_type last);
 
+    inline size_t next_larger_size(size_t s) const;
+
   protected:
 
   public:
@@ -309,12 +311,12 @@ namespace amethyst
     /** Tells if the vector is empty */
     inline bool empty() const
     {
-      return begin() == end();
+      return data_pointer == end_pointer;
     }
     /** Returns the size of the vector */
     inline size_t size() const
     {
-      return end() - begin();
+      return end_pointer - data_pointer;
     }
 
     inline iterator begin() { return iterator(data_pointer); }
@@ -516,15 +518,7 @@ namespace amethyst
   {
     if( old.data_pointer )
     {
-      size_t desired_size = old.size();
-      size_t next_power = 1;
-
-      while(next_power < desired_size)
-      {
-        next_power <<= 1;
-      }
-      desired_size = next_power;
-
+      size_t desired_size = next_larger_size(old.size());
       increase_storage(desired_size);
 
 #if defined(AMETHYST_EXCEPTION_SAFETY)
@@ -551,6 +545,22 @@ namespace amethyst
     }
   } // quick_vector(quick_vector)
 
+  template<class T>
+  inline size_t quick_vector<T>::next_larger_size(size_t s) const
+  {
+    // Ccalculating the power of two that is larger or equal to the size needed
+    // to store the data isn't just for quick resizing.  It turns out that the
+    // raw memory allocation for an even power of two is a few percent faster
+    // on some platforms (Linux/MacOS) than the time for a lesser chunk of
+    // memory that is a sum of even powers of two.
+    size_t next_power = 1;
+    while(next_power < s)
+    {
+      next_power <<= 1;
+    }
+    return next_power;
+  }
+
   //-------------------------------------------
   // Assignment operator for class quick_vector
   //-------------------------------------------
@@ -563,14 +573,7 @@ namespace amethyst
       // Remove the current data (leave the storage alone).
       destroy_data();
 
-      size_t desired_size = old.size();
-      size_t next_power = 1;
-
-      while(next_power < desired_size)
-      {
-        next_power <<= 1;
-      }
-      desired_size = next_power;
+      size_t desired_size = next_larger_size(old.size());
 
       // Increase the storage (if required) to hold all of the data to be
       // copied.
@@ -676,6 +679,9 @@ namespace amethyst
 
     const T* copy_end = vec.end_pointer;
 
+    // If the copy constructors here throw anything, we're safe, as the
+    // end_pointer shows one beyond the last successfully copied element.  The
+    // destructor should properly handle things.
     for( const T* copy_iter = vec.data_pointer; copy_iter != copy_end; ++copy_iter, ++end_pointer)
     {
       new(end_pointer) T(*copy_iter);
@@ -701,16 +707,13 @@ namespace amethyst
     {
       return false;
     }
-    typename quick_vector<T>::const_iterator iter1 = vec1.begin();
-    typename quick_vector<T>::const_iterator iter2 = vec2.begin();
-    while( iter1 != vec1.end() )
+    // For now, it seems as though the subscript access is faster than iterator access.
+    for( size_t i = 0; i < vec1.size(); ++i )
     {
-      if( *iter1 != *iter2 )
+      if( vec1[i] != vec2[i] )
       {
         return false;
       }
-      ++iter1;
-      ++iter2;
     }
     return true;
   }
