@@ -1,4 +1,4 @@
-#include <manygames/rgbcolor.hpp>
+#include <graphics/rgbcolor.hpp>
 #include <iostream>
 using namespace std;
 #include "testinclude.hpp"
@@ -6,7 +6,7 @@ using namespace std;
 #define ERROR_TEXT(text) ((++error_count),text)
 
 template <class T>
-ostream& operator<<(ostream& o, const manygames::rgbcolor<T>& c)
+ostream& operator<<(ostream& o, const amethyst::rgbcolor<T>& c)
 {
   o << "<" << c.r() << ", " << c.g() << ", " << c.b() << ">";
   return o;
@@ -18,7 +18,7 @@ int main(int,char**)
   const char* passed = "Passed";
   const char* failed = "FAILED!";
 
-  typedef manygames::rgbcolor<int> color;
+  typedef amethyst::rgbcolor<int> color;
   
   color blah01;
 

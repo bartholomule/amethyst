@@ -4,15 +4,15 @@
 
 using namespace std;
 
-#include <manygames/raster.hpp>
-#include <manygames/useful_functions.hpp>
+#include <graphics/raster.hpp>
+#include <useful_functions.hpp>
 #include "testinclude.hpp"
 #include <cstring>
 
-typedef manygames::raster<int> irast;
+typedef amethyst::raster<int> irast;
 
 template <class T>
-ostream& operator<<(ostream& o, const manygames::raster<T>& r)
+ostream& operator<<(ostream& o, const amethyst::raster<T>& r)
 {
 
   string s = "+" + string(r.get_width() * 4 + 1, '-') + "+";
@@ -35,7 +35,7 @@ ostream& operator<<(ostream& o, const manygames::raster<T>& r)
 
 // Implement the constructor for the size_mismatch constructor... To prevent
 // the need to have another file linked against this one.
-namespace manygames {
+namespace amethyst {
   size_mismatch::size_mismatch(const std::string& __arg):
     std::runtime_error(__arg)
   {
@@ -68,7 +68,6 @@ int main(int argc, char** argv)
 		      sized.get_numpixels() == width * height,
 		      passed,
 		      ERROR_TEXT(failed));
-    
 
     TEST_EXCEPTION_NAMED("to assign within bounds",
 			 for(unsigned y = 0; y < height; ++y)
@@ -279,7 +278,7 @@ int main(int argc, char** argv)
     cout << "Reinterpreting rasters (normally dangerous, if done incorrectly)..." << endl;
     cout << "-------------------------------------------------------------------" << endl;
 
-    typedef manygames::raster<char> crast;
+    typedef amethyst::raster<char> crast;
 
     char* hello_data = "|Hello...|n|.Hello..|n|..Hello.|n|...Hello|n\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
     //    cout << hello_data << endl;
