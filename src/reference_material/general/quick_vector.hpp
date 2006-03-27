@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.7 2006/03/27 02:54:59 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.1 2006/03/27 02:56:35 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -222,7 +222,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.7 $
+   * @version $Revision: 1.1 $
    *
    */
   template<class T>
