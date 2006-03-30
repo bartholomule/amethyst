@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.3 2006/03/27 07:29:19 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.4 2006/03/30 08:05:15 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -225,7 +225,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
+   * @version $Revision: 1.4 $
    *
    */
   template<class T>
@@ -335,6 +335,10 @@ namespace amethyst
     /* push_back is for interface compat with std::vector. It just forwards to append.*/
     void push_back(const T& val);
     void push_back(const quick_vector<T>& vec);
+
+    iterator erase(iterator location);
+    iterator erase(iterator first, iterator last);
+    void clear();
 
     /* Conversion to a std::vector */
     operator std::vector<T>() const;
@@ -698,6 +702,61 @@ namespace amethyst
   inline void quick_vector<T>::push_back(const quick_vector<T>& vec)
   {
     append(vec);
+  }
+
+  template <class T>
+  typename quick_vector<T>::iterator quick_vector<T>::erase(typename quick_vector<T>::iterator pos)
+  {
+	  if( pos != end() )
+	  {
+		  return this->erase(pos, pos + 1);
+	  }
+	  return end();
+  }
+
+  template <class T>
+  typename quick_vector<T>::iterator quick_vector<T>::erase(typename quick_vector<T>::iterator first, typename quick_vector<T>::iterator last)
+  {
+    T* front = &*first;
+    T* back = &*last;
+
+    if( back > front )
+    {
+      // Copy data down...
+      while( back != end_pointer )
+      {
+        // Although almost everything else about the quick_vector is using a
+        // copy constructor, I can't come up with an exception safe method of
+        // doing so (there would be the chance of an exception being thrown in
+        // the copy constructor while one element in the middle of the vector
+        // has already been destroyed and not yet reinitialized).  We'll need
+        // to resort to the assignment operators for safety.
+        *front = *back;
+        ++front;
+        ++back;
+      }
+      // Clean up the extra data.
+      while( end_pointer != front )
+      {
+        --end_pointer;
+        end_pointer->~T();
+      }
+    }
+	 // Return the element that appears *after* the ones that were deleted.  This now happens to be 'first'
+	 return first;
+  }
+
+  template <class T>
+  void quick_vector<T>::clear()
+  {
+    if( !empty() )
+    {
+      while( end_pointer != data_pointer )
+      {
+        --end_pointer;
+        end_pointer->~T();
+      }
+    }
   }
 
   template <class T>
