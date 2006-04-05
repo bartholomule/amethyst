@@ -1,5 +1,5 @@
 /*
- * $Id: base_logger.cpp,v 1.2 2006/02/21 01:12:25 kpharris Exp $
+ * $Id: base_logger.cpp,v 1.3 2006/04/05 05:56:36 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2006 Kevin Harris
@@ -28,13 +28,22 @@ namespace amethyst
 	// Default constructor for class logger
 	//------------------------------------------
 	logger::logger() :
-		formatter(log_formatter::create_log_formatter("%m")),
-		output_stream(stream_stdout)
+		formatter(log_formatter::create_log_formatter("%m"))
+		, output_stream(stream_stdout)
 #if defined(HAVE_CCPP_THREADS)
 		, output_lock("default logger")
 #endif // HAVE_CCPP_THREADS
 	{
 	} // logger()
+
+	logger::logger(const rc_pointer<log_formatter>& lf, const output_stream_ref& sr) :
+		formatter(lf)
+		, output_stream(sr)
+#if defined(HAVE_CCPP_THREADS)
+		, output_lock("formatted logger")
+#endif // HAVE_CCPP_THREADS
+	{
+	}
 
 	//---------------------------------
 	// Destructor for class logger
@@ -118,8 +127,8 @@ namespace amethyst
 #if defined(HAVE_CCPP_THREADS)
 			MutexLock ml(output_lock);
 #endif // HAVE_CCPP_THREADS
-			std::string formatted_text = formatter->format_message(message);
-			(*output_stream) << formatted_text << std::endl;
+			std::vector<char> formatted_text = formatter->format_message(message);
+			output_stream->write(&formatted_text[0], formatted_text.size())  << std::endl;
 		}
 	}
 

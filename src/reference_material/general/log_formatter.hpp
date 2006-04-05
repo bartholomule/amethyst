@@ -1,5 +1,5 @@
 /*
- * $Id: log_formatter.hpp,v 1.1 2006/01/30 11:24:53 kpharris Exp $
+ * $Id: log_formatter.hpp,v 1.2 2006/04/05 05:57:08 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2006 Kevin Harris
@@ -23,6 +23,7 @@
 #define            AMETHYST__LOG_FORMATTER_HPP
 
 #include <string>
+#include <vector>
 #include "rc_pointer.hpp"
 
 namespace amethyst
@@ -51,7 +52,7 @@ namespace amethyst
 	 * The base class for objects that will do log formatting.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.1 $
+	 * @version $Revision: 1.2 $
 	 *
 	 */
 	class log_formatter
@@ -61,7 +62,7 @@ namespace amethyst
 		formatter_conversion_list* conversion_list;
 
 	protected:
-		virtual std::string do_format_message(const UnformattedMessage& m);
+		virtual std::vector<char> do_format_message(const UnformattedMessage& m);
 	public:
 		/** Default constructor */
 		log_formatter();
@@ -75,7 +76,7 @@ namespace amethyst
 		/** Assignment operator */
 		log_formatter& operator= (const log_formatter& old);
 
-		std::string format_message(const UnformattedMessage& m);
+		std::vector<char> format_message(const UnformattedMessage& m);
 
 		static rc_pointer<log_formatter> create_log_formatter(const std::string& format_string);
 
