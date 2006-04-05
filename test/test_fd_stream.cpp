@@ -28,7 +28,8 @@ int main(int argc, const char** argv)
 	std::cout << amethyst::string_format("closing baz.txt (%1)", baz) << std::endl;
 
 
-	amethyst::logger logger;
+	//	amethyst::logger logger(amethyst::log_formatter::create_log_formatter("test \"%m\"\\nHere's a percent: '%%'\nHere's a tab: '\\t'\nHere's an embedded null: '\\x0'\nAnd a space '\\x30'"), amethyst::stream_stdout);
+	amethyst::logger logger(amethyst::log_formatter::create_log_formatter("date(%d{%H:%M:%S}) file(%F) file+line(%l) line(%L) method(%M) message(%/30.40m) runtime(%r) threadid(%t) pid(%P) percent(%%) \\xl3"), amethyst::stream_stdout);
 	logger.log("Hello from a logger.");
 
 	if( !error_count )
