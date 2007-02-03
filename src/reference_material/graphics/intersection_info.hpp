@@ -1,5 +1,5 @@
 /*
- * $Id: intersection_info.hpp,v 1.6 2004/05/17 07:17:04 kpharris Exp $
+ * $Id: intersection_info.hpp,v 1.7 2007/02/03 23:21:33 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -24,7 +24,7 @@
 
 #include "conditional_value.hpp"
 
-#include "quick_vector.hpp"
+#include "general/quick_vector.hpp"
 #include "math/vector3.hpp"
 #include "math/coord2.hpp"
 #include "math/onb.hpp"
@@ -40,7 +40,7 @@ namespace amethyst
    * Information about an intersection (point-based intersection).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    * 
    */
   template<class T>
@@ -54,7 +54,7 @@ namespace amethyst
       ibool(bool val=false):value(val) { }
       ibool(const ibool& ib): value(ib.value) { }
       operator bool() const { return value; }
-      ibool& operator=(const ibool& ib) { value = ib.value; }
+      ibool& operator=(const ibool& ib) { value = ib.value; return *this; }
     };
     
   private:
