@@ -1,8 +1,12 @@
 // g++ -g test.cpp -o test -lm -W -Wall -I.
 
+# if 0
 #include <graphics/shape.hpp>
 #include <graphics/sphere.hpp>
 #include <graphics/plane.hpp>
+#endif
+
+#include <math/quaternion.hpp>
 
 #include <general/string_format.hpp>
 
@@ -17,6 +21,7 @@ using amethyst::string_format;
 
 int main(int, char**)
 {
+#if 0
   amethyst::sphere<double> sph1(point(0,2,0), 1);
   amethyst::sphere<double> sph2(point(0,2,0), 2);
   amethyst::plane<double> pla1(point(0,0,0),vec(0,1,0));
@@ -61,7 +66,19 @@ int main(int, char**)
   cout << string_format("Six different argument types: %1 %2 %3 %4 %5 %6", 1, "2", 3.0, string("4"), false, vec(1,2,3)) << endl;
 
   cout << pla1 << endl;
-  cout << sph1 << endl;  
+  cout << sph1 << endl;
+#endif // 0
+
+  typedef amethyst::quaternion<double> quat;
+
+  quat foo(1, quat::VECTOR(1,0,0));
+  cout << foo << endl;
+  cout << foo * foo << endl;
+  cout << foo * foo * foo << endl;
+
+  quat i(0,quat::VECTOR(1,0,0));
+  cout << i << endl;
+  cout << i * i << endl;
   
   return 0;
 }
