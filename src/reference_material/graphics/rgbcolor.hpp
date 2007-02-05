@@ -1,5 +1,5 @@
 /*
- * $Id: rgbcolor.hpp,v 1.5 2007/02/04 06:18:28 kpharris Exp $
+ * $Id: rgbcolor.hpp,v 1.6 2007/02/05 07:04:23 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -49,12 +49,14 @@ namespace amethyst
 	 * class as an array of three ints.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.5 $
+	 * @version $Revision: 1.6 $
 	 *
 	 */
 	template <class T>
 	class rgbcolor
 	{
+	public:
+		typedef T number_type;
 
 	protected:
 		/** A struct of three items directly accessible. */
