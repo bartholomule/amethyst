@@ -48,12 +48,13 @@ int main(int argc, char** argv)
   color light(0.7,0.7,0.7), dark(0.5,0.5,0.5), black(0,0,0);
   color red(0.7,0.0,0.0), blue(0.0,0.0,0.7);
 
-  raster<color> image(WIDTH, HEIGHT);
+  amethyst::image<float_type> image(WIDTH, HEIGHT);
 
   intersection_info<float_type> stuff;
 
   cout << "objects=" << sl << endl;
 
+  std::cerr << "Generating image..." << std::endl;
   for( int y = 0; y < HEIGHT; ++y )
   {
     for( int x = 0; x < WIDTH; ++x )
@@ -82,10 +83,8 @@ int main(int argc, char** argv)
       }
     }
   }
-  tga_io<color> output;
-
-  tga_io<color>::use_streambuf dummy;
-  
-  output.output("figure_3_1.tga", image, dummy);
+  std::cerr << "Saving image..." << std::endl;
+  tga_io<float_type> output;
+  output.output("figure_3_1.tga", image);
   return 0; 
 }
