@@ -1,5 +1,5 @@
 /*
- * $Id: samplegen2d.hpp,v 1.2 2007/02/05 07:12:17 kpharris Exp $
+ * $Id: samplegen2d.hpp,v 1.3 2007/02/10 13:17:47 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -253,15 +253,18 @@ namespace amethyst
 	quick_vector<coord2<T> > regular_sample_2d<T>::get_samples(int num_samples)
 	{
 		int x, y;
-		int sample_width = (int)sqrt(num_samples);
-		T scalar = NEAR_ONE / T(sample_width - 1);
+		int sample_height = (int)sqrt(num_samples);
+		int sample_width = num_samples / sample_height;
+		T scalarY = NEAR_ONE / T(sample_height - 1);
+		T scalarX = NEAR_ONE / T(sample_width - 1);
+
 		quick_vector<coord2<T> > v;
 
-		for(y = 0; y < sample_width; ++y)
+		for(y = 0; y < sample_height; ++y)
 		{
 			for(x = 0; x < sample_width; ++x)
 			{
-				v.push_back(coord2<T>(x * scalar, y * scalar));
+				v.push_back(coord2<T>(x * scalarX, y * scalarY));
 			}
 		}
 		return(v);
@@ -271,14 +274,16 @@ namespace amethyst
 	void regular_sample_2d<T>::get_samples(int num_samples, void(*pf)(const coord2<T>&))
 	{
 		int x, y;
-		int sample_width = (int)sqrt(num_samples);
-		T scalar = NEAR_ONE / T(sample_width - 1);
+		int sample_height = (int)sqrt(num_samples);
+		int sample_width = num_samples / sample_height;
+		T scalarY = NEAR_ONE / T(sample_height - 1);
+		T scalarX = NEAR_ONE / T(sample_width - 1);
 
-		for(y = 0; y < sample_width; ++y)
+		for(y = 0; y < sample_height; ++y)
 		{
 			for(x = 0; x < sample_width; ++x)
 			{
-				pf(coord2<T>(x * scalar, y * scalar));
+				pf(coord2<T>(x * scalarX, y * scalarY));
 			}
 		}
 	}
@@ -346,16 +351,20 @@ namespace amethyst
 	quick_vector<coord2<T> > jitter_sample_2d<T>::get_samples(int num_samples)
 	{
 		int x, y;
-		int sample_width = (int)sqrt(T(num_samples));
+		// This arrangement tends to favor width over height.  As most images are
+		// wider than they are tall, this is not a bad thing.  If an even square
+		// is used, they will be equal.
+		int sample_height = (int)sqrt(T(num_samples));
+		int sample_width = num_samples / sample_height;
 		quick_vector<coord2<T> > v;
 
-		for(y = 0; y < sample_width; ++y)
+		for(y = 0; y < sample_height; ++y)
 		{
 			for(x = 0; x < sample_width; ++x)
 			{
 				coord2<T> p = sample_generator_2d<T>::next_rand();
 				v.push_back(coord2<T>((x+p.x())/T(sample_width),
-									(y+p.y())/T(sample_width)));
+									(y+p.y())/T(sample_height)));
 			}
 		}
 		return(v);
@@ -366,14 +375,16 @@ namespace amethyst
 		void(*pf)(const coord2<T>&))
 	{
 		int x, y;
-		int sample_width = (int)sqrt(T(num_samples));
-		for(y = 0; y < sample_width; ++y)
+		// See the comments about favorint width in the vector version.
+		int sample_height = (int)sqrt(T(num_samples));
+		int sample_width = num_samples / sample_height;
+		for(y = 0; y < sample_height; ++y)
 		{
 			for(x = 0; x < sample_width; ++x)
 			{
 				coord2<T> p = sample_generator_2d<T>::next_rand();
 				pf(coord2<T>((x+p.x())/T(sample_width),
-						(y+p.y())/T(sample_width)));
+						(y+p.y())/T(sample_height)));
 			}
 		}
 	}
