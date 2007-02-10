@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.13 2007/02/04 06:18:28 kpharris Exp $
+ * $Id: plane.hpp,v 1.14 2007/02/10 13:16:34 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,8 +25,8 @@
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include "shape.hpp"
-#include "sphere.hpp"
+#include <graphics/shape.hpp>
+#include <graphics/sphere.hpp>
 #include <math/coord2.hpp>
 #include <general/string_format.hpp>
 
@@ -38,7 +38,7 @@ namespace amethyst
 	 * A plane in 3d.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.13 $
+	 * @version $Revision: 1.14 $
 	 *
 	 */
 	template<class T>
@@ -139,7 +139,7 @@ namespace amethyst
 		bool extract_uv_for_point(const point3<T>& point, coord2<T>& uv) const;
 
 		// This doesn't check to see if the point is on the plane.  As such, it is
-		// a speedimprovement when the point is already known to be on the plane.
+		// a speed improvement when the point is already known to be on the plane.
 		void extract_uv_for_point_nonchecked(const point3<T>& point, coord2<T>& uv) const;
 
 		virtual intersection_capabilities get_intersection_capabilities() const;
