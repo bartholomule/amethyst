@@ -1,5 +1,5 @@
 /*
- * $Id: interpolated_value.hpp,v 1.2 2007/02/04 06:18:28 kpharris Exp $
+ * $Id: interpolated_value.hpp,v 1.3 2007/05/18 16:36:59 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -91,7 +91,7 @@ namespace amethyst
 	 * be for parametric-changing parameters (eg. location, radius, etc.)
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.2 $
+	 * @version $Revision: 1.3 $
 	 *
 	 */
 	template<class parametric_type, class interpolation_type>
@@ -419,7 +419,7 @@ namespace amethyst
 			interpolation_function f = interpolation_function(),
 			endpoint_behavior b = ENDPOINT_STOP):
 			ip1(p1),
-			ip1(p2),
+			ip2(p2),
 			fun(f),
 			behavior(b)
 		{

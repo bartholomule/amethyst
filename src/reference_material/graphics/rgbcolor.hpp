@@ -1,5 +1,5 @@
 /*
- * $Id: rgbcolor.hpp,v 1.6 2007/02/05 07:04:23 kpharris Exp $
+ * $Id: rgbcolor.hpp,v 1.7 2007/05/18 16:36:59 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -21,6 +21,8 @@
 
 #if       !defined(AMETHYST__RGBCOLOR_HPP)
 #define            AMETHYST__RGBCOLOR_HPP
+
+#include <iostream>
 
 namespace amethyst
 {
@@ -49,7 +51,7 @@ namespace amethyst
 	 * class as an array of three ints.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.6 $
+	 * @version $Revision: 1.7 $
 	 *
 	 */
 	template <class T>

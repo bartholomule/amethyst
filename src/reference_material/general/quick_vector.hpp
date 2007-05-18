@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.4 2006/03/30 08:05:15 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.5 2007/05/18 16:36:59 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -52,7 +52,7 @@ namespace amethyst
    * A simple random_access iterator.
    */
   template <class T>
-  class simple_iterator : public std::iterator<std::random_access_iterator_tag,T,size_t,T*,T&>
+  class simple_iterator : public std::iterator<std::random_access_iterator_tag,T,ssize_t,T*,T&>
   {
   public:
     inline simple_iterator(): ptr(NULL)
@@ -73,8 +73,8 @@ namespace amethyst
       return *this;
     }
 
-    inline T* operator->() { return ptr; }
-    inline T& operator*() { return *ptr; }
+    inline T* operator->() const { return ptr; }
+    inline T& operator*() const { return *ptr; }
     inline simple_iterator operator++()
     {
       ++ptr;
@@ -225,7 +225,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    *
    */
   template<class T>

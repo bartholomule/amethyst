@@ -1,5 +1,5 @@
 /*
- * $Id: string_format.hpp,v 1.5 2006/02/21 01:13:48 kpharris Exp $
+ * $Id: string_format.hpp,v 1.6 2007/05/18 16:36:59 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,6 +25,7 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include <cstdlib>
 
 namespace amethyst
 {
