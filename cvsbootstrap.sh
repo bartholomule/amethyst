@@ -14,4 +14,4 @@ run_cmd aclocal
 run_cmd autoconf
 run_cmd autoheader
 run_cmd libtoolize
-run_cmd automake --foreign --add-missing 
+run_cmd automake --add-missing --copy --gnu

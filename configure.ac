@@ -13,6 +13,8 @@ AC_PREFIX_DEFAULT(/usr/local/)
 
 AM_CONFIG_HEADER(src/amethyst_config.hpp)
 
+AC_GNU_SOURCE
+
 dnl ---------------------------------------------------------------------------
 dnl Gets the host type
 dnl ---------------------------------------------------------------------------
@@ -342,6 +344,7 @@ AC_OUTPUT([
             src/Makefile
             src/utils/Makefile
             src/reference_material/Makefile
+            src/reference_material/general/Makefile
             include/Makefile
             test/Makefile
           ],
