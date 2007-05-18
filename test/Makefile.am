@@ -8,5 +8,5 @@ test_raster_SOURCES = test_raster.cpp
 test_rgbcolor_SOURCES = test_rgbcolor.cpp
 INCLUDES=-I@top_srcdir@/src/reference_material/general -I@top_srcdir@/src/reference_material/
 # Turn off optimizations, so that these tests will actually execute.
-CXXFLAGS=-O0 -ggdb
+AM_CXXFLAGS=-O0 -ggdb
 
