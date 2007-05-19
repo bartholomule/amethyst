@@ -1,5 +1,5 @@
 /*
- * $Id: quick_vector.hpp,v 1.5 2007/05/18 16:36:59 kpharris Exp $
+ * $Id: quick_vector.hpp,v 1.6 2007/05/19 07:54:58 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -225,7 +225,7 @@ namespace amethyst
    * be gained by NOT defining this value.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    *
    */
   template<class T>
@@ -317,6 +317,11 @@ namespace amethyst
     inline size_t size() const
     {
       return end_pointer - data_pointer;
+    }
+
+    inline void resize(size_t size)
+    {
+      increase_storage(size);
     }
 
     inline iterator begin() { return iterator(data_pointer); }
