@@ -1,5 +1,5 @@
 /*
- * $Id: point3.hpp,v 1.3 2004/04/07 05:10:06 kpharris Exp $
+ * $Id: point3.hpp,v 1.4 2007/05/19 07:55:52 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -67,7 +67,12 @@ namespace amethyst
     }
     inline point3(const point3<T>& c): coord3<T>(c)
     {
-    }  
+    }
+
+	  coord3<T> getcoord() const
+	  {
+		  return coord3<T>(x(), y(), z());
+	  }
 
     inline void set(T x, T y, T z)
     {
