@@ -1,5 +1,5 @@
 /*
- * $Id: raster.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: raster.hpp,v 1.5 2007/07/07 18:11:26 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -39,7 +39,7 @@ namespace amethyst
    * have iterators (at this time).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    * 
    */
   template <class T>
@@ -185,7 +185,7 @@ namespace amethyst
    * row number be changed.
    *
    * @author Kevin Harris
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    */
   template <class T>
   class scanline
@@ -520,8 +520,8 @@ namespace amethyst
   {
     unsigned old_width = this->width;
     unsigned old_height = this->height;
-    unsigned old_mid_x = old_width / 2;
-    unsigned old_mid_y = old_height / 2;
+    int old_mid_x = old_width / 2;
+    int old_mid_y = old_height / 2;
     T* old_data = raster_data;
 
     // If there is no change, return, doing nothing.
