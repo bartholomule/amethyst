@@ -93,6 +93,8 @@ namespace amethyst
 
 	template <class T> matrix_4x4<T> invert (const matrix_4x4<T>& rktMAT);
 
+	template <class T> std::ostream& operator<<(std::ostream& o, const matrix_4x4<T>& m);
+
 	template <class T>
 	class matrix_4x4
 	{

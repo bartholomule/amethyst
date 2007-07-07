@@ -1,5 +1,5 @@
 /*
- * $Id: vector3.hpp,v 1.5 2007/02/04 06:18:28 kpharris Exp $
+ * $Id: vector3.hpp,v 1.6 2007/07/07 18:13:09 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -49,7 +49,7 @@
 namespace amethyst
 {
 	template <class T>
-	class vector3:private coord3<T>
+	class vector3: private coord3<T>
 	{
 	public:
 		typedef T base;

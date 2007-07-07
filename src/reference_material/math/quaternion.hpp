@@ -2,6 +2,7 @@
 #define            KH_QUATERNION_H
 
 #include "math/coord3.hpp"
+#include "math/vector3.hpp"
 #include "math/mat_4x4.hpp"
 #include <cmath>
 #include <iosfwd>
@@ -117,25 +118,30 @@ namespace amethyst
 	class quaternion
 	{
 	public:
-		typedef coord3<T> VECTOR;
+		typedef coord3<T> coord_type;
 	private:
 		T      real;
-		VECTOR imag;
+		coord_type imag;
 	public:
 
 		// Constructors/copy constructors
-		inline explicit quaternion(T real = T(0), const VECTOR& imag = VECTOR(0,0,0)):
-			real(real), imag(imag)
+		inline explicit quaternion(T real = T(0), const coord_type& imag_c = coord_type(0,0,0)):
+			real(real), imag(imag_c)
 		{
 		}
-		inline explicit quaternion(const VECTOR& imag): real(T(0)), imag(imag){ }
+		inline explicit quaternion(T real = T(0), const vector3<T>& imag_v):
+			real(real), imag(imag_v.x(), imag_v.y(), imag_v.z())
+		{
+		}
+		inline explicit quaternion(const coord_type& imag_c): real(T(0)), imag(imag_c){ }
+		inline explicit quaternion(const vector3<T>& imag_v): real(T(0)), imag(imag_v.x(), imag_v.y(), imag_v.z()){ }
 		inline quaternion(const quaternion& p): real(p.real), imag(p.imag)    { }
 
 		inline T getReal() const              { return real; }
-		inline VECTOR getImag() const         { return imag; }
+		inline coord_type getImag() const         { return imag; }
 		inline void setReal (T r)             { real = r; }
-		inline void setImag (const VECTOR& v) { imag = v; }
-		inline void set(T r, const VECTOR& v) { real = r; imag = v; }
+		inline void setImag (const coord_type& v) { imag = v; }
+		inline void set(T r, const coord_type& v) { real = r; imag = v; }
 
 		inline quaternion& operator = (const quaternion& p)
 		{
@@ -166,12 +172,16 @@ namespace amethyst
 			return(*this);
 		}
 
-		inline quaternion& operator *= (const VECTOR& v)
+		inline quaternion& operator *= (const coord_type& v)
 		{
 			T new_real =  - amethyst::dotprod(imag, v);
 			imag = real * v + amethyst::crossprod(imag, v);
 			real = new_real;
 			return(*this);
+		}
+		inline quaternion& operator *= (const vector3<T>& v)
+		{
+			return this->operator*=(coord_type(v.x(), v.y(), v.z()));
 		}
 		inline quaternion& operator *= (T scalar)
 		{
@@ -192,12 +202,12 @@ namespace amethyst
 			quaternion temp(q1);
 			return temp *= q2;
 		}
-		inline friend quaternion operator*(const quaternion& q1, const VECTOR& v2)
+		inline friend quaternion operator*(const quaternion& q1, const coord_type& v2)
 		{
 			quaternion temp(q1);
 			return temp *= v2;
 		}
-		inline friend quaternion operator*(const VECTOR& v1, const quaternion& q2)
+		inline friend quaternion operator*(const coord_type& v1, const quaternion& q2)
 		{
 			quaternion temp(0,v1);
 			return temp *= q2;
@@ -230,12 +240,12 @@ namespace amethyst
 		// unary -
 		inline friend quaternion operator-(const quaternion& q)
 		{
-			return quaternion(-q.real, VECTOR(-q.imag.x(),-q.imag.y(),-q.imag.z()));
+			return quaternion(-q.real, coord_type(-q.imag.x(),-q.imag.y(),-q.imag.z()));
 		}
 
 		inline quaternion conjugate (void) const
 		{
-			return quaternion (real, VECTOR (-imag.x(), -imag.y(), -imag.z()));
+			return quaternion (real, coord_type (-imag.x(), -imag.y(), -imag.z()));
 		}
 
 		inline T dotprod(const quaternion& p) const
@@ -248,15 +258,26 @@ namespace amethyst
 			return sqrt(this->dotprod(*this));
 		}
 
-		static inline VECTOR rotate(const VECTOR& point, T angle, const VECTOR& line)
+		static inline coord_type rotate(const coord_type& point, T angle, const coord_type& line)
 		{
 			quaternion temp(line, angle);
+			temp /= temp.norm();
 			quaternion rotated = temp * point * temp.conjugate();
 			return rotated.getImag();
 		}
-		static inline VECTOR rotate(const VECTOR& v, const quaternion& q)
+		static inline coord_type rotate(const coord_type& v, const quaternion& q)
 		{
 			quaternion temp = q * v * q.conjugate();
+			return temp.getImag();
+		}
+		static inline coord_type rotate(const vector3<T>& v, const quaternion& q)
+		{
+			quaternion temp = q * v * q.conjugate();
+			return temp.getImag();
+		}
+		static inline coord_type rotate(const point3<T>& p, const quaternion& q)
+		{
+			quaternion temp = q * p * q.conjugate();
 			return temp.getImag();
 		}
 
@@ -267,6 +288,20 @@ namespace amethyst
 		}
 	};
 
+
+	template <class T>
+	quaternion<T> operator*(const quaternion<T>& q, const vector3<T>& v)
+	{
+		quaternion<T> temp(q);
+		return temp *= v;
+	}
+
+	template <class T>
+	quaternion<T> operator*(const vector3<T>& v, const quaternion<T>& q)
+	{
+		quaternion<T> temp(0, v);
+		return temp *= q;
+	}
 
 	// The dot product of two quaternions.
 	template <class T>
@@ -295,18 +330,17 @@ namespace amethyst
 
 
 	// Create a quaternion, as above, however, the vector is normalized before use.
-	template <class T>
-	inline quaternion<T> makeUnitQuaternion(T angle, const coord3<T>& line)
+	template <class T, class vector_type>
+	inline quaternion<T> makeUnitQuaternion(T angle, const vector_type& line)
 	{
 		angle *= M_PI / 180;
 		T real = cos(angle / 2);
-		T norm = line.norm();
+		T norm = length(line);
 
 		assert(norm > T(0));
 
 		return quaternion<T>(real, sin(angle/2) * line / norm);
 	}
-
 
 	// Create a homogeneous rotation matrix from the given quaternion.
 	template <class T>
