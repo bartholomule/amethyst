@@ -1,5 +1,5 @@
 /*
- * $Id: testinclude.hpp,v 1.2 2006/01/30 11:18:10 kpharris Exp $
+ * $Id: testinclude.hpp,v 1.1 2008/06/09 16:31:18 kpharris Exp $
  *
  * Part of "Amethyst Palace" - A playground for future graphics ideas
  * Copyright (C) 2003 Kevin Harris

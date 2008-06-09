@@ -7,7 +7,7 @@ AUTO_UNIT_TEST(sam)
 {
 	std::cerr << "An auto unit test (sam) really ran." << std::endl;
 	TEST_COMPARE_EQUAL(10, 5 + 5);
-	TEST_EXCEPTION_NOTHROW(2 + 2);
+	TEST_EXCEPTION_NOTHROW((2 + 2));
 }
 
 

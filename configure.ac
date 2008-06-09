@@ -31,7 +31,7 @@ AC_PROG_YACC
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
-AM_GNU_GETTEXT
+#AM_GNU_GETTEXT
 
 AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
@@ -115,7 +115,8 @@ dnl ---------------------------------------------------------------------------
 dnl ---------------
 dnl gtkmm-2.0
 dnl ---------------
-PKG_CHECK_MODULES(GTKMM, gtkmm-2.0, HAVE_GTKMM=1, HAVE_GTKMM=0 )
+HAVE_GTKMM=0
+#PKG_CHECK_MODULES(GTKMM, gtkmm-2.0, HAVE_GTKMM=1, HAVE_GTKMM=0 )
 AC_DEFINE(HAVE_GTKMM, $HAVE_GTKMM, gtk-- is available.)
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
@@ -124,7 +125,8 @@ AM_CONDITIONAL(HAVE_GTKMM, test "x$HAVE_GTKMM" = "x1")
 dnl ---------------
 dnl SigC++
 dnl ---------------
-PKG_CHECK_MODULES(SIGCPP, sigc++-2.0, HAVE_SIGCPP=1, HAVE_SIGCPP=0 )
+HAVE_SIGCPP=0
+#PKG_CHECK_MODULES(SIGCPP, sigc++-2.0, HAVE_SIGCPP=1, HAVE_SIGCPP=0 )
 AC_DEFINE(HAVE_SIGCPP, $HAVE_SIGCPP, sigc++ is available.)
 AC_SUBST(SIGCPP_CFLAGS)
 AC_SUBST(SIGCPP_LIBS)
@@ -337,7 +339,6 @@ AC_SUBST(ARCH_PROG_SETLIBPATH)
 AC_OUTPUT([
             Makefile
             doc/Makefile
-            intl/Makefile
             po/Makefile.in
             po/Makefile
             m4/Makefile
@@ -347,11 +348,14 @@ AC_OUTPUT([
             src/reference_material/general/Makefile
             include/Makefile
             test/Makefile
+            test/test_framework/Makefile
           ],
           echo "------------------"
           echo "Configure is done."
           echo "------------------"
 )
+#             intl/Makefile
+
 
 if test ! -e install-sh
 then

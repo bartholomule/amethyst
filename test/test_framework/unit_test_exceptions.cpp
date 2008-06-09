@@ -1,5 +1,5 @@
 /*
- * $Id: unit_test_info.hpp,v 1.1 2007/07/05 21:33:30 kpharris Exp $
+ * $Id: unit_test_exceptions.cpp,v 1.1 2008/06/09 16:31:18 kpharris Exp $
  *
  * Part of "Amethyst Palace" - A playground for future graphics ideas
  * Copyright (C) 2007 Kevin Harris
@@ -19,27 +19,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#if       !defined(UNIT_TEST_INFO_HPP_INCLUDED)
-#define            UNIT_TEST_INFO_HPP_INCLUDED
-
 #include <string>
+#include "unit_test_exceptions.hpp"
+#include "unit_test_info.hpp"
 
 namespace amethyst
 {
 	namespace test
 	{
-
-		struct test_information
+		test_exception::test_exception(const std::string& why, const std::string& test_name, const std::string& file, int line)
+			: reason(why)
+			, info(test_name, file, line)
 		{
-			test_information();
-			test_information(const std::string& name, const std::string& file, int line);
-			std::string test_name;
-			std::string filename;
-			int line_number;
-		};
+		}
+		test_exception:: test_exception(const std::string& why, const test_information& test_info)
+			: reason(why)
+			, info(test_info)
+		{
+		}
+
+		AMETHYST_DEFINE_EXCEPTION(test_aborted);
+		AMETHYST_DEFINE_EXCEPTION(never_thrown); // Never thrown, used as a dummy exception
 	}
 }
-
-#define TEST_INFORMATION(name) ::amethyst::test::test_information(name, __FILE__, __LINE__)
-
-#endif /* !defined(UNIT_TEST_INFO_HPP_INCLUDED) */

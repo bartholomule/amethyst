@@ -5,6 +5,8 @@ figure_4_5
 cs5600_program01
 cs5600_program02
 cs5600_program03
+cs5600_program*.jpg
+cs5600_program*.tif
 .libs
 .deps
 Makefile

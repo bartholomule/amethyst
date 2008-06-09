@@ -46,8 +46,8 @@ namespace amethyst {
 
 int main(int argc, char** argv)
 {
-  const int width = 10;
-  const int height = 12;
+  const unsigned width = 10;
+  const unsigned height = 12;
   int error_count = 0;
   const char* passed = "Passed";
   const char* failed = "FAILED!";

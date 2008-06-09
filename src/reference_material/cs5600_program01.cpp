@@ -150,7 +150,7 @@ void program1_extra()
 		{
 			number_type x_pos = x_min + (x * (x_max - x_min)) / width;
 
-			complex q(x_pos, complex::VECTOR(y_pos, 0, 0));
+			complex q(x_pos, complex::coord_type(y_pos, 0, 0));
 
 			//			std::cerr << "pix(" << x_pos << ", " << y_pos << ") -->(" << x << ", " << y << ")" << std::endl;
 			number_type escape = mandelbrot_escape(q, q,

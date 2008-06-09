@@ -23,7 +23,7 @@
 */
 
 /*
-  $Id: gen-class.cpp,v 1.4 2007/05/18 16:33:03 kpharris Exp $
+  $Id: gen-class.cpp,v 1.5 2008/06/09 16:31:17 kpharris Exp $
  */
 
 /*
@@ -56,33 +56,33 @@ static const string PackageLocation = "http://sourceforge.net/projects/manygames
 static const string HeaderExtension = "hpp";
 
 static const string GPL_License = "\
- * This program is free software; you can redistribute it and/or modify \n\
- * it under the terms of the GNU General Public License as published by \n\
- * the Free Software Foundation; either version 2 of the License, or    \n\
- * (at your option) any later version.                                  \n\
- *                                                                      \n\
- * This program is distributed in the hope that it will be useful, but  \n\
- * WITHOUT ANY WARRANTY; without even the implied warranty of           \n\
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    \n\
- * General Public License for more details.                             \n\
- *                                                                      \n\
- * You should have received a copy of the GNU General Public License    \n\
- * along with this program; if not, write to the Free Software          \n\
+ * This program is free software; you can redistribute it and/or modify\n\
+ * it under the terms of the GNU General Public License as published by\n\
+ * the Free Software Foundation; either version 2 of the License, or\n\
+ * (at your option) any later version.\n\
+ *\n\
+ * This program is distributed in the hope that it will be useful, but\n\
+ * WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n\
+ * General Public License for more details.\n\
+ *\n\
+ * You should have received a copy of the GNU General Public License\n\
+ * along with this program; if not, write to the Free Software\n\
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.\n";
 
 static const string LGPL_License = "\
- * This library is free software; you can redistribute it and/or           \n\
- * modify it under the terms of the GNU Lesser General Public              \n\
- * License as published by the Free Software Foundation; either            \n\
- * version 2.1 of the License, or (at your option) any later version.      \n\
- *                                                                         \n\
- * This library is distributed in the hope that it will be useful,         \n\
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          \n\
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU       \n\
- * Lesser General Public License for more details.                         \n\
- *                                                                         \n\
- * You should have received a copy of the GNU Lesser General Public        \n\
- * License along with this library; if not, write to the Free Software     \n\
+ * This library is free software; you can redistribute it and/or\n\
+ * modify it under the terms of the GNU Lesser General Public\n\
+ * License as published by the Free Software Foundation; either\n\
+ * version 2.1 of the License, or (at your option) any later version.\n\
+ *\n\
+ * This library is distributed in the hope that it will be useful,\n\
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n\
+ * Lesser General Public License for more details.\n\
+ *\n\
+ * You should have received a copy of the GNU Lesser General Public\n\
+ * License along with this library; if not, write to the Free Software\n\
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.\n";
 
 
@@ -174,7 +174,7 @@ string GenerateClassDeclaration(const string& classname,
   declaration += "// BEGIN(DELETEME)\n";
 declaration += "//-----------------------------------------------------------\n";
   declaration += "#error You must customize this automatically generated class.\n";
-  declaration += "// To do this, you must: \n";
+  declaration += "// To do this, you must:\n";
   string last_num_used = "1";
   if( !parentname.empty() )
   {
@@ -210,12 +210,12 @@ declaration += "//-----------------------------------------------------------\n"
   declaration += "// END(DELETEME)\n\n";
 
   declaration += indent + "/**\n";
-  declaration += indent + " * \n";
+  declaration += indent + " *\n";
   declaration += indent + " * ***CLASS DESCRIPTION GOES HERE*** (multiple lines are ok)\n";
-  declaration += indent + " * \n";
+  declaration += indent + " *\n";
   declaration += indent + " * @author " + AuthorName + " <" + EmailText + ">\n";
   declaration += indent + " * @version $" + "Revision: 1.1 $\n";
-  declaration += indent + " * \n";
+  declaration += indent + " *\n";
   declaration += indent + " */\n";
 
   // This will either be used by the template (if any), or the statement after.
@@ -436,7 +436,7 @@ void RemoveSwitches(int& argc, char** argv, string& munged_class, string& parent
       } break;
     case 'v':
       {
-        cout << "Class Stub Generator version $Revision: 1.4 $" << endl;
+        cout << "Class Stub Generator version $Revision: 1.5 $" << endl;
         cout << "Copyright (C) 2003 Kevin Harris" << endl;
         cout << endl;
         cout << "This is free software, released under terms of the GNU Public License (GPL)" << endl;
@@ -445,7 +445,7 @@ void RemoveSwitches(int& argc, char** argv, string& munged_class, string& parent
       } break;
     case 'h':
       {
-        cout << "Class Stub Generator version $Revision: 1.4 $" << endl;
+        cout << "Class Stub Generator version $Revision: 1.5 $" << endl;
         cout << "  This is a program to generate class stubs. \n\
   As arguments, it accepts one non-switch argument, which is the classname.\n\
   ie. giving it 'foo.baz' would generate a class baz in namespace foo.\n\
@@ -588,7 +588,7 @@ string GenerateNamespaceBegin(const vector<string>& namespaces, string& indent)
   for(vector<string>::const_iterator i = namespaces.begin(); i != namespaces.end(); ++i)
   {
     result += (indent + "namespace " + *i + "\n" +
-               indent + "{ \n");
+               indent + "{\n");
     indent += "  ";
   }
   return result;

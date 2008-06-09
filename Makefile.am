@@ -1,5 +1,7 @@
 EXTRA_DIST = config.rpath LICENSE autogen.sh version.sh
-SUBDIRS = m4 doc intl src test po include
+SUBDIRS = m4 doc src test include
+# po
+# intl
 ACLOCAL_AMFLAGS = -I m4
 
 PACKAGE_NAME=@PACKAGE_NAME@
