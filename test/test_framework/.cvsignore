@@ -1,0 +1,9 @@
+*~
+*.la
+*.lo
+*.ii
+.deps
+.libs
+Makefile
+Makefile.in
+test_tests
