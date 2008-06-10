@@ -7,7 +7,8 @@ AUTO_UNIT_TEST(sam)
 {
 	std::cerr << "An auto unit test (sam) really ran." << std::endl;
 	TEST_COMPARE_EQUAL(10, 5 + 5);
-	TEST_EXCEPTION_NOTHROW((2 + 2));
+	int i;
+	TEST_EXCEPTION_NOTHROW(i = 2 + 2);
 }
 
 
@@ -44,6 +45,6 @@ AUTO_UNIT_TEST(bad_tests)
 	TEST_EXCEPTION_NOTHROW(throw int(2));
 	TEST_EXCEPTION_THROW_SPECIFIC(throw int(2), double);
 	TEST_EXCEPTION_NOTHROW_SPECIFIC(throw int(2), int);
+	TEST_COMPARE_CLOSE(x, y, 0.5);
 	TEST_EXCEPTION_THROW(AMETHYST_ABORT_TESTS("I'm tired of running."));
-
 }

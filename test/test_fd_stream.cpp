@@ -11,8 +11,6 @@ int main(int argc, const char** argv)
 	using std::cout;
 	using std::endl;
 	int error_count = 0;
-	const char* passed = "Passed";
-	const char* failed = "FAILED!";
 
 	amethyst::fd_ostream foo;
 	foo << "Hello." << std::endl;
