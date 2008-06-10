@@ -1,5 +1,5 @@
 /*
- * $Id: unit_test_aggregator.cpp,v 1.1 2008/06/09 16:31:18 kpharris Exp $
+ * $Id: unit_test_aggregator.cpp,v 1.2 2008/06/10 06:57:52 kpharris Exp $
  *
  * Part of "Amethyst Palace" - A playground for future graphics ideas
  * Copyright (C) 2007 Kevin Harris
@@ -81,7 +81,10 @@ namespace amethyst
 		{
 			if( !chained )
 			{
-				notify(info, string_format("info: Started test %1", info.test_name));
+				if( getenv("UNIT_TEST_VERBOSE") )
+				{
+					notify(info, string_format("info: Started test %1", info.test_name));
+				}
 			}
 			++count_tried;
 			if( chained_results )
@@ -93,7 +96,10 @@ namespace amethyst
 		{
 			if( !chained )
 			{
-				notify(info, "info: Test passed\n"); // added vertical whitespace to assist emacs in finding error lines
+				if( getenv("UNIT_TEST_VERBOSE") )
+				{
+					notify(info, "info: Test passed\n"); // added vertical whitespace to assist emacs in finding error lines
+				}
 			}
 			++count_passed;
 			if( chained_results )

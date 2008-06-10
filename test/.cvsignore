@@ -10,4 +10,4 @@ test_raster
 test_rgbcolor
 test_tokenizer
 test_fd_stream
-test_tests
+test_quaternion

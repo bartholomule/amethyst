@@ -30,6 +30,7 @@ AUTO_UNIT_TEST(joe)
 	TEST_COMPARE_EQUAL(x, y);
 	TEST_COMPARE_EQUAL(x, y);
 	TEST_COMPARE_EQUAL(x, y);
+	TEST_COMPARE_CLOSE(x, y, 0.0001);
 }
 
 
@@ -40,7 +41,6 @@ AUTO_UNIT_TEST(bad_tests)
 	int x = 1;
 	int y = 2;
 	TEST_COMPARE_EQUAL(x, y);
-
 	TEST_EXCEPTION_NOTHROW(throw int(2));
 	TEST_EXCEPTION_THROW_SPECIFIC(throw int(2), double);
 	TEST_EXCEPTION_NOTHROW_SPECIFIC(throw int(2), int);

@@ -1,5 +1,5 @@
 /*
- * $Id: unit_test.hpp,v 1.1 2008/06/09 16:31:18 kpharris Exp $
+ * $Id: unit_test.hpp,v 1.2 2008/06/10 06:57:52 kpharris Exp $
  *
  * Part of "Amethyst Palace" - A playground for future graphics ideas
  * Copyright (C) 2007 Kevin Harris
@@ -89,6 +89,21 @@ do { \
 #define TEST_COMPARE_GREATER_EQ(a, b) TEST_COMPARE_GENERIC(a,b,>=)
 #define TEST_COMPARE_LESS(a, b) TEST_COMPARE_GENERIC(a,b,<)
 #define TEST_COMPARE_LESS_EQ(a, b) TEST_COMPARE_GENERIC(a,b,<=)
+
+#define TEST_COMPARE_CLOSE(a,b,epsilon) \
+do { \
+	::amethyst::test::test_information local_info = TEST_INFORMATION(::amethyst::string_format("%1_compare_%2", test_name, __LINE__)); \
+	unit_test::test_started(local_info); \
+	if( ( (((a) - (b)) < (epsilon)) && (((a) - (b)) > (-(epsilon))) )	\
+		|| ( (((b) - (a)) < (epsilon)) && (((b) - (a)) > (-(epsilon))) ) ) \
+	{ \
+		unit_test::test_passed(local_info); \
+	} \
+	else \
+	{ \
+		unit_test::test_failed(local_info, ::amethyst::string_format("Closeness test failed for \"%1\" and \"%2\": %3 != %4 (epsilon %5)", #a, #b, (a), (b), (epsilon))); \
+	} \
+} while(0)
 
 #define TEST_EXCEPTION_GENERIC_TRYBLOCK(tryblock, catchtype, catchblock, catchallblock) \
 do { \
