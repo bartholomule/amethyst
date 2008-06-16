@@ -1,5 +1,5 @@
 /*
- * $Id: raster.hpp,v 1.5 2007/07/07 18:11:26 kpharris Exp $
+ * $Id: raster.hpp,v 1.6 2008/06/16 10:17:49 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -23,9 +23,9 @@
 #define            AMETHYST__RASTER_HPP
 
 #include <textized.hpp>
-#include <extra_exceptions.hpp>
-#include <template_functions.hpp>
-#include <useful_functions.hpp>
+#include "general/extra_exceptions.hpp"
+#include "general/template_functions.hpp"
+#include "general/useful_functions.hpp"
 #include <string>
 
 namespace amethyst
@@ -39,7 +39,7 @@ namespace amethyst
    * have iterators (at this time).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    * 
    */
   template <class T>
@@ -185,7 +185,7 @@ namespace amethyst
    * row number be changed.
    *
    * @author Kevin Harris
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    */
   template <class T>
   class scanline

@@ -1,7 +1,8 @@
-#include <graphics/rgbcolor.hpp>
+#include "graphics/rgbcolor.hpp"
+#include "test_framework/testinclude.hpp"
+
 #include <iostream>
 using namespace std;
-#include "testinclude.hpp"
 
 #define ERROR_TEXT(text) ((++error_count),text)
 

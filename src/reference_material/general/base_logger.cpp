@@ -1,5 +1,5 @@
 /*
- * $Id: base_logger.cpp,v 1.3 2006/04/05 05:56:36 kpharris Exp $
+ * $Id: base_logger.cpp,v 1.4 2008/06/16 10:17:47 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2006 Kevin Harris
@@ -20,7 +20,6 @@
  */
 
 #include "base_logger.hpp"
-
 
 namespace amethyst
 {

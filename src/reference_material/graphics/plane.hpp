@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.14 2007/02/10 13:16:34 kpharris Exp $
+ * $Id: plane.hpp,v 1.15 2008/06/16 10:17:48 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -38,7 +38,7 @@ namespace amethyst
 	 * A plane in 3d.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.14 $
+	 * @version $Revision: 1.15 $
 	 *
 	 */
 	template<class T>
@@ -177,12 +177,7 @@ namespace amethyst
 		defining_point(p),
 		normal(unit(n))
 	{
-		v_vector = unit(crossprod(normal,
-								 point3<T>(defining_point.x() + 1,
-									 defining_point.y(),
-									 defining_point.z()) -
-								 defining_point));
-		u_vector = crossprod(v_vector, normal);
+		calculate_perpendicular_vectors(normal, u_vector, v_vector);
 
 		setup_non_zero_indices();
 	} // plane(point3,vector3)

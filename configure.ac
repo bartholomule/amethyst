@@ -346,6 +346,7 @@ AC_OUTPUT([
             src/utils/Makefile
             src/reference_material/Makefile
             src/reference_material/general/Makefile
+            src/reference_material/graphics/Makefile
             include/Makefile
             test/Makefile
             test/test_framework/Makefile

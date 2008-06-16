@@ -1,5 +1,5 @@
 /*
- * $Id: interpolated_value.hpp,v 1.3 2007/05/18 16:36:59 kpharris Exp $
+ * $Id: interpolated_value.hpp,v 1.4 2008/06/16 10:17:48 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -61,10 +61,10 @@
 
 
 #include <string>
-#include "quick_vector.hpp"
 #include <algorithm>
 #include <ostream>
-#include <general/string_format.hpp>
+#include "general/string_format.hpp"
+#include "general/quick_vector.hpp"
 
 namespace amethyst
 {
@@ -91,7 +91,7 @@ namespace amethyst
 	 * be for parametric-changing parameters (eg. location, radius, etc.)
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.3 $
+	 * @version $Revision: 1.4 $
 	 *
 	 */
 	template<class parametric_type, class interpolation_type>

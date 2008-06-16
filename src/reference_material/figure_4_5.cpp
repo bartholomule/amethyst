@@ -5,17 +5,17 @@
  * edition.
  */
 
-#include <math/frame.hpp>
-#include <sphere.hpp>
-#include <triangle.hpp>
-#include <aggregate.hpp>
-#include <raster.hpp>
-#include <tga_io.h>
-#include <rgbcolor.hpp>
-#include <math/coord2.hpp>
-#include <cmath>
-#include <pinhole_camera.hpp>
+#include "math/frame.hpp"
+#include "graphics/sphere.hpp"
+#include "graphics/triangle.hpp"
+#include "graphics/aggregate.hpp"
+#include "graphics/raster.hpp"
+#include "graphics/tga_io.h"
+#include "graphics/rgbcolor.hpp"
+#include "math/coord2.hpp"
+#include "graphics/pinhole_camera.hpp"
 
+#include <cmath>
 #include <iostream>
 
 using namespace amethyst;
@@ -72,21 +72,6 @@ int main(int argc, char** argv)
 			float_type a = (x + 0.5);
 			float_type b = (y + 0.5);
 			ray_parameters<float_type> r = camera.get_ray(a,b);
-			//      cout<< "a,b=" << a << "," << b << endl;
-
-			/*
-			  float_type a = (x - 0.5) / float_type(WIDTH - 1);
-			  float_type b = (y - 0.5) / float_type(HEIGHT - 1);
-			  coord2<float_type> c(a,b);
-			  unit_line3<float_type> r = camera.get_ray(c);
-			  //      cout << "c(" << x << "," << y << ")=" << c << endl;
-			  */
-
-			/*
-			  cout << "ray=" << r << endl;
-			  cout << "ray.point_at(1)=" << r.point_at(float_type(1)) << endl;
-			  cout << "ray.point_at_scaled(1)=" << r.point_at_scaled(float_type(1)) << endl;
-			*/
 
 			if( !sl.intersects_ray(r, stuff, requirements) )
 			{

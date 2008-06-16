@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.10 2007/02/10 13:15:14 kpharris Exp $
+ * $Id: shape.hpp,v 1.11 2008/06/16 10:17:49 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -44,7 +44,7 @@ namespace amethyst
 	 * The base class for a shape.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.10 $
+	 * @version $Revision: 1.11 $
 	 *
 	 */
 	template<class T>
@@ -117,13 +117,8 @@ namespace amethyst
 
 		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const = 0;
 
-		virtual std::string to_string(const std::string& base_indentation,
+		virtual std::string to_string(const std::string& base_indentation = "",
 			const std::string& level_indentation = "  ") const = 0;
-
-		virtual std::string to_string() const
-		{
-			return to_string("");
-		}
 
 		virtual std::string name() const
 		{

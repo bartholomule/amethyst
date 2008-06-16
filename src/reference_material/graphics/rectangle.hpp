@@ -1,5 +1,5 @@
 /*
- * $Id: rectangle.hpp,v 1.4 2008/06/13 15:49:07 kpharris Exp $
+ * $Id: rectangle.hpp,v 1.5 2008/06/16 10:17:49 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple rectangle class, which is based on the plane class.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.5 $
    *
    */
   template<class T>
@@ -303,7 +303,7 @@ namespace amethyst
 
     caps &= ~object_capabilities::INFINITE;
     caps |= object_capabilities::BOUNDABLE;
-    caps |= object_capabilities::POLYGONAZATION;
+    caps |= object_capabilities::POLYGONIZATION;
 
     return caps;
   }

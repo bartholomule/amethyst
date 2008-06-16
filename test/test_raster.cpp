@@ -4,9 +4,9 @@
 
 using namespace std;
 
-#include <graphics/raster.hpp>
-#include <useful_functions.hpp>
-#include "testinclude.hpp"
+#include "graphics/raster.hpp"
+#include "general/useful_functions.hpp"
+#include "test_framework/testinclude.hpp"
 #include <cstring>
 
 typedef amethyst::raster<int> irast;

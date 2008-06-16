@@ -1,5 +1,5 @@
 /*
- * $Id: samplegen2d.hpp,v 1.3 2007/02/10 13:17:47 kpharris Exp $
+ * $Id: samplegen2d.hpp,v 1.4 2008/06/16 10:17:49 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -45,10 +45,10 @@
 */
 
 #include <algorithm>
-#include <graphics/random.hpp>
-#include <math/coord2.hpp>
-#include <general/quick_vector.hpp>
-#include <general/rc_pointer.hpp>
+#include "general/random.hpp"
+#include "math/coord2.hpp"
+#include "general/quick_vector.hpp"
+#include "general/rc_pointer.hpp"
 
 namespace amethyst
 {

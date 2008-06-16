@@ -5,22 +5,22 @@
  * edition.
  */
 
-#include <math/frame.hpp>
-#include <graphics/sphere.hpp>
-#include <graphics/dynamic_sphere.hpp>
-#include <graphics/triangle.hpp>
-#include <graphics/aggregate.hpp>
-#include <graphics/raster.hpp>
-#include <graphics/tga_io.h>
-#include <graphics/rgbcolor.hpp>
-#include <math/coord2.hpp>
+#include "math/frame.hpp"
+#include "graphics/sphere.hpp"
+#include "graphics/dynamic_sphere.hpp"
+#include "graphics/triangle.hpp"
+#include "graphics/aggregate.hpp"
+#include "graphics/raster.hpp"
+#include "graphics/tga_io.h"
+#include "graphics/rgbcolor.hpp"
+#include "math/coord2.hpp"
+#include "graphics/pinhole_camera.hpp"
+
+#include "general/random.hpp"
+#include "graphics/samplegen2d.hpp"
+#include "graphics/samplegen1d.hpp"
+
 #include <cmath>
-#include <graphics/pinhole_camera.hpp>
-
-#include <graphics/random.hpp>
-#include <graphics/samplegen2d.hpp>
-#include <graphics/samplegen1d.hpp>
-
 #include <iostream>
 
 using namespace amethyst;

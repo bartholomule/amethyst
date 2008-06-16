@@ -1,0 +1,8 @@
+*.tga
+.libs
+.deps
+Makefile
+Makefile.in
+*.lo
+lib*.la
+quick_vector_vs_std_vector_perf

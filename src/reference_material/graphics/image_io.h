@@ -11,11 +11,12 @@
   19jan1999 Created this file.
 */
 
-#include <graphics/image.hpp>
-#include <graphics/image_converter.hpp>
 #include <string>
 #include <fstream>
-#include <rc_pointer.hpp>
+
+#include "graphics/image.hpp"
+#include "graphics/image_converter.hpp"
+#include "general/rc_pointer.hpp"
 
 namespace amethyst
 {

@@ -1,5 +1,5 @@
 /*
- * $Id: extra_exceptions.cpp,v 1.2 2003/09/18 00:40:52 kpharris Exp $
+ * $Id: extra_exceptions.cpp,v 1.1 2008/06/16 10:17:47 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris

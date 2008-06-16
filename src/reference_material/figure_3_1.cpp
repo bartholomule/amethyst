@@ -1,16 +1,16 @@
-// g++ -g figure_3_1.cpp graphics/capabilities.cpp graphics/requirements.cpp -o figure_3_1 -lm -I. -Igraphics -Igeneral
+// g++ -g figure_3_1.cpp graphics/capabilities.cpp graphics/requirements.cpp -o figure_3_1 -lm -I.
 
 /*
  * This is figure 3.1 from Peter Shirley's "Realistic Raytracing" book, second
  * edition. 
  */
 
-#include <sphere.hpp>
-#include <triangle.hpp>
-#include <aggregate.hpp>
-#include <raster.hpp>
-#include <tga_io.h>
-#include <rgbcolor.hpp>
+#include "graphics/sphere.hpp"
+#include "graphics/triangle.hpp"
+#include "graphics/aggregate.hpp"
+#include "graphics/raster.hpp"
+#include "graphics/tga_io.h"
+#include "graphics/rgbcolor.hpp"
 
 #include <iostream>
 

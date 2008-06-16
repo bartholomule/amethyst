@@ -1,9 +1,11 @@
-#include "testinclude.hpp"
+#include "general/fd_stream.hpp"
+#include "general/string_format.hpp"
+#include "general/base_logger.hpp"
+
+#include "test_framework/testinclude.hpp"
+
 #include <iostream>
 #include <ostream>
-#include "fd_stream.hpp"
-#include "string_format.hpp"
-#include "base_logger.hpp"
 #include <fcntl.h>
 
 int main(int argc, const char** argv)

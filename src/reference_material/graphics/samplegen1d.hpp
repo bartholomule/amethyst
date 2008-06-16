@@ -1,5 +1,5 @@
 /*
- * $Id: samplegen1d.hpp,v 1.1 2004/05/17 06:43:53 kpharris Exp $
+ * $Id: samplegen1d.hpp,v 1.2 2008/06/16 10:17:49 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -46,8 +46,8 @@
   16May2004 Changed the names from 2d to 1d.  Added a clone function.
 */
 
-#include "quick_vector.hpp"
-#include "random.hpp"
+#include "general/quick_vector.hpp"
+#include "general/random.hpp"
 
 namespace amethyst
 {

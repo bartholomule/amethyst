@@ -1,5 +1,5 @@
 /*
- * $Id: base_camera.hpp,v 1.2 2004/06/01 03:59:31 kpharris Exp $
+ * $Id: base_camera.hpp,v 1.3 2008/06/16 10:17:48 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -22,8 +22,8 @@
 #if       !defined(AMETHYST__BASE_CAMERA_HPP)
 #define            AMETHYST__BASE_CAMERA_HPP
 
-#include <math/unit_line3.hpp>
-#include <string_format.hpp>
+#include "math/unit_line3.hpp"
+#include "general/string_format.hpp"
 #include <ostream>
 
 namespace amethyst
@@ -33,7 +33,7 @@ namespace amethyst
    * A base class for a camera.
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
+   * @version $Revision: 1.3 $
    * 
    */
   template<class T>

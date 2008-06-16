@@ -1,5 +1,5 @@
 /*
- * $Id: random.hpp,v 1.2 2007/02/05 07:14:22 kpharris Exp $
+ * $Id: random.hpp,v 1.1 2008/06/16 10:17:47 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris

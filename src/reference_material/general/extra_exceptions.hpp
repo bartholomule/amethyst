@@ -1,5 +1,5 @@
 /*
- * $Id: extra_exceptions.hpp,v 1.4 2004/04/07 05:10:05 kpharris Exp $
+ * $Id: extra_exceptions.hpp,v 1.1 2008/06/16 10:17:47 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -32,7 +32,7 @@ namespace amethyst
    * Thrown to indicate a size error (for assignment of arrays, etc).
    * 
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
+   * @version $Revision: 1.1 $
    * 
    */
   class size_mismatch : public std::runtime_error

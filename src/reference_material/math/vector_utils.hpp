@@ -1,21 +1,21 @@
 /*
- * $Id: vector_utils.hpp,v 1.3 2004/04/07 05:10:06 kpharris Exp $
+ * $Id: vector_utils.hpp,v 1.4 2008/06/16 10:17:49 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or    
- * (at your option) any later version.                                  
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
@@ -40,19 +40,19 @@ namespace amethyst
   {
     return(vector_type(1/v.x(), 1/v.y(), 1/v.z()));
   }
-  
+
   template <class vector_type>
   inline typename vector_type::base average(const vector_type& v)
   {
     return((v.x() + v.y() + v.z())/3);
   }
-  
+
   template <class vector_type>
   inline typename vector_type::base max(const vector_type& v)
   {
     return std::max(v.x(), std::max(v.y(),v.z()));
   }
-  
+
   template <class vector_type>
   vector_type abs_vector(const vector_type& v)
   {
@@ -74,7 +74,7 @@ namespace amethyst
     }
     return(min_index);
   }
-  
+
   template <class vector_type>
   inline vector_type perp_vector(const vector_type& v)
   {
@@ -98,7 +98,7 @@ namespace amethyst
   {
     return dotprod(v1,v1) > dotprod(v2,v2);
   }
-  
+
   template <class vector_type> inline bool magnitude_less(const vector_type& v1, const vector_type& v2)
   {
     return dotprod(v1,v1) < dotprod(v2,v2);
@@ -126,7 +126,26 @@ namespace amethyst
     }
   } // best_planar_projection(const coord3&, unsigned&, unsigned&)
 
-  
-} // namespace amethyst  
+
+	template <typename vector_type>
+	void calculate_perpendicular_vectors(const vector_type& normal, vector_type& u, vector_type& v)
+	{
+		// Given the "best planar projection", this will say which index should
+		// be modified.  Note that the diagonal (0,0) (1,1) (2,2) won't ever be
+		// used (can't be returned by best_planar_projection)
+		const unsigned index_to_modify[3][3] = { { 0, 0, 2 }, { 0, 0, 1 }, { 2, 1, 0 } };
+
+		unsigned i1, i2;
+		best_planar_projection(normal, i1, i2);
+		unsigned i3 = index_to_modify[i1][i2];
+
+		vector_type vn = normal;
+		vn[i3] = vn[i3] + 1;
+
+		v = unit(crossprod(normal, vn));
+		u = unit(crossprod(v, normal));
+	}
+
+} // namespace amethyst
 
 #endif /* !defined(AMETHYST__VECTOR_UTILS_HPP) */

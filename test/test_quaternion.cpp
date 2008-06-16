@@ -1,5 +1,5 @@
 #define auto_unit_test_main main
-#include "unit_test_auto.hpp"
+#include "test_framework/unit_test_auto.hpp"
 #include "math/quaternion.hpp"
 #include "math/vector3.hpp"
 #include <cmath>

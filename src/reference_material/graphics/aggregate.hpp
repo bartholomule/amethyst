@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.9 2008/06/13 15:38:55 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.10 2008/06/16 10:17:48 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,11 +25,11 @@
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include "shape.hpp"
-#include "capabilities.hpp"
+#include "graphics/shape.hpp"
+#include "graphics/capabilities.hpp"
 
-#include "quick_vector.hpp"
-#include <rc_pointer.hpp>
+#include "general/quick_vector.hpp"
+#include "general/rc_pointer.hpp"
 
 namespace amethyst
 {
@@ -39,7 +39,7 @@ namespace amethyst
     * An aggregate (collection) of shapes.
     *
     * @author Kevin Harris <kpharris@users.sourceforge.net>
-    * @version $Revision: 1.9 $
+    * @version $Revision: 1.10 $
     *
     */
    template<class T>

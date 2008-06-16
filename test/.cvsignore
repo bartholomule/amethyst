@@ -11,3 +11,4 @@ test_rgbcolor
 test_tokenizer
 test_fd_stream
 test_quaternion
+test_disc
