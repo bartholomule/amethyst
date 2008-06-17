@@ -21,7 +21,7 @@ LDADD = \
 	-L$(top_builddir)/src/reference_material/graphics -lamethyst_graphics
 
 INCLUDES = \
-	-I$(top_srcdir)/src/reference_material/ \
+	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/test
 
 noinst_PROGRAMS = test_raster test_rgbcolor test_fd_stream test_tokenizer $(BUILT_TESTS)
