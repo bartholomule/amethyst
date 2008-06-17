@@ -129,7 +129,7 @@ namespace amethyst
 			real(real), imag(imag_c)
 		{
 		}
-		inline explicit quaternion(T real = T(0), const vector3<T>& imag_v):
+		inline explicit quaternion(T real, const vector3<T>& imag_v):
 			real(real), imag(imag_v.x(), imag_v.y(), imag_v.z())
 		{
 		}

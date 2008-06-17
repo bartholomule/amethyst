@@ -1,0 +1,6 @@
+*~
+Makefile
+Makefile.in
+config.hpp
+config.hpp.in
+stamp-h*

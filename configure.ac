@@ -11,7 +11,7 @@ dnl Change the version number here when required.
 AM_INIT_AUTOMAKE(panorama-amethyst, 0.00.00)
 AC_PREFIX_DEFAULT(/usr/local/)
 
-AM_CONFIG_HEADER(src/amethyst_config.hpp)
+AM_CONFIG_HEADER(include/amethyst/config.hpp)
 
 AC_GNU_SOURCE
 
@@ -26,12 +26,15 @@ dnl ---------------------------------------------------------------------------
 AC_PROG_CXX
 AC_LANG(C++)
 
+CC=`echo "${CC}" | sed 's/-O2//g'`
+CXX=`echo "${CXX}" | sed 's/-O2//g'`
+CXXFLAGS=`echo "${CXXFLAGS}" | sed 's/-O2//g'`
+
 AM_PROG_LEX
 AC_PROG_YACC
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
-#AM_GNU_GETTEXT
 
 AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
@@ -46,6 +49,7 @@ dnl ---------------------------------------------------------------------------
 dnl Checks for header files.
 dnl ---------------------------------------------------------------------------
 AC_HEADER_STDC
+AC_CHECK_HEADERS(libintl.h)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for C++ features
@@ -111,27 +115,6 @@ fi
 dnl ---------------------------------------------------------------------------
 dnl Check for special libraries
 dnl ---------------------------------------------------------------------------
-
-dnl ---------------
-dnl gtkmm-2.0
-dnl ---------------
-HAVE_GTKMM=0
-#PKG_CHECK_MODULES(GTKMM, gtkmm-2.0, HAVE_GTKMM=1, HAVE_GTKMM=0 )
-AC_DEFINE(HAVE_GTKMM, $HAVE_GTKMM, gtk-- is available.)
-AC_SUBST(GTKMM_CFLAGS)
-AC_SUBST(GTKMM_LIBS)
-AM_CONDITIONAL(HAVE_GTKMM, test "x$HAVE_GTKMM" = "x1")
-
-dnl ---------------
-dnl SigC++
-dnl ---------------
-HAVE_SIGCPP=0
-#PKG_CHECK_MODULES(SIGCPP, sigc++-2.0, HAVE_SIGCPP=1, HAVE_SIGCPP=0 )
-AC_DEFINE(HAVE_SIGCPP, $HAVE_SIGCPP, sigc++ is available.)
-AC_SUBST(SIGCPP_CFLAGS)
-AC_SUBST(SIGCPP_LIBS)
-AM_CONDITIONAL(HAVE_SIGCPP, test "x$HAVE_SIGCPP" = "x1")
-
 AC_MSG_CHECKING(for a forced cpu type)
 AC_ARG_ENABLE(cpu,
 [  --enable-cpu=CPUTYPE    Force the use of the given cpu type in compilation.]
@@ -213,28 +196,15 @@ elif test $OPTIMIZATION_VAL != "no"; then
   OPTIMIZATIONS_ALLOWED=0
   OPTIMIZE_EXPENSIVE=0
   OPTIMIZATION_LEVEL=""
-  dnl For some reason, this didn't work correctly with a simple case:
-  dnl [0-9]) ...
 
   case $OPTIMIZATION_VAL in
-    1) OPTIMIZATIONS_ALLOWED=1 ;;
-    2) OPTIMIZATIONS_ALLOWED=1 ;;
-    3) OPTIMIZATIONS_ALLOWED=1 ;;
-    4) OPTIMIZATIONS_ALLOWED=1 ;;
-    5) OPTIMIZATIONS_ALLOWED=1 ;;
-    6) OPTIMIZATIONS_ALLOWED=1 ;;
-    7) OPTIMIZATIONS_ALLOWED=1 ;;
-    8) OPTIMIZATIONS_ALLOWED=1 ;;
-    9) OPTIMIZATIONS_ALLOWED=1 ;;
-    0) OPTIMIZATIONS_ALLOWED=1 ;;
+    0|1|2|3|4|5|6|7|8|9) OPTIMIZATIONS_ALLOWED=1 ;;
     *) OPTIMIZATION_VAL="NO -- unknown value \"$OPTIMIZATION_VAL\"" ;;
   esac
-  if test $OPTIMIZATIONS_ALLOWED != 0
-  then
+  if test $OPTIMIZATIONS_ALLOWED != 0; then
     OPTIMIZATION_LEVEL=$OPTIMIZATION_VAL
     OPTIMIZATION_VAL="yes, level $OPTIMIZATION_LEVEL"
-    if test $OPTIMIZATION_LEVEL -ge 5
-    then
+    if test $OPTIMIZATION_LEVEL -ge 5; then
       OPTIMIZE_EXPENSIVE=1
     fi
     CFLAGS="$CFLAGS -O$OPTIMIZATION_LEVEL"
@@ -339,15 +309,13 @@ AC_SUBST(ARCH_PROG_SETLIBPATH)
 AC_OUTPUT([
             Makefile
             doc/Makefile
-            po/Makefile.in
-            po/Makefile
-            m4/Makefile
+            include/Makefile
+            include/amethyst/Makefile
             src/Makefile
             src/utils/Makefile
             src/reference_material/Makefile
             src/reference_material/general/Makefile
             src/reference_material/graphics/Makefile
-            include/Makefile
             test/Makefile
             test/test_framework/Makefile
           ],

@@ -1,1 +1,1 @@
-
+SUBDIRS = amethyst

@@ -1,28 +1,28 @@
 /*
- * $Id: raster.hpp,v 1.6 2008/06/16 10:17:49 kpharris Exp $
+ * $Id: raster.hpp,v 1.7 2008/06/17 16:11:12 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or    
- * (at your option) any later version.                                  
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
 #if       !defined(AMETHYST__RASTER_HPP)
 #define            AMETHYST__RASTER_HPP
 
-#include <textized.hpp>
+#include "general/textized.hpp"
 #include "general/extra_exceptions.hpp"
 #include "general/template_functions.hpp"
 #include "general/useful_functions.hpp"
@@ -33,14 +33,14 @@ namespace amethyst
   template <class T> class scanline;
 
   /**
-   * 
+   *
    * A generic class to represent a raster (2d matrix).  This is useful for
    * raster graphics and possibly lots of other fun stuff.  Note:  It does NOT
    * have iterators (at this time).
-   * 
+   *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.6 $
-   * 
+   * @version $Revision: 1.7 $
+   *
    */
   template <class T>
   class raster
@@ -79,7 +79,7 @@ namespace amethyst
      * @param x The column.
      * @param y The row.
      * @throws out_of_range if either x or y is out of range.
-     */    
+     */
     const T& operator()(unsigned x, unsigned y) const
       throw(out_of_range);
 
@@ -106,7 +106,7 @@ namespace amethyst
      * @returns a new raster that contains the data from the specified region.
      */
     raster<T> sub_raster(unsigned x1, unsigned y1,
-                         unsigned x2, unsigned y2) const throw(out_of_range); 
+                         unsigned x2, unsigned y2) const throw(out_of_range);
 
     /**
      * Resize the current raster to the given width and height.  If preserve is
@@ -119,7 +119,7 @@ namespace amethyst
      * Resize the current raster to the given width and height, shifting old
      * data to be centered at cx,cy in the newly sized raster, and filling the
      * rest with the given fill data.
-     * 
+     *
      */
     void resize(unsigned width, unsigned height,
                 int cx, int cy, const T& fill);
@@ -159,7 +159,7 @@ namespace amethyst
     unsigned get_numpixels() const
     {
       return width * height;
-    } 
+    }
     /** Return if the raster has no data. */
     bool empty() const
     {
@@ -185,7 +185,7 @@ namespace amethyst
    * row number be changed.
    *
    * @author Kevin Harris
-   * @version $Revision: 1.6 $
+   * @version $Revision: 1.7 $
    */
   template <class T>
   class scanline
@@ -207,7 +207,7 @@ namespace amethyst
      * @param x The index of the element on this scanline.
      * @throws out_of_range if x is out of range
      * @returns The element requested.
-     */      
+     */
     const T& operator[](unsigned x) const throw(out_of_range);
 
     /**
@@ -222,7 +222,7 @@ namespace amethyst
      * @returns A reference to this scanline, for chained assignments.
      * @throws size_mismatch if the sizes of the scanlines (widths) are not
      *   the same.
-     */  
+     */
     scanline& operator=(const scanline& line) throw(size_mismatch);
 
   private:
@@ -394,7 +394,7 @@ namespace amethyst
       snprintf(buffer,1024,"raster<T>::op()(%d,%d)const: %s", x, y,
                intl("index is out of range"));
       throw out_of_range(std::string(buffer));
-    }    
+    }
   }
 
   template <class T>
@@ -410,7 +410,7 @@ namespace amethyst
       snprintf(buffer,1024,"raster<T>::op[](%d): %s", y,
                intl("index is out of range"));
       throw out_of_range(std::string(buffer));
-    }    
+    }
   }
 
   template <class T>
@@ -427,7 +427,7 @@ namespace amethyst
       snprintf(buffer,1024,"raster<T>::op[](%d)const: %s", y,
                intl("index is out of range"));
       throw out_of_range(std::string(buffer));
-    }    
+    }
   }
 
   template <class T>
@@ -440,7 +440,7 @@ namespace amethyst
       if( (x1 < x2) && (y1 < y2) )
       {
         // Both of these add 1, because it is inclusive...
-        unsigned x_range = x2 - x1 + 1; 
+        unsigned x_range = x2 - x1 + 1;
         unsigned y_range = y2 - y1 + 1;
 
         raster<T> ret_ras(x_range, y_range);
@@ -464,7 +464,7 @@ namespace amethyst
     else
     {
       throw out_of_range(std::string("raster<T>::sub_raster(...): ") +
-                         intl("index is out of range"));       
+                         intl("index is out of range"));
     }
   }
 
@@ -686,7 +686,7 @@ namespace amethyst
       snprintf(buffer,1024,"raster<T>::scanline::op[](%d): %s", x,
                intl("index is out of range"));
       throw out_of_range(std::string(buffer));
-    } 
+    }
   } // scanline::operator[](x)
 
   template <class T>
@@ -702,8 +702,8 @@ namespace amethyst
       snprintf(buffer,1024,"raster<T>::scanline::op[](%d)const: %s", x,
                intl("index is out of range"));
       throw out_of_range(std::string(buffer));
-    } 
-  } // scanline::operator[](x) const  
+    }
+  } // scanline::operator[](x) const
 
   template <class T>
   scanline<T>& scanline<T>::operator=(const scanline& line) throw(size_mismatch)
@@ -724,7 +724,7 @@ namespace amethyst
                             intl("raster widths are different"));
       }
     }
-    return *this;   
+    return *this;
   } // scanline::operator=(scanline)
 
 } // namespace amethyst

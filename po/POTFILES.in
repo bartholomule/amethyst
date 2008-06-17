@@ -1,7 +1,0 @@
-# List of source files containing translatable strings.
-# Copyright (C) 2003 Kevin Harris
-
-# Library header files (with inlined/templated stuff)
-#include/manygames/raster.hpp
-     
-# Other package source files
