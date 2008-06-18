@@ -383,13 +383,17 @@ rcp_reinterpret_cast(const rc_pointer<T,counter_type>& old_rcp)
 template <class T, class counter_type>
 std::ostream& operator<<(std::ostream& o, const rc_pointer<T,counter_type>& rcp)
 {
-  o << "p=0x" << std::hex << int(rcp.data_pointer)
-    << " c="  << std::dec << int(rcp.counts.reference_count())
+  o << "p=" << std::hex << reinterpret_cast<void*>(rcp.data_pointer)
+    << " c=" << std::dec << int(rcp.counts.reference_count())
     << "{";
   if(rcp.data_pointer != NULL)
+  {
     o << *rcp.data_pointer;
+  }
   else
+  {
     o << "NULL";
+  }
   o << "}";
   return(o);
 }
