@@ -1,12 +1,25 @@
 #include "general/fd_stream.hpp"
 #include "general/string_format.hpp"
 #include "general/base_logger.hpp"
+#include "general/rc_pointer.hpp"
 
 #include "test_framework/testinclude.hpp"
 
 #include <iostream>
 #include <ostream>
 #include <fcntl.h>
+
+struct barf
+{
+	barf(int val) : value(val) { }
+	int value;
+};
+
+std::ostream& operator<<(std::ostream& o, const barf& b)
+{
+	o << "This is barf: " << b.value;
+	return o;
+}
 
 int main(int argc, const char** argv)
 {
@@ -19,6 +32,9 @@ int main(int argc, const char** argv)
 
 	amethyst::fd_ostream bar(2);
 	foo << "Goodbye." << std::endl;
+
+	rc_pointer<barf> b(new barf(10));
+	foo << b << std::endl;
 
 	std::cout << "opening baz.txt" << std::endl;
 	int baz = open("baz.txt", O_RDWR | O_CREAT, 0644);
