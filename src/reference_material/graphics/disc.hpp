@@ -1,5 +1,5 @@
 /*
- * $Id: disc.hpp,v 1.1 2008/06/16 10:17:48 kpharris Exp $
+ * $Id: disc.hpp,v 1.2 2008/06/18 05:33:10 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2008 Kevin Harris
@@ -39,7 +39,7 @@ namespace amethyst
 	 * A disc (circle).
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.1 $
+	 * @version $Revision: 1.2 $
 	 *
 	 */
 	template<class T>
@@ -165,18 +165,10 @@ namespace amethyst
 	template<class T>
 	bool disc<T>::intersects(const sphere<T>& s) const
 	{
-		logger lgr;
-		lgr.log( string_format("Checking intersection between disc and sphere:\n%1\n%2", *this, s) );
-
 		vector3<T> sphere_vector = s.get_center() - plane<T>::get_origin();
 		T projected_n = dotprod(sphere_vector, plane<T>::get_normal());
 		T projected_n_squared = projected_n * projected_n;
 		T sphere_radius_squared = s.get_radius() * s.get_radius();
-
-		lgr.log(string_format("sv=%1, pns=%2, srs=%3",
-				sphere_vector,
-				projected_n_squared,
-				sphere_radius_squared));
 
 		if( sphere_radius_squared >= projected_n_squared )
 		{
@@ -194,16 +186,10 @@ namespace amethyst
 			T projected_u = dotprod(sphere_vector, plane<T>::get_u_vector());
 			T projected_v = dotprod(sphere_vector, plane<T>::get_v_vector());
 
-			lgr.log(string_format("pu=%1 pv=%2", convert_to_string(projected_u,0,0,12), convert_to_string(projected_v,0,0,12)));
-
 			T distance_to_projected_center = sqrt(projected_u * projected_u + projected_v * projected_v);
 
 			// Use epsilon to determine if it is close enough to consider an
 			// intersection.
-			lgr.log(string_format("radius=%1 proj_rad=%2 dpc=%3",
-					convert_to_string(radius,0,0,12),
-					convert_to_string(projected_radius,0,0,12),
-					convert_to_string(distance_to_projected_center,0,0,12)));
 			if( (radius + projected_radius + AMETHYST_EPSILON) > distance_to_projected_center )
 			{
 				return true;
