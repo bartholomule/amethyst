@@ -1,5 +1,5 @@
 /*
- * $Id: sphere.hpp,v 1.9 2007/02/04 06:18:28 kpharris Exp $
+ * $Id: sphere.hpp,v 1.10 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,9 +25,9 @@
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include "shape.hpp"
-#include <general/defines.hpp>
-#include <general/string_format.hpp>
+#include "amethyst/graphics/shape.hpp"
+#include "amethyst/general/defines.hpp"
+#include "amethyst/general/string_format.hpp"
 
 namespace amethyst
 {
@@ -37,7 +37,7 @@ namespace amethyst
 	 * A sphere class.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.9 $
+	 * @version $Revision: 1.10 $
 	 *
 	 */
 	template<class T>
@@ -105,9 +105,6 @@ namespace amethyst
 
 		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-		virtual std::string to_string(const std::string& base_indentation,
-			const std::string& level_indentation = "  ") const;
-
 		virtual std::string name() const
 		{
 			return "sphere";
@@ -115,6 +112,8 @@ namespace amethyst
 
 		virtual intersection_capabilities get_intersection_capabilities() const;
 		virtual object_capabilities get_object_capabilities() const;
+	private:
+		 coord2<T> get_uv(const point3<T>& location) const;
 	}; // class sphere
 
 
@@ -247,14 +246,16 @@ namespace amethyst
 				intersection.set_first_point( line.point_at(t1) );
 				intersection.set_ray(line);
 
-
 				if( requirements.needs_normal() )
 				{
 					intersection.set_normal(unit(intersection.get_first_point() - center));
 				}
 
 				// FIXME! Follow the requirements
-
+				if( requirements.needs_uv() )
+				{
+					intersection.set_uv(get_uv(intersection.get_first_point()));
+				}
 
 				return true;
 			}
@@ -274,6 +275,10 @@ namespace amethyst
 						intersection.set_normal(unit(intersection.get_first_point() - center));
 					}
 
+					if( requirements.needs_uv() )
+					{
+						intersection.set_uv(get_uv(intersection.get_first_point()));
+					}
 					// FIXME! Follow the requirements (uv, local coords, etc).
 					return true;
 				}
@@ -346,16 +351,6 @@ namespace amethyst
 	}
 
 	template <class T>
-	std::string sphere<T>::to_string(const std::string& indent,
-		const std::string& level_indent) const
-	{
-		return ( indent + "sphere\n" +
-			indent + "{\n" +
-			sphere<T>::internal_members(indent + level_indent, false) +
-			indent + "}" );
-	}
-
-	template <class T>
 	intersection_capabilities sphere<T>::get_intersection_capabilities() const
 	{
 		intersection_capabilities caps = shape<T>::get_intersection_capabilities();
@@ -377,6 +372,22 @@ namespace amethyst
 		caps |= object_capabilities::SIMPLE;
 
 		return caps;
+	}
+
+	template <class T>
+	coord2<T> sphere<T>::get_uv(const point3<T>& location) const
+	{
+		 vector3<T> point_vector = location - center;
+
+		 T cos_theta = point_vector.y() / radius;
+		 // phi = [-pi,pi]
+		 // theta = [0,pi]
+		 T theta = acos(cos_theta);
+		 T phi = atan2(point_vector.z(), point_vector.x());
+		 T u = (phi + M_PI) / (2 * M_PI);
+		 T v = theta / M_PI;
+
+		 return coord2<T>(u, v);
 	}
 
 } // namespace amethyst

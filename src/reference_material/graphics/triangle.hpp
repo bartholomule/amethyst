@@ -1,5 +1,5 @@
 /*
- * $Id: triangle.hpp,v 1.9 2007/02/10 13:14:19 kpharris Exp $
+ * $Id: triangle.hpp,v 1.10 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,7 +25,7 @@
 // --------------------------------------
 // Include of parent class header
 // --------------------------------------
-#include <graphics/plane.hpp>
+#include "amethyst/graphics/plane.hpp"
 
 namespace amethyst
 {
@@ -35,7 +35,7 @@ namespace amethyst
 	 * A simple triangle class, which is based on the plane class.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.9 $
+	 * @version $Revision: 1.10 $
 	 *
 	 */
 	template<class T>
@@ -88,12 +88,7 @@ namespace amethyst
 
 		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-		virtual std::string to_string(const std::string& indent,
-			const std::string& level_indent = "  ") const;
-		virtual std::string name() const
-		{
-			return "triangle";
-		}
+		virtual std::string name() const { return "triangle"; }
 
 		virtual intersection_capabilities get_intersection_capabilities() const;
 		virtual object_capabilities get_object_capabilities() const;
@@ -238,10 +233,8 @@ namespace amethyst
 	template <class T>
 	std::string triangle<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
 	{
-		std::string retval;
+		std::string retval = plane<T>::internal_members(indentation, prefix_with_classname);
 		std::string internal_tagging = indentation;
-
-		retval += plane<T>::internal_members(indentation, true);
 
 		if( prefix_with_classname )
 		{
@@ -249,16 +242,6 @@ namespace amethyst
 		}
 
 		return retval;
-	}
-
-	template <class T>
-	std::string triangle<T>::to_string(const std::string& indent,
-		const std::string& level_indent) const
-	{
-		return ( indent + "triangle\n" +
-			indent + "{\n" +
-			triangle<T>::internal_members(indent + level_indent, false) +
-			indent + "}" );
 	}
 
 	template <class T>

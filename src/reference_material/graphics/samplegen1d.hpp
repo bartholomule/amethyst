@@ -1,21 +1,21 @@
 /*
- * $Id: samplegen1d.hpp,v 1.2 2008/06/16 10:17:49 kpharris Exp $
+ * $Id: samplegen1d.hpp,v 1.3 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or   
- * (at your option) any later version.                                 
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
@@ -46,8 +46,8 @@
   16May2004 Changed the names from 2d to 1d.  Added a clone function.
 */
 
-#include "general/quick_vector.hpp"
-#include "general/random.hpp"
+#include "amethyst/general/quick_vector.hpp"
+#include "amethyst/general/random.hpp"
 
 namespace amethyst
 {
@@ -58,15 +58,15 @@ namespace amethyst
     sample_generator_1d(const Random<T>& r = default_random<T>());
     sample_generator_1d(const sample_generator_1d<T>& gen) :
       rand_gen(gen.rand_gen->clone_new())
-    { }    
+    { }
     virtual ~sample_generator_1d() { delete rand_gen; }
 
     virtual quick_vector<T> get_samples(int num_samples) = 0;
     virtual void get_samples(int num_samples, void(*pf)(T)) = 0;
-    
+
     template <class operation>
     void filter_samples(int num_samples, operation& o);
-    
+
     const Random<T>& get_rand_gen() const { return *rand_gen; }
 
     virtual sample_generator_1d<T>* clone_new() const = 0;
@@ -140,7 +140,7 @@ namespace amethyst
     return(rand_gen->next());
   }
 
-  template <class T>  
+  template <class T>
   template <class operation>
   void sample_generator_1d<T>::filter_samples(int num_samples, operation& o)
   {
@@ -188,7 +188,7 @@ namespace amethyst
   {
     return new random_sample_1d<T>(*this);
   }
-  
+
   /* regular_generator stuff */
   template <class T>
   regular_sample_1d<T>::regular_sample_1d(const Random<T>& r):
@@ -199,7 +199,7 @@ namespace amethyst
   template <class T>
   quick_vector<T> regular_sample_1d<T>::get_samples(int num_samples)
   {
-    const T scalar = NEAR_ONE / T(num_samples - 1);    
+    const T scalar = NEAR_ONE / T(num_samples - 1);
     quick_vector<T> v;
     for(int x = 0; x < num_samples; ++x)
     {
@@ -257,7 +257,7 @@ namespace amethyst
   jitter_sample_1d<T>* jitter_sample_1d<T>::clone_new() const
   {
     return new jitter_sample_1d<T>(*this);
-  }  
+  }
 
   /* stuff for the poisson class */
   template <class T>

@@ -1,5 +1,5 @@
 /*
- * $Id: rectangle.hpp,v 1.5 2008/06/16 10:17:49 kpharris Exp $
+ * $Id: rectangle.hpp,v 1.6 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,7 +25,7 @@
 // --------------------------------------
 // Include of parent class header
 // --------------------------------------
-#include "plane.hpp"
+#include "amethyst/graphics/plane.hpp"
 
 namespace amethyst
 {
@@ -35,7 +35,7 @@ namespace amethyst
    * A simple rectangle class, which is based on the plane class.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.5 $
+   * @version $Revision: 1.6 $
    *
    */
   template<class T>
@@ -91,8 +91,6 @@ namespace amethyst
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-    virtual std::string to_string(const std::string& indent,
-                                  const std::string& level_indent = "  ") const;
     virtual std::string name() const { return "rectangle"; }
 
     virtual intersection_capabilities get_intersection_capabilities() const;
@@ -263,29 +261,17 @@ namespace amethyst
   template <class T>
   std::string rectangle<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
   {
-    std::string retval;
+    std::string retval = = plane<T>::internal_members(indentation, prefix_with_classname);
     std::string internal_tagging = indentation;
-
-    retval += plane<T>::internal_members(indentation, true);
 
     if( prefix_with_classname )
     {
       internal_tagging += rectangle<T>::name() + "::";
     }
 
+	 // No local members.
+
     return retval;
-  }
-
-  template <class T>
-  std::string rectangle<T>::to_string(const std::string& indent,
-                                     const std::string& level_indent) const
-  {
-
-    return ( indent + "rectangle\n" +
-             indent + "{\n" +
-             rectangle<T>::internal_members(indent + level_indent, false) +
-             indent + "}" );
-
   }
 
   template <class T>

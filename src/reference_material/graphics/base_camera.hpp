@@ -1,43 +1,43 @@
 /*
- * $Id: base_camera.hpp,v 1.3 2008/06/16 10:17:48 kpharris Exp $
+ * $Id: base_camera.hpp,v 1.4 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
  *
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or    
- * (at your option) any later version.                                  
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
 #if       !defined(AMETHYST__BASE_CAMERA_HPP)
 #define            AMETHYST__BASE_CAMERA_HPP
 
-#include "math/unit_line3.hpp"
-#include "general/string_format.hpp"
-#include <ostream>
+#include "amethyst/math/unit_line3.hpp"
+#include "amethyst/general/string_format.hpp"
+#include "amethyst/general/string_dumpable.hpp"
 
 namespace amethyst
-{ 
+{
   /**
-   * 
+   *
    * A base class for a camera.
-   * 
+   *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.3 $
-   * 
+   * @version $Revision: 1.4 $
+   *
    */
   template<class T>
-  class base_camera
+  class base_camera : public string_dumpable
   {
 
   private:
@@ -51,7 +51,7 @@ namespace amethyst
     base_camera();
 
     /** Secondary constructor */
-    base_camera(size_t w, size_t h);    
+    base_camera(size_t w, size_t h);
 
     /** Destructor */
     virtual ~base_camera();
@@ -68,7 +68,7 @@ namespace amethyst
 
     void set_width(size_t w) { nx = w; }
     void set_height(size_t h) { ny = h; }
-    
+
     /* FIXME! At some point in the future, these will need to have a more
        complete ray, which includes time, etc. */
     /* This sample point is in [0,1]^2 */
@@ -77,19 +77,8 @@ namespace amethyst
     virtual ray_parameters<T> get_ray(const T& px, const T& py, T time = 0) const = 0;
 
     virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-    
-    virtual std::string to_string(const std::string& base_indentation,
-                                  const std::string& level_indentation = "  ") const;
 
-    virtual std::string to_string() const
-    {
-      return to_string("");
-    }
-
-    virtual std::string name() const
-    {
-      return "base_camera";
-    }
+    virtual std::string name() const { return "base_camera"; }
   }; // class base_camera
 
 
@@ -101,7 +90,7 @@ namespace amethyst
   base_camera<T>::base_camera():
     nx(0), ny(0)
   {
-  
+
   } // base_camera()
 
   //------------------------------------------
@@ -111,8 +100,8 @@ namespace amethyst
   base_camera<T>::base_camera(size_t w, size_t h):
     nx(w), ny(h)
   {
-  
-  } // base_camera(w,h)  
+
+  } // base_camera(w,h)
 
   //---------------------------------
   // Destructor for class base_camera
@@ -120,7 +109,7 @@ namespace amethyst
   template<class T>
   base_camera<T>::~base_camera()
   {
-  
+
   } // ~base_camera()
 
   //---------------------------------------
@@ -153,7 +142,7 @@ namespace amethyst
   std::string base_camera<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
   {
     std::string retval;
-    
+
     std::string internal_tagging = indentation;
 
     if( prefix_with_classname )
@@ -165,23 +154,6 @@ namespace amethyst
     return retval;
   }
 
-  template <class T>
-  std::string base_camera<T>::to_string(const std::string& indent,
-                                        const std::string& level_indent) const
-  {
-    return ( indent + base_camera<T>::name() + "\n" + 
-             indent + "{\n" +
-             base_camera<T>::internal_members(indent + level_indent, false) +
-             indent + "}" );         
-  }  
-
-  template <class T>
-  std::ostream& operator<<(std::ostream& o, const base_camera<T>& c)
-  {
-    o << c.to_string();
-    return o;
-  }
-  
 } // namespace amethyst
 
 

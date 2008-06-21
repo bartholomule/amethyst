@@ -5,7 +5,13 @@ libamethyst_general_la_SOURCES = \
 	log_formatter.cpp \
 	string_tokenizer.cpp \
 	stream_reference.cpp \
-	extra_exceptions.cpp
+	extra_exceptions.cpp \
+	string_dumpable.cpp
+
+# FIXME! Complete this list of headers.
+pkginclude_HEADERS = \
+	string_dumpable.hpp
+
 libamethyst_general_la_LIBADD =
 libamethyst_general_la_LDFLAGS = -shared -rpath @prefix@/lib -version-info 1
 

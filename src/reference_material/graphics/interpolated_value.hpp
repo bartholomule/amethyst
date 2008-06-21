@@ -1,5 +1,5 @@
 /*
- * $Id: interpolated_value.hpp,v 1.4 2008/06/16 10:17:48 kpharris Exp $
+ * $Id: interpolated_value.hpp,v 1.5 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -62,9 +62,9 @@
 
 #include <string>
 #include <algorithm>
-#include <ostream>
-#include "general/string_format.hpp"
-#include "general/quick_vector.hpp"
+#include "amethyst/general/string_format.hpp"
+#include "amethyst/general/quick_vector.hpp"
+#include "amethyst/general/string_dumpable.hpp"
 
 namespace amethyst
 {
@@ -91,16 +91,12 @@ namespace amethyst
 	 * be for parametric-changing parameters (eg. location, radius, etc.)
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.4 $
+	 * @version $Revision: 1.5 $
 	 *
 	 */
 	template<class parametric_type, class interpolation_type>
-	class interpolated_value
+	class interpolated_value : public string_dumpable
 	{
-	private:
-
-	protected:
-
 	public:
 
 		/** Default constructor */
@@ -113,21 +109,11 @@ namespace amethyst
 		virtual interpolation_type interpolate(parametric_type parameter) const = 0;
 		virtual interpolated_value<parametric_type, interpolation_type>* clone_new() const = 0;
 
-		virtual std::string to_string(const std::string& base_indentation,
-			const std::string& level_indentation = "  ") const = 0;
-
 		virtual quick_vector<interpolation_point<parametric_type, interpolation_type> > get_interpolation_points() const = 0;
 
-		virtual std::string name() const
-		{
-			return "interpolation_base_class";
-		}
+		virtual std::string name() const { return "interpolation_base_class"; }
 
-		std::string to_string() const
-		{
-			return to_string("");
-		}
-
+		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const { return std::string(); }
 	}; // class interpolated_value
 
 
@@ -178,12 +164,7 @@ namespace amethyst
 	std::ostream& operator<<(std::ostream& o,
 		const interpolation_point<parametric_type, interpolation_type>& ip)
 	{
-		o << "{ ";
-		o << ip.parameter;
-		o << ", ";
-		o << ip.value;
-		o << " }";
-		return o;
+		return o << "{ " << ip.parameter << ", " << ip.value << " }";
 	}
 
 	enum endpoint_behavior { ENDPOINT_STOP, ENDPOINT_CONTINUE };
@@ -429,22 +410,23 @@ namespace amethyst
 		virtual ~interpolated_pair() { };
 		virtual self_type* clone_new() const { return new self_type(*this); }
 
-		virtual std::string name() const
-		{
-			return "interpolated_pair<" + fun.name() + ">";
-		}
+		virtual std::string name() const { return "interpolated_pair<" + fun.name() + ">"; }
 
-		virtual std::string to_string(const std::string& base_indentation,
-			const std::string& level_indentation = "  ") const
+		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const
 		{
-			std::string my_name = name();
-			std::string indent = base_indentation + level_indentation;
-			return ( base_indentation + my_name + "\n" +
-				base_indentation + "{\n" +
-				indent + string_format("p1=%1\n", ip1) +
-				indent + string_format("p2=%1\n", ip2) +
-				indent + string_format("endpoint=%1\n", behavior) +
-				base_indentation + "}" );
+			std::string retval = interpolated_value<parametric_type,interpolation_type>::internal_members(indentation, prefix_with_classname);
+			std::string internal_tagging = indentation;
+
+			if( prefix_with_classname )
+			{
+				internal_tagging += self_type::name() + "::";
+			}
+
+			retval += internal_tagging + string_format("p1=%1\n", ip1);
+			retval += internal_tagging + string_format("p2=%1\n", ip2);
+			retval += internal_tagging + string_format("endpoint=%1\n", behavior);
+
+			return retval;
 		}
 
 		virtual bool valid_parameter(parametric_type parameter) const
@@ -522,21 +504,22 @@ namespace amethyst
 		virtual ~interpolated_vector() { };
 		virtual self_type* clone_new() const { return new self_type(*this); }
 
-		virtual std::string name() const
-		{
-			return "interpolated_vector<" + fun.name() + ">";
-		}
+		virtual std::string name() const { return "interpolated_vector<" + fun.name() + ">"; }
 
-		virtual std::string to_string(const std::string& base_indentation,
-			const std::string& level_indentation = "  ") const
+		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const
 		{
-			std::string my_name = name();
-			std::string indent = base_indentation + level_indentation;
-			return ( base_indentation + my_name + "\n" +
-				base_indentation + "{\n" +
-				indent + string_format("v=%1\n", iv) +
-				indent + string_format("endpoint=%1\n", behavior) +
-				base_indentation + "}" );
+			std::string retval = interpolated_value<parametric_type,interpolation_type>::internal_members(indentation, prefix_with_classname);
+			std::string internal_tagging = indentation;
+
+			if( prefix_with_classname )
+			{
+				internal_tagging += self_type::name() + "::";
+			}
+
+			retval += internal_tagging + string_format("v=%1\n", iv);
+			retval += internal_tagging + string_format("endpoint=%1\n", behavior);
+
+			return retval;
 		}
 
 		virtual bool valid_parameter(parametric_type parameter) const
@@ -685,14 +668,6 @@ namespace amethyst
 		user_interpolation<T,IT,fn_ptr> interpolation(fun, fn_name);
 
 		return interpolated_vector<T,IT,user_interpolation<T,IT,fn_ptr> >(vec, interpolation, b);
-	}
-
-
-	template <class T, class V>
-	std::ostream& operator<<(std::ostream& o, const interpolated_value<T,V>& iv)
-	{
-		o << iv.to_string();
-		return o;
 	}
 
 } // namespace amethyst

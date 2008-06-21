@@ -1,5 +1,5 @@
 /*
- * $Id: image_converter.hpp,v 1.6 2008/06/16 10:17:48 kpharris Exp $
+ * $Id: image_converter.hpp,v 1.7 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -22,7 +22,7 @@
 #if       !defined(AMETHYST__IMAGE_CONVERTER_HPP)
 #define            AMETHYST__IMAGE_CONVERTER_HPP
 
-#include "graphics/image.hpp"
+#include "amethyst/graphics/image.hpp"
 #include <cmath>
 
 namespace amethyst

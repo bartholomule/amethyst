@@ -1,5 +1,5 @@
 /*
- * $Id: disc.hpp,v 1.2 2008/06/18 05:33:10 kpharris Exp $
+ * $Id: disc.hpp,v 1.3 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2008 Kevin Harris
@@ -25,11 +25,9 @@
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include "plane.hpp"
-
-#include "general/base_logger.hpp"
-#include "general/string_format.hpp"
-#include "math/template_math.hpp"
+#include "amethyst/graphics/plane.hpp"
+#include "amethyst/general/string_format.hpp"
+#include "amethyst/math/template_math.hpp"
 
 namespace amethyst
 {
@@ -39,7 +37,7 @@ namespace amethyst
 	 * A disc (circle).
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.2 $
+	 * @version $Revision: 1.3 $
 	 *
 	 */
 	template<class T>
@@ -92,8 +90,6 @@ namespace amethyst
 
 		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-		virtual std::string to_string(const std::string& indent,
-			const std::string& level_indent = "  ") const;
 		virtual std::string name() const { return "disc"; }
 
 		virtual intersection_capabilities get_intersection_capabilities() const;
@@ -258,10 +254,8 @@ namespace amethyst
 	template <class T>
 	std::string disc<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
 	{
-		std::string retval;
+		std::string retval = plane<T>::internal_members(indentation, true);
 		std::string internal_tagging = indentation;
-
-		retval += plane<T>::internal_members(indentation, true);
 
 		if( prefix_with_classname )
 		{
@@ -271,18 +265,6 @@ namespace amethyst
 		retval += internal_tagging + string_format("radius=%1\n", radius);
 
 		return retval;
-	}
-
-	template <class T>
-	std::string disc<T>::to_string(const std::string& indent,
-		const std::string& level_indent) const
-	{
-
-		return ( indent + "disc\n" +
-			indent + "{\n" +
-			disc<T>::internal_members(indent + level_indent, false) +
-			indent + "}" );
-
 	}
 
 	template <class T>

@@ -1,5 +1,5 @@
 /*
- * $Id: image.hpp,v 1.6 2008/06/16 10:17:48 kpharris Exp $
+ * $Id: image.hpp,v 1.7 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -25,8 +25,8 @@
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include "graphics/raster.hpp"
-#include "graphics/rgbcolor.hpp"
+#include "amethyst/graphics/raster.hpp"
+#include "amethyst/graphics/rgbcolor.hpp"
 
 namespace amethyst
 {
@@ -59,7 +59,7 @@ namespace amethyst
 	 * </font>
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.6 $
+	 * @version $Revision: 1.7 $
 	 * @see raster
 	 * @see rgbcolor
 	 *

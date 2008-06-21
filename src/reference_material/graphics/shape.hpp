@@ -1,5 +1,5 @@
 /*
- * $Id: shape.hpp,v 1.11 2008/06/16 10:17:49 kpharris Exp $
+ * $Id: shape.hpp,v 1.12 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -22,16 +22,14 @@
 #if       !defined(AMETHYST__SHAPE_HPP)
 #define            AMETHYST__SHAPE_HPP
 
-#include <math/point3.hpp>
-#include <math/line3.hpp>
-#include <math/unit_line3.hpp>
-#include <graphics/intersection_info.hpp>
-#include <graphics/capabilities.hpp>
-#include <graphics/requirements.hpp>
-#include <graphics/ray_parameters.hpp>
-
-#include <string>
-#include <ostream>
+#include "amethyst/math/point3.hpp"
+#include "amethyst/math/line3.hpp"
+#include "amethyst/math/unit_line3.hpp"
+#include "amethyst/graphics/intersection_info.hpp"
+#include "amethyst/graphics/capabilities.hpp"
+#include "amethyst/graphics/requirements.hpp"
+#include "amethyst/graphics/ray_parameters.hpp"
+#include "amethyst/general/string_dumpable.hpp"
 
 namespace amethyst
 {
@@ -44,11 +42,11 @@ namespace amethyst
 	 * The base class for a shape.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.11 $
+	 * @version $Revision: 1.12 $
 	 *
 	 */
 	template<class T>
-	class shape
+	class shape : public string_dumpable
 	{
 
 	private:
@@ -114,11 +112,6 @@ namespace amethyst
 		 * textures will be applied.
 		 */
 		virtual bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const = 0;
-
-		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const = 0;
-
-		virtual std::string to_string(const std::string& base_indentation = "",
-			const std::string& level_indentation = "  ") const = 0;
 
 		virtual std::string name() const
 		{
@@ -209,14 +202,6 @@ namespace amethyst
 		}
 		return false;
 	} // shape::intersects_ray(line3<T>,T)
-
-
-	template <class T>
-	std::ostream& operator<<(std::ostream& o, const shape<T>& s)
-	{
-		o << s.to_string();
-		return o;
-	}
 
 } // namespace amethyst
 

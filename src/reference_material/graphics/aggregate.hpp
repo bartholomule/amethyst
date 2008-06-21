@@ -1,5 +1,5 @@
 /*
- * $Id: aggregate.hpp,v 1.10 2008/06/16 10:17:48 kpharris Exp $
+ * $Id: aggregate.hpp,v 1.11 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,11 +25,10 @@
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include "graphics/shape.hpp"
-#include "graphics/capabilities.hpp"
-
-#include "general/quick_vector.hpp"
-#include "general/rc_pointer.hpp"
+#include "amethyst/graphics/shape.hpp"
+#include "amethyst/graphics/capabilities.hpp"
+#include "amethyst/general/quick_vector.hpp"
+#include "amethyst/general/rc_pointer.hpp"
 
 namespace amethyst
 {
@@ -39,7 +38,7 @@ namespace amethyst
     * An aggregate (collection) of shapes.
     *
     * @author Kevin Harris <kpharris@users.sourceforge.net>
-    * @version $Revision: 1.10 $
+    * @version $Revision: 1.11 $
     *
     */
    template<class T>
@@ -98,13 +97,7 @@ namespace amethyst
 
       virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-      virtual std::string to_string(const std::string& base_indentation,
-         const std::string& level_indentation = "  ") const;
-
-      virtual std::string name() const
-      {
-         return "aggregate";
-      }
+      virtual std::string name() const { return "aggregate"; }
 
       virtual intersection_capabilities get_intersection_capabilities() const
       {
@@ -446,29 +439,17 @@ namespace amethyst
 
       retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
       retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());
-      return retval;
-   }
 
-   template <class T>
-   std::string aggregate<T>::to_string(const std::string& indent,
-      const std::string& level_indent) const
-   {
-      std::string ret_value = ( indent + "aggregate\n" +
-         indent + "{\n"  +
-         aggregate<T>::internal_members(indent + level_indent, false) + "\n" );
+		std::string level_indent = "  ";
 
-      std::string next_level = indent + level_indent;
-
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           iter != shape_list.end();
+		for( typename shape_list_type::const_iterator iter = shape_list.begin();
+			  iter != shape_list.end();
            ++iter )
       {
-         ret_value += (*iter)->to_string(next_level, level_indent) + "\n";
+         retval += (*iter)->to_string(indentation, level_indent) + "\n";
       }
 
-      ret_value += ( indent + "}" );
-
-      return ret_value;
+      return retval;
    }
 
    template <class T>

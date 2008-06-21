@@ -1,47 +1,46 @@
 /*
- * $Id: intersection_info.hpp,v 1.7 2007/02/03 23:21:33 kpharris Exp $
+ * $Id: intersection_info.hpp,v 1.8 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
  *
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or    
- * (at your option) any later version.                                  
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
 #if       !defined(AMETHYST__INTERSECTION_INFO_HPP)
 #define            AMETHYST__INTERSECTION_INFO_HPP
 
-#include "conditional_value.hpp"
-
-#include "general/quick_vector.hpp"
-#include "math/vector3.hpp"
-#include "math/coord2.hpp"
-#include "math/onb.hpp"
-#include "math/unit_line3.hpp"
+#include "amethyst/graphics/conditional_value.hpp"
+#include "amethyst/general/quick_vector.hpp"
+#include "amethyst/math/vector3.hpp"
+#include "amethyst/math/coord2.hpp"
+#include "amethyst/math/onb.hpp"
+#include "amethyst/math/unit_line3.hpp"
 
 namespace amethyst
-{ 
+{
   template <class T>
   class shape;
 
   /**
-   * 
+   *
    * Information about an intersection (point-based intersection).
-   * 
+   *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.7 $
-   * 
+   * @version $Revision: 1.8 $
+   *
    */
   template<class T>
   class intersection_info
@@ -56,7 +55,7 @@ namespace amethyst
       operator bool() const { return value; }
       ibool& operator=(const ibool& ib) { value = ib.value; return *this; }
     };
-    
+
   private:
 
   protected:
@@ -70,7 +69,7 @@ namespace amethyst
     typedef conditional_value<onb<T>, ibool> conditional_onb;
     typedef conditional_value<unit_line3<T>, ibool> conditional_line;
     typedef conditional_value<quick_vector<intersection_info<T> >, ibool> conditional_intersection_list;
-    
+
     conditional_shape shape_hit;
     conditional_scalar first_hit_distance;
     conditional_point point_of_hit;
@@ -80,7 +79,7 @@ namespace amethyst
     conditional_vector3 normal;
     conditional_shape_vector all_containers;
     conditional_intersection_list all_intersections;
-    
+
   public:
     /** Default constructor -- compiler default */
     //    intersection_info();
@@ -183,7 +182,7 @@ namespace amethyst
         all_intersections = conditional_intersection_list(quick_vector<intersection_info<T> >(), true);
       }
       all_intersections->push_back(info);
-    }    
+    }
 
     bool have_shape() const { return shape_hit.do_test(); }
     bool have_distance() const { return first_hit_distance.do_test(); }
@@ -194,10 +193,10 @@ namespace amethyst
     bool have_normal() const { return normal.do_test(); }
     bool have_containers() const { return all_containers.do_test(); }
     bool have_multiple_intersections() const { return all_intersections.do_test(); }
-    
+
     // Calculate any important values that are missing, based on other values contained herein.
     void calculate_missing();
-    
+
   }; // class intersection_info
 
   template <class T>
@@ -211,7 +210,7 @@ namespace amethyst
 
     // FIXME! Add more.
   }
-  
+
 } // namespace amethyst
 
 

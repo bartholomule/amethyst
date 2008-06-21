@@ -5,20 +5,21 @@
  * edition.
  */
 
-#include "math/frame.hpp"
-#include "graphics/sphere.hpp"
-#include "graphics/dynamic_sphere.hpp"
-#include "graphics/triangle.hpp"
-#include "graphics/aggregate.hpp"
-#include "graphics/raster.hpp"
-#include "graphics/tga_io.h"
-#include "graphics/rgbcolor.hpp"
-#include "math/coord2.hpp"
-#include "graphics/pinhole_camera.hpp"
+#include "amethyst/math/frame.hpp"
+#include "amethyst/graphics/sphere.hpp"
+#include "amethyst/graphics/dynamic_sphere.hpp"
+#include "amethyst/graphics/triangle.hpp"
+#include "amethyst/graphics/aggregate.hpp"
+#include "amethyst/graphics/raster.hpp"
+#include "amethyst/graphics/tga_io.h"
+#include "amethyst/graphics/rgbcolor.hpp"
+#include "amethyst/math/coord2.hpp"
+#include "amethyst/graphics/pinhole_camera.hpp"
 
-#include "general/random.hpp"
-#include "graphics/samplegen2d.hpp"
-#include "graphics/samplegen1d.hpp"
+#include "amethyst/general/random.hpp"
+#include "amethyst/graphics/samplegen2d.hpp"
+#include "amethyst/graphics/samplegen1d.hpp"
+#include "amethyst/graphics/simple_texture.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -32,6 +33,7 @@ typedef point3<float_type> point;
 typedef vector3<float_type> vec;
 typedef rgbcolor<float_type> color;
 typedef coord2<float_type> coord;
+typedef simple_texture<float_type, color> texture_type;
 
 using std::cout;
 using std::endl;
@@ -80,11 +82,16 @@ int main(int argc, char** argv)
 	raster<color> image(WIDTH, HEIGHT);
 	intersection_info<float_type> stuff;
 
+	texture_type texture = texture_type(color(0.9,0.1,0.1));
+
 	cout << "objects=" << sl << endl;
 	cout << "camera=" << camera << endl;
+	cout << "texture=" << texture << endl;
 
 	intersection_requirements requirements;
 	requirements.force_normal(true);
+	requirements.force_uv(true);
+	requirements.force_first_only(true);
 
 	sample_generator_2d<float_type> *gen_2d = new jitter_sample_2d<float_type>();
 	sample_generator_1d<float_type> *gen_1d = new jitter_sample_1d<float_type>();
@@ -103,25 +110,6 @@ int main(int argc, char** argv)
 				float_type b = y + samples[time_sample].y();
 				float_type c = time_samples[time_sample];
 				ray_parameters<float_type> r = camera.get_ray(a, b, c);
-				//	cout<< "a,b,c=" << a << "," << b << "," << c << endl;
-
-				//	float_type a = (x + 0.5);
-				//	float_type b = (y + 0.5);
-				//	ray_parameters<float_type> r = camera.get_ray(a,b, time_sample / float_type(TIME_MAG));
-
-				/*
-				  float_type a = (x - 0.5) / float_type(WIDTH - 1);
-				  float_type b = (y - 0.5) / float_type(HEIGHT - 1);
-				  coord2<float_type> c(a,b);
-				  unit_line3<float_type> r = camera.get_ray(c);
-				  //      cout << "c(" << x << "," << y << ")=" << c << endl;
-				  */
-
-				/*
-				  cout << "ray=" << r << endl;
-				  cout << "ray.point_at(1)=" << r.point_at(float_type(1)) << endl;
-				  cout << "ray.point_at_scaled(1)=" << r.point_at_scaled(float_type(1)) << endl;
-				*/
 
 				if( !sl.intersects_ray(r, stuff, requirements) )
 				{
@@ -131,9 +119,12 @@ int main(int argc, char** argv)
 				{
 					vec normal = stuff.get_normal();
 
-					// Assign a color which is just a cosine between the normal and
+					// std::cout << string_format("x=%1 y=%2 s=%3 n=%4", x, y, c, normal) << std::endl;
+
+					// Assign a color which is just a cosine between the normal and the light vector (y).
 					float_type f = 0.1 + 0.9 * std::max<float_type>(dotprod(normal, vec(0,1,0)), 0);
-					current_color += color(f,f,f);
+
+					current_color += f * texture.get_color(stuff.get_first_point(), stuff.get_uv());
 				}
 			}
 			current_color *= 1.0/float_type(TIME_MAG);

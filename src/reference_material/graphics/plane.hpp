@@ -1,5 +1,5 @@
 /*
- * $Id: plane.hpp,v 1.15 2008/06/16 10:17:48 kpharris Exp $
+ * $Id: plane.hpp,v 1.16 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -25,10 +25,10 @@
 // --------------------------------------
 // Default include of parent class header
 // --------------------------------------
-#include <graphics/shape.hpp>
-#include <graphics/sphere.hpp>
-#include <math/coord2.hpp>
-#include <general/string_format.hpp>
+#include "amethyst/general/string_format.hpp"
+#include "amethyst/graphics/shape.hpp"
+#include "amethyst/graphics/sphere.hpp"
+#include "amethyst/math/coord2.hpp"
 
 namespace amethyst
 {
@@ -38,7 +38,7 @@ namespace amethyst
 	 * A plane in 3d.
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.15 $
+	 * @version $Revision: 1.16 $
 	 *
 	 */
 	template<class T>
@@ -126,13 +126,7 @@ namespace amethyst
 
 		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-		virtual std::string to_string(const std::string& base_indentation,
-			const std::string& level_indentation = "  ") const;
-
-		virtual std::string name() const
-		{
-			return "plane";
-		}
+		virtual std::string name() const { return "plane"; }
 
 		// Check to see if the given point is on the plane, and if so, get the UV
 		// coordinates of the point.
@@ -512,16 +506,6 @@ namespace amethyst
 			non_zero_u_index,
 			non_zero_v_index);
 		return retval;
-	}
-
-	template <class T>
-	std::string plane<T>::to_string(const std::string& indent,
-		const std::string& level_indent) const
-	{
-		return ( indent + plane<T>::name() + "\n" +
-			indent + "{\n" +
-			plane<T>::internal_members(indent + level_indent, false) +
-			indent + "}" );
 	}
 
 	template <class T>

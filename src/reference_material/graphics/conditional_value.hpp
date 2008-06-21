@@ -1,21 +1,21 @@
 /*
- * $Id: conditional_value.hpp,v 1.2 2004/08/16 16:04:24 kpharris Exp $
+ * $Id: conditional_value.hpp,v 1.3 2008/06/21 22:25:10 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
  *
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or    
- * (at your option) any later version.                                  
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
@@ -25,7 +25,7 @@
 #include <cassert>
 
 namespace amethyst
-{ 
+{
   template <class T>
   struct nonzero
   {
@@ -35,12 +35,12 @@ namespace amethyst
     }
   };
   /**
-   * 
+   *
    * A conditional value -- A value that has a precondition upon access.
-   * 
+   *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
-   * 
+   * @version $Revision: 1.3 $
+   *
    */
   template<class value_type,
 	   class test_type = bool,
@@ -52,7 +52,7 @@ namespace amethyst
     value_type value;
     test_type test_value;
     condition_test test;
-    
+
   protected:
 
   public:
@@ -80,7 +80,7 @@ namespace amethyst
     bool do_test() const { return test(test_value); }
 
     const value_type& peek_at_value() const { return value; }
-    
+
   }; // class conditional_value
 
 
@@ -93,7 +93,7 @@ namespace amethyst
     value(val),
     test_value(test_val)
   {
-  
+
   } // conditional_value()
 
   //---------------------------------------
@@ -102,7 +102,7 @@ namespace amethyst
   template<class value_type, class test_type, class condition_test>
   conditional_value<value_type,test_type,condition_test>::~conditional_value()
   {
-  
+
   } // ~conditional_value()
 
   //---------------------------------------------
@@ -134,38 +134,38 @@ namespace amethyst
   } // conditional_value::operator=(conditional_value)
 
 
-  template<class value_type, class test_type, class condition_test>  
+  template<class value_type, class test_type, class condition_test>
   value_type conditional_value<value_type,test_type,condition_test>::operator*() const
   {
     // FIXME!
     assert(test(test_value));
     return value;
   }
-  
-  template<class value_type, class test_type, class condition_test>  
+
+  template<class value_type, class test_type, class condition_test>
   value_type& conditional_value<value_type,test_type,condition_test>::operator*()
   {
     // FIXME!
     assert(test(test_value));
-    return value;    
+    return value;
   }
-  
-  template<class value_type, class test_type, class condition_test>  
+
+  template<class value_type, class test_type, class condition_test>
   const value_type* conditional_value<value_type,test_type,condition_test>::operator->() const
   {
     // FIXME!
     assert(test(test_value));
-    return &value;    
+    return &value;
   }
-  
-  template<class value_type, class test_type, class condition_test>  
+
+  template<class value_type, class test_type, class condition_test>
   value_type* conditional_value<value_type,test_type,condition_test>::operator->()
   {
     // FIXME!
     assert(test(test_value));
-    return &value;    
+    return &value;
   }
-  
+
 } // namespace amethyst
 
 
