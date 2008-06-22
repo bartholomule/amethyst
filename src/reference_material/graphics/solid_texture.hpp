@@ -1,5 +1,5 @@
 /*
- * $Id: solid_texture.hpp,v 1.1 2008/06/21 22:25:10 kpharris Exp $
+ * $Id: solid_texture.hpp,v 1.2 2008/06/22 17:27:07 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2008 Kevin Harris
@@ -33,11 +33,11 @@ namespace amethyst
    * positioning.
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    *
    */
   template<class T, class color_type>
-  class solid_texture : public texture
+  class solid_texture : public texture<T,color_type>
   {
 
   public:
@@ -45,14 +45,12 @@ namespace amethyst
     virtual ~solid_texture();
 
     color_type get_color(const point3<T>& location, const coord2<T>& coord) const;
-    virtual color_type get_color_at_point(const point3<T>& location) = 0;
+    virtual color_type get_color_at_point(const point3<T>& location) const = 0;
 
-		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-
-		virtual std::string name() const
-		{
-			return "texture";
-		}
+    virtual std::string name() const
+    {
+      return "texture";
+    }
 
   }; // class solid_texture
 
@@ -68,7 +66,7 @@ namespace amethyst
   } // ~solid_texture()
 
   template<class T, class color_type>
-  color_type solid_texture<T,color_type>::get_color(const point3<T>& location, const coord2<T>& coord)
+  color_type solid_texture<T,color_type>::get_color(const point3<T>& location, const coord2<T>& coord) const
   {
     return get_color_at_point(location);
   }

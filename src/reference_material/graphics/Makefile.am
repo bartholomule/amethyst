@@ -24,6 +24,8 @@ pkginclude_HEADERS = \
 	simple_texture.hpp \
 	surface_texture.hpp \
 	solid_texture.hpp \
+	noise_texture.hpp \
+	marble_texture.hpp \
 	\
 	material.hpp \
 	\
