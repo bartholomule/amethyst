@@ -1,21 +1,21 @@
 /*
- * $Id: coord3.hpp,v 1.5 2004/04/18 21:36:49 kpharris Exp $
+ * $Id: coord3.hpp,v 1.6 2008/06/22 17:28:28 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
  *
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or    
- * (at your option) any later version.                                  
- *                                                                      
- * This program is distributed in the hope that it will be useful, but  
- * WITHOUT ANY WARRANTY; without even the implied warranty of           
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    
- * General Public License for more details.                             
- *                                                                      
- * You should have received a copy of the GNU General Public License    
- * along with this program; if not, write to the Free Software          
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
@@ -27,7 +27,7 @@
 
   A 3d coordinate class that has some basic functionality.  Also, some
   functions to act on that class (at the bottom).
-  
+
 */
 
 /*
@@ -35,12 +35,12 @@
   17Jan1999 Wrote this file, did some basic testing added the dot product,
   cross product, length, and unit functions.
   20jan1999 Added a default constructor for the coord3 class and the
-  coord3_union union. 
+  coord3_union union.
   25jan1999 Added a unary - operator, and an invert function.
   05Mar1999 Added the * operator for two coord3s. It will take the
-  componentwise product. 
+  componentwise product.
   02Apr1999 Added the constructor to take a single double, it is intended to
-  init the coord to a given value. 
+  init the coord to a given value.
   22Apr1999 Added the average function.
   Added the *= operator that takes two coord3s.
   18May2001 Started changing this for use in a newer tracer, as per "Realistic
@@ -53,7 +53,7 @@
 #include <ostream>
 
 namespace amethyst
-{ 
+{
   template <class T>
   class coord3
   {
@@ -70,7 +70,7 @@ namespace amethyst
     };
     /* union to allow accesses to both indirectly through an array, and directly
        through a name, without adding any extra processing time or space
-       requirements */ 
+       requirements */
     union  coord3_union
     {
       coord3_union()
@@ -119,7 +119,7 @@ namespace amethyst
     {
       coords.direct.x = x;
       coords.direct.y = y;
-      coords.direct.z = z;    
+      coords.direct.z = z;
     }
 
     /* Accessors */
@@ -167,14 +167,14 @@ namespace amethyst
     template <class U>
     coord3& operator*=(U factor);
     template <class U>
-    coord3& operator/=(U factor);        
+    coord3& operator/=(U factor);
 
     inline T length() const
     {
       return T(sqrt(double((x() * x()) +
-                           (y() * y()) +
-                           (z() * z()))));
-    }  
+            (y() * y()) +
+            (z() * z()))));
+    }
 
   };
 
@@ -216,7 +216,7 @@ namespace amethyst
     coords.direct.x *= p2.coords.direct.x;
     coords.direct.y *= p2.coords.direct.y;
     coords.direct.z *= p2.coords.direct.z;
-    return *this;    
+    return *this;
   }
 
   template <class T>
@@ -243,7 +243,7 @@ namespace amethyst
   {
     coords.direct.x = T(coords.direct.x * factor);
     coords.direct.y = T(coords.direct.y * factor);
-    coords.direct.z = T(coords.direct.z * factor);    
+    coords.direct.z = T(coords.direct.z * factor);
     return *this;
   }
 
@@ -253,9 +253,9 @@ namespace amethyst
   {
     coords.direct.x = T(coords.direct.x / factor);
     coords.direct.y = T(coords.direct.y / factor);
-    coords.direct.z = T(coords.direct.z / factor);    
+    coords.direct.z = T(coords.direct.z / factor);
     return *this;
-  }  
+  }
 
   /* non-member math functions (also inlined for an attempt at some speed) */
   template <class T>
@@ -298,8 +298,8 @@ namespace amethyst
   inline coord3<T> operator*(const coord3<T>& p1, const coord3<T>& p2)
   {
     return(coord3<T>(p1.x() * p2.x(),
-                     p1.y() * p2.y(),
-                     p1.z() * p2.z()));
+        p1.y() * p2.y(),
+        p1.z() * p2.z()));
   }
   template <class T>
   inline coord3<T> operator/(const coord3<T>& p1, T factor)
@@ -313,7 +313,7 @@ namespace amethyst
     coord3<T> p(p1); p /= factor;  return(p);
   }
 
-  // Unary minus 
+  // Unary minus
   template <class T>
   inline coord3<T> operator-(const coord3<T>& p1)
   {
@@ -325,15 +325,15 @@ namespace amethyst
   template <class T>
   inline T dotprod(const coord3<T>& c1, const coord3<T>& c2)
   {
-    return( (c1.x()*c2.x()) + (c1.y()*c2.y()) + (c1.z()*c2.z()));  
+    return( (c1.x()*c2.x()) + (c1.y()*c2.y()) + (c1.z()*c2.z()));
   }
 
   template <class T>
   inline coord3<T> crossprod(const coord3<T>& c1, const coord3<T>& c2)
   {
     return( coord3<T>((c1.y()*c2.z()) - (c2.y()*c1.z()),
-                      (c2.x()*c1.z()) - (c1.x()*c2.z()),
-                      (c1.x()*c2.y()) - (c2.x()*c1.y())));  
+        (c2.x()*c1.z()) - (c1.x()*c2.z()),
+        (c1.x()*c2.y()) - (c2.x()*c1.y())));
   }
 
   template <class T>

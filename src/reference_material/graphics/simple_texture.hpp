@@ -1,5 +1,5 @@
 /*
- * $Id: simple_texture.hpp,v 1.1 2008/06/21 22:25:10 kpharris Exp $
+ * $Id: simple_texture.hpp,v 1.2 2008/06/22 17:25:53 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2008 Kevin Harris
@@ -31,7 +31,7 @@ namespace amethyst
    * A simple texture (constant color).
    *
    * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
+   * @version $Revision: 1.2 $
    *
    */
   template<class T, class color_type>
@@ -41,19 +41,19 @@ namespace amethyst
     simple_texture(const color_type& color);
     virtual ~simple_texture();
 
-  virtual color_type get_color(const point3<T>& location, const coord2<T>& coord) const;
+    virtual color_type get_color(const point3<T>& location, const coord2<T>& coord) const;
 
-  virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-  virtual std::string name() const { return "simple_texture"; }
+    virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
+    virtual std::string name() const { return "simple_texture"; }
 
   private:
-  color_type m_color;
+    color_type m_color;
   }; // class simple_texture
 
   template<class T, class color_type>
   simple_texture<T,color_type>::simple_texture(const color_type& color)
-  : texture<T,color_type>()
-  , m_color(color)
+    : texture<T,color_type>()
+    , m_color(color)
   {
   } // simple_texture()
 
