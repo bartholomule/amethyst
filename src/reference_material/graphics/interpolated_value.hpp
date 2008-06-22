@@ -1,5 +1,5 @@
 /*
- * $Id: interpolated_value.hpp,v 1.5 2008/06/21 22:25:10 kpharris Exp $
+ * $Id: interpolated_value.hpp,v 1.6 2008/06/22 17:24:47 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -91,7 +91,7 @@ namespace amethyst
 	 * be for parametric-changing parameters (eg. location, radius, etc.)
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.5 $
+	 * @version $Revision: 1.6 $
 	 *
 	 */
 	template<class parametric_type, class interpolation_type>
@@ -605,11 +605,8 @@ namespace amethyst
 	};
 
 	template <class T, class IT>
-	interpolated_pair<T,IT,user_interpolation<T, IT, typename it_wrapper<T,IT>::user_interpolation_function> >
-	create_interpolation(const IT& i1,
-		const IT& i2,
-		endpoint_behavior b = ENDPOINT_STOP,
-		interpolation_method method = INTERP_CUBIC)
+	user_interpolation<T,IT,typename it_wrapper<T,IT>::user_interpolation_function>
+	get_interpolation_function(interpolation_method method = INTERP_CUBIC)
 	{
 		typedef typename it_wrapper<T,IT>::user_interpolation_function fn_ptr;
 
@@ -632,7 +629,19 @@ namespace amethyst
 			break;
 		}
 
-		user_interpolation<T,IT,fn_ptr> interpolation(fun, fn_name);
+		return user_interpolation<T,IT,fn_ptr>(fun, fn_name);
+	}
+
+	template <class T, class IT>
+	interpolated_pair<T,IT,user_interpolation<T, IT, typename it_wrapper<T,IT>::user_interpolation_function> >
+	create_interpolation(const IT& i1,
+		const IT& i2,
+		endpoint_behavior b = ENDPOINT_STOP,
+		interpolation_method method = INTERP_CUBIC)
+	{
+		typedef typename it_wrapper<T,IT>::user_interpolation_function fn_ptr;
+
+		user_interpolation<T,IT,fn_ptr> interpolation = get_interpolation_function<T,IT>(method);
 
 		return interpolated_pair<T,IT,user_interpolation<T,IT,fn_ptr> >(i1,i2, interpolation, b);
 	}
@@ -646,28 +655,24 @@ namespace amethyst
 	{
 		typedef typename it_wrapper<T,IT>::user_interpolation_function fn_ptr;
 
-		fn_ptr fun;
-		std::string fn_name;
-
-		switch(method)
-		{
-		case INTERP_BLOCK:
-			fun = &block_interpolate<T,IT>;
-			fn_name = "block";
-			break;
-		case INTERP_LINEAR:
-			fun = &linear_interpolate<T,IT>;
-			fn_name = "linear";
-			break;
-		case INTERP_CUBIC:
-			fun = &cubic_interpolate<T,IT>;
-			fn_name = "cubic";
-			break;
-		}
-
-		user_interpolation<T,IT,fn_ptr> interpolation(fun, fn_name);
+		user_interpolation<T,IT,fn_ptr> interpolation = get_interpolation_function<T,IT>(method);
 
 		return interpolated_vector<T,IT,user_interpolation<T,IT,fn_ptr> >(vec, interpolation, b);
+	}
+
+   template <class T, class IT>
+	interpolated_vector<T,IT,user_interpolation<T, IT, typename it_wrapper<T,IT>::user_interpolation_function> >
+	create_interpolation(const IT& i1, const IT& i2, const IT& i3,
+		endpoint_behavior b = ENDPOINT_STOP,
+		interpolation_method method = INTERP_CUBIC)
+	{
+		quick_vector<interpolation_point<T, IT> > vec(3);
+
+		vec[0] = interpolation_point<T,IT>(T(0.0), i1);
+		vec[1] = interpolation_point<T,IT>(T(0.5), i2);
+		vec[2] = interpolation_point<T,IT>(T(1.0), i3);
+
+		return create_interpolation<T,IT>(vec, b, method);
 	}
 
 } // namespace amethyst
