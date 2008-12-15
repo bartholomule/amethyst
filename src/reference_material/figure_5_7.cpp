@@ -65,7 +65,8 @@ int main(int argc, char** argv)
 	raster<color> image(WIDTH, HEIGHT);
 	intersection_info<float_type> stuff;
 
-	texture_type texture(6.67, 5); // I calculate in line width.  Pete does it in stripes/area  1/0.15 = 6.67
+   //	texture_type texture(6.67, 5); // I calculate in line width.  Pete does it in stripes/area  1/0.15 = 6.67
+   texture_type texture(6.67, 10); // I calculate in line width.  Pete does it in stripes/area  1/0.15 = 6.67
    vec light_vector = unit(vec(1,-1,-1));
    float_type ambience(0.05);
 

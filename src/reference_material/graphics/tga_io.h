@@ -159,6 +159,7 @@ namespace amethyst
 	template <class T>
 	rc_pointer<image<T> > tga_io<T>::input(std::istream& i) const
 	{
+		// Statics with constructors are bad.  Fix this.
 		static rc_pointer<image<T> > trash_image(new image<T>(1,1));
 		byte version;
 		byte b1, b2;

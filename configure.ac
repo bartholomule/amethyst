@@ -306,6 +306,16 @@ AC_MSG_RESULT($EXPER_VAL)
 AC_SUBST(ARCH_MAKE_SHARED_OPTS)
 AC_SUBST(ARCH_PROG_SETLIBPATH)
 
+AC_CHECK_SIZEOF(char, 1)
+AC_CHECK_SIZEOF(short int, 2)
+AC_CHECK_SIZEOF(int, 4)
+AC_CHECK_SIZEOF(long int, 4)
+AC_CHECK_SIZEOF(long long int, 8)
+AC_CHECK_SIZEOF(float, 4)
+AC_CHECK_SIZEOF(double, 8)
+AC_CHECK_SIZEOF(long double, 8)
+AC_CHECK_SIZEOF(char *, 4)
+
 AC_OUTPUT([
             Makefile
             doc/Makefile

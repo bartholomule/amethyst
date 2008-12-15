@@ -1,5 +1,5 @@
 /*
- * $Id: random.hpp,v 1.1 2008/06/16 10:17:47 kpharris Exp $
+ * $Id: random.hpp,v 1.2 2008/12/15 17:27:26 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -47,9 +47,9 @@
 #include <cstdlib>
 #include <algorithm>
 
-#if    defined(KH_USE_TIME_FOR_RANDOM)
 #include <time.h>
-#endif /* defined(KH_USE_TIME_FOR_RANDOM) */
+
+#include "amethyst/general/types.hpp"
 
 namespace amethyst
 {
@@ -60,10 +60,11 @@ namespace amethyst
 	public:
 		virtual ~Random() {}
 		virtual T next() = 0;
-		virtual unsigned long next_int() = 0;
+		virtual UInt32 next_int() = 0;
 		virtual Random<T>* clone_new() const = 0;
-		virtual void set_seed(unsigned long seed) = 0;
+		virtual void set_seed(UInt32 seed) = 0;
 
+		UInt32 next_int(UInt32 max);
 		template <class array_type>
 		void shuffle(array_type& arr);
 
@@ -80,16 +81,16 @@ namespace amethyst
 	{
 	public:
 		default_random();
-		default_random(unsigned long int seed);
+		default_random(UInt32 seed);
 		default_random(const default_random& old_rand);
 
 		virtual ~default_random() {}
 
 
 		virtual T next();
-		virtual unsigned long next_int();
+		virtual UInt32 next_int();
 
-		virtual void set_seed(unsigned long int seed);
+		virtual void set_seed(UInt32 seed);
 		void set_seed(unsigned short seed[3]);
 
 		virtual default_random<T>* clone_new() const;
@@ -103,18 +104,18 @@ namespace amethyst
 	{
 	public:
 		mersenne_twist_random();
-		mersenne_twist_random(unsigned long int seed);
+		mersenne_twist_random(UInt32 seed);
 		mersenne_twist_random(const mersenne_twist_random& old_rand);
 		virtual ~mersenne_twist_random() { }
 
 		virtual T next();
-		virtual unsigned long next_int();
-		virtual void set_seed(unsigned long int seed);
+		virtual UInt32 next_int();
+		virtual void set_seed(UInt32 seed);
 
 		virtual mersenne_twist_random<T>* clone_new() const;
 	private:
 		static const size_t STATE_SIZE = 624;
-		unsigned long state[STATE_SIZE];
+		UInt32 state[STATE_SIZE];
 		size_t state_used; // How many random numbers are left before
 		// recalculation needs to take place.
 		enum {ARCH_BIG_ENDIAN, ARCH_LITTLE_ENDIAN, ARCH_NON_IEEE} arch_type;
@@ -152,19 +153,23 @@ namespace amethyst
 	}
 
 	template <class T>
+	UInt32 Random<T>::next_int(UInt32 max)
+	{
+		UInt32 val = next_int();
+		UInt32 retval= static_cast<UInt32>(ldexp(double(val), -32) * max);
+		return retval;
+	}
+
+	template <class T>
 	/* If the time should be used to generate an initial seed, use it, otherwise,
 		just start with a default seed */
 	default_random<T>::default_random() : Random<T>()
 	{
-#if    defined(KH_USE_TIME_FOR_RANDOM)
 		set_seed(1073741827 * time(0)); /* a large, likely prime number & the time */
-#else
-		set_seed(1073741827); /* a large, likely prime number */
-#endif /* defined(KH_USE_TIME_FOR_RANDOM) */
 	}
 
 	template <class T>
-	default_random<T>::default_random(unsigned long int seed)
+	default_random<T>::default_random(UInt32 seed)
 	{
 		set_seed(seed);
 	}
@@ -185,13 +190,13 @@ namespace amethyst
 	}
 
 	template <class T>
-	unsigned long default_random<T>::next_int()
+	UInt32 default_random<T>::next_int()
 	{
 		return(jrand48(state));
 	}
 
 	template <class T>
-	void default_random<T>::set_seed(unsigned long int seed)
+	void default_random<T>::set_seed(UInt32 seed)
 	{
 		unsigned short int max_short = (unsigned short) - 1;
 		int short_bits = sizeof(short) * 8;
@@ -216,15 +221,11 @@ namespace amethyst
 	template <class T>
 	mersenne_twist_random<T>::mersenne_twist_random() : Random<T>()
 	{
-#if    defined(KH_USE_TIME_FOR_RANDOM)
 		set_seed(1073741827 * time(0)); /* a large, likely prime number & the time */
-#else
-		set_seed(1073741827); /* a large, likely prime number */
-#endif /* defined(KH_USE_TIME_FOR_RANDOM) */
 	}
 
 	template <class T>
-	mersenne_twist_random<T>::mersenne_twist_random(unsigned long seed) : Random<T>()
+	mersenne_twist_random<T>::mersenne_twist_random(UInt32 seed) : Random<T>()
 	{
 		set_seed(seed);
 	}
@@ -242,7 +243,7 @@ namespace amethyst
 	}
 
 	template <class T>
-	void mersenne_twist_random<T>::set_seed(unsigned long seed)
+	void mersenne_twist_random<T>::set_seed(UInt32 seed)
 	{
 		// This was borrowed from mersenne.cpp (A. Fog)
 		state[0] = seed;
@@ -254,7 +255,7 @@ namespace amethyst
 				) + state_used);
 		}
 		// Find out how the FP numbers are arranged.
-		union {double f; unsigned long i[2];} convert;
+		union {double f; UInt32 i[2];} convert;
 		convert.f = 1.0;
 		if (convert.i[1] == 0x3FF00000)
 		{
@@ -270,28 +271,28 @@ namespace amethyst
 		}
 	}
 
-#define MERS_M   397
-#define MERS_R   31
-#define MERS_U   11
-#define MERS_S   7
-#define MERS_T   15
-#define MERS_L   18
-#define MERS_A   0x9908B0DF
-#define MERS_B   0x9D2C5680
-#define MERS_C   0xEFC60000
+	const UInt32 MERS_M = 397;
+	const UInt32 MERS_R = 31;
+	const UInt32 MERS_U = 11;
+	const UInt32 MERS_S = 7;
+	const UInt32 MERS_T = 15;
+	const UInt32 MERS_L = 18;
+	const UInt32 MERS_A = 0x9908B0DF;
+	const UInt32 MERS_B = 0x9D2C5680;
+	const UInt32 MERS_C = 0xEFC60000;
 
 	template <class T>
-	unsigned long mersenne_twist_random<T>::next_int()
+	UInt32 mersenne_twist_random<T>::next_int()
 	{
 		// generate 32 random bits
-		unsigned long y;
+		UInt32 y;
 
 		if (state_used >= STATE_SIZE)
 		{
 			// generate STATE_SIZE words at one time
-			const unsigned long LOWER_MASK = (1LU << MERS_R) - 1; // lower MERS_R bits
-			const unsigned long UPPER_MASK = -1L  << MERS_R;      // upper (32 - MERS_R) bits
-			static const unsigned long mag01[2] = {0, MERS_A};
+			const UInt32 LOWER_MASK = (1LU << MERS_R) - 1; // lower MERS_R bits
+			const UInt32 UPPER_MASK = -1L  << MERS_R;      // upper (32 - MERS_R) bits
+			static const UInt32 mag01[2] = {0, MERS_A};
 
 			size_t kk;
 			for (kk=0; kk < STATE_SIZE-MERS_M; kk++)
@@ -320,28 +321,18 @@ namespace amethyst
 		return y;
 	}
 
-#undef MERS_M
-#undef MERS_R
-#undef MERS_U
-#undef MERS_S
-#undef MERS_T
-#undef MERS_L
-#undef MERS_A
-#undef MERS_B
-#undef MERS_C
-
 	template <class T>
 	T mersenne_twist_random<T>::next()
 	{
-		const size_t num_longs_required = sizeof(double) / sizeof(unsigned long);
+		const size_t num_longs_required = sizeof(double) / sizeof(UInt32);
 		union
 		{
 			double d;
-			unsigned long i[num_longs_required];
+			UInt32 i[num_longs_required];
 		} conversion;
 
-		unsigned long random_int = next_int();
-		unsigned long random_int2 = next_int();
+		UInt32 random_int = next_int();
+		UInt32 random_int2 = next_int();
 
 		/*
 		 *  S EEEEEEEEEEE FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
@@ -372,7 +363,7 @@ namespace amethyst
 		// non-IEEE floating point representation:
 		// NOTE: This process removes the uniformness, as rounding comes into
 		// effect.
-		return (double)random_int * (1./((double)(unsigned long)(-1L)+1.));
+		return (double)random_int * (1./((double)(UInt32)(-1L)+1.));
 	}
 
 	template <class T>

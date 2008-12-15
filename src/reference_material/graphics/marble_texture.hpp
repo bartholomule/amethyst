@@ -1,5 +1,5 @@
 /*
- * $Id: marble_texture.hpp,v 1.1 2008/06/22 17:27:07 kpharris Exp $
+ * $Id: marble_texture.hpp,v 1.2 2008/12/15 17:27:26 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2008 Kevin Harris
@@ -34,7 +34,7 @@ namespace amethyst
     * A texture that is based on solid noise.
     *
     * @author Kevin Harris <kpharris@users.sourceforge.net>
-    * @version $Revision: 1.1 $
+    * @version $Revision: 1.2 $
     *
     */
   template<typename T, typename color_type>
@@ -67,7 +67,7 @@ namespace amethyst
     , m_freq(M_PI / line_width)
     , m_scale(scale)
     , m_noise(rnd, 16) // For our purposes, 16 elements is plenty and will speed things up over the default.
-    , m_colors(create_interpolation<T,color_type>(color_type(0.06,0.04,0.02),color_type(0.4,0.2,0.1), color_type(0.8,0.8,0.8)).clone_new())
+    , m_colors(create_interpolation<T,color_type>(color_type(0.06,0.04,0.02),color_type(0.4,0.2,0.1), color_type(0.8,0.8,0.8), 2).clone_new())
     , m_octaves(octaves)
   {
   }
@@ -134,8 +134,8 @@ namespace amethyst
 
     // Pete does an absolute value here, which I've never done on my marble
     // textures before.  It gives nice sharp edges on the low (dark) side.
-    //    T noisy_value = (sin(v.x() + turb) + T(1)) / T(2);
-    T noisy_value = tfabs(sin(v.x() + turb));
+    T noisy_value = (sin(v.x() + turb) + T(1)) / T(2);
+    //    T noisy_value = tfabs(sin(v.x() + turb));
 
      if( m_colors )
      {

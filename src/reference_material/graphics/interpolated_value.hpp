@@ -1,5 +1,5 @@
 /*
- * $Id: interpolated_value.hpp,v 1.6 2008/06/22 17:24:47 kpharris Exp $
+ * $Id: interpolated_value.hpp,v 1.7 2008/12/15 17:27:26 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2004 Kevin Harris
@@ -91,7 +91,7 @@ namespace amethyst
 	 * be for parametric-changing parameters (eg. location, radius, etc.)
 	 *
 	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.6 $
+	 * @version $Revision: 1.7 $
 	 *
 	 */
 	template<class parametric_type, class interpolation_type>
@@ -662,14 +662,14 @@ namespace amethyst
 
    template <class T, class IT>
 	interpolated_vector<T,IT,user_interpolation<T, IT, typename it_wrapper<T,IT>::user_interpolation_function> >
-	create_interpolation(const IT& i1, const IT& i2, const IT& i3,
+	create_interpolation(const IT& i1, const IT& i2, const IT& i3, T exponent = 1,
 		endpoint_behavior b = ENDPOINT_STOP,
 		interpolation_method method = INTERP_CUBIC)
 	{
 		quick_vector<interpolation_point<T, IT> > vec(3);
 
 		vec[0] = interpolation_point<T,IT>(T(0.0), i1);
-		vec[1] = interpolation_point<T,IT>(T(0.5), i2);
+		vec[1] = interpolation_point<T,IT>(pow(T(0.5), exponent), i2);
 		vec[2] = interpolation_point<T,IT>(T(1.0), i3);
 
 		return create_interpolation<T,IT>(vec, b, method);

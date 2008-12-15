@@ -1,5 +1,5 @@
 /*
- * $Id: string_dumpable.cpp,v 1.1 2008/06/21 22:25:10 kpharris Exp $
+ * $Id: string_dumpable.cpp,v 1.2 2008/12/15 17:27:26 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2008 Kevin Harris
@@ -20,6 +20,7 @@
  */
 
 #include "string_dumpable.hpp"
+#include <ostream>
 
 namespace amethyst
 {
