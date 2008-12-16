@@ -591,11 +591,12 @@ bool read_population(const char* filename, population& populous, size_t& generat
 
 void mutate_plebs(population& populous, number_type mutation_rate, Random<number_type>& random, size_t max_width, size_t max_height)
 {
+	std::cout << "Mutating children... ";
 	for( size_t i = 0; i < populous.size(); ++i )
 	{
 		if( random.next() < mutation_rate )
 		{
-			std::cout << "mutating child " << i << std::endl;
+			std::cout << i << " ";
 			// Mutate me...
 			size_t data_points = populous[i].pleb_data.size() * 18;
 			size_t spot = random.next_int(data_points);
@@ -615,6 +616,7 @@ void mutate_plebs(population& populous, number_type mutation_rate, Random<number
 			}
 		}
 	}
+	std::cout << std::endl;
 }
 
 typedef void (*generation_tweaker)(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random);
@@ -648,16 +650,18 @@ void run_for_generations(population& populous, const rc_pointer<image<number_typ
 
 		if( (generation + 1) < generations )
 		{
-			std::cout << "dumping best" << std::endl;
+ 			std::cout << "best[" << generation << "] =";
 			for(size_t i = 0; i < best.size(); ++i )
 			{
-				std::cout << "best[" << generation << "][" << i << "]=" << best[i].pleb_index << std::endl;
+				std::cout << " " << best[i].pleb_index;
 			}
-			std::cout << "dumping worst" << std::endl;
+			std::cout << std::endl;
+			std::cout << "worst[" << generation << "] =";
 			for(size_t i = 0; i < worst.size(); ++i )
 			{
-				std::cout << "worst[" << generation << "][" << i << "]=" << worst[i].pleb_index << std::endl;
+				std::cout << " " << worst[i].pleb_index;
 			}
+			std::cout << std::endl;
 			// Cross over..
 			cross_generation(populous, generation, best, worst, crossover_points, mutation_rate, width, height, random);
 
@@ -731,7 +735,7 @@ void add_occasional_triangles(population& populous, size_t generation, size_t wi
 	//	static const number_type constant_factor = max_triangles / log(reach_max_at * exp(max_triangles));
 	//	number_type expected_triangles = constant_factor * log(generation);
 	number_type expected_triangles = generation * (max_triangles / reach_max_at);
-	size_t triangles_at_this_generation = expected_triangles;
+	size_t triangles_at_this_generation = std::min<size_t>(expected_triangles, max_triangles);
 
 	std::cout << "Generation " << generation << ": expect to have " << std::setprecision(6) << expected_triangles << " triangles..." << std::endl;
 
