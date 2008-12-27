@@ -27,6 +27,197 @@ struct vertex
 	point3<number_type> xya;
 };
 
+void compare_and_swap(vertex& p1, vertex& p2, size_t index)
+{
+	if( p2.xya[index] < p1.xya[index] )
+	{
+		std::swap(p2, p1);
+	}
+}
+
+// Add the term to the current sum, add the dropped bits to the correction
+// term, and return the new sum
+template <typename T>
+inline T corrected_sum(T current_sum, T term, T& correction)
+{
+  T sum1 = current_sum + term;
+  // In an ideal world, this would be zero: (x - (x + t) + t)
+  correction += (current_sum - sum1) + term;
+  return(sum1);
+}
+
+void put_alpha_pixel_unchecked(color* pixels, int width, int height, int x, int y, const color& c, number_type alpha)
+{
+	color& existing = pixels[y * width + x];
+	number_type a1 = 1 - alpha;
+	existing.set(
+		existing.r() * alpha + c.r() * a1,
+		existing.g() * alpha + c.g() * a1,
+		existing.b() * alpha + c.b() * a1);
+}
+
+void put_alpha_pixel(image<number_type>& img, int x, int y, const color& c, number_type alpha)
+{
+	if( ( (x >= 0) && (x < img.get_width()) ) &&
+		( (y >= 0) && (y < img.get_height()) ) )
+	{
+		color& existing = img(x,y);
+		number_type a1 = 1 - alpha;
+		existing.set(
+			existing.r() * alpha + c.r() * a1,
+			existing.g() * alpha + c.g() * a1,
+			existing.b() * alpha + c.b() * a1);
+	}
+}
+
+// An inner loop of DDA (Bresenhem's algo) to draw a single horizontal line.
+void draw_horizontal_line(image<number_type>& img, number_type x1, number_type x2, number_type y, color c1, color c2, number_type a1, number_type a2, bool swap_x_and_y = false)
+{
+	// Go between x1 and x2, a1 and a2, c1 and c2
+	number_type dx = x2 - x1;
+
+	if( dx < 0 )
+	{
+		std::swap(x1, x2);
+		std::swap(c1, c2);
+		std::swap(a1, a2);
+		dx = x2 - x1;
+	}
+
+	color* pixels = img.reinterpret<color*>();
+	int width = img.get_width();
+	int height = img.get_height();
+
+	number_type a_dx =  (a2 - a1) / dx;
+	color cdx = (c2 - c1) * (1 / dx);
+
+	number_type a = a1;
+	color c = c1;
+
+	// Do the bounds checking here so it doesn't need to be done for each pixel.
+	if( x1 < 0 )
+	{
+		a = -x1 * a_dx;
+		c = -x1 * cdx;
+		x1 = 0;
+	}
+	if( x2 > width )
+	{
+		x2 = width - 1;
+	}
+
+	if( swap_x_and_y )
+	{
+		for( number_type x = x1; x <= x2; x += 1 )
+		{
+			put_alpha_pixel_unchecked(pixels, width, height, y, x, c, a);
+			a += a_dx;
+			c += cdx;
+		}
+	}
+	else
+	{
+		for( number_type x = x1; x <= x2; x += 1 )
+		{
+			put_alpha_pixel_unchecked(pixels, width, height, x, y, c, a);
+			a += a_dx;
+			c += cdx;
+		}
+	}
+}
+
+// An algorithm similar to Bresenems's line drawing, but for rasterizing an
+// alpha-blended triangle (one sample per pixel).
+//
+// At some point, this could be modified to draw the body of the triangle with
+// 1 sample per pixel (no need for more) and draw smooth edges using more
+// samples.
+void dda_rasterize_triangle(vertex p1, vertex p2, vertex p3, image<number_type>& img)
+{
+	// Do a sort of the 3 points by y coord.  This is done with 3 compare/swap operations.
+	compare_and_swap(p1, p2, 1);
+	compare_and_swap(p2, p3, 1);
+	compare_and_swap(p1, p2, 1);
+
+	// This needs to be fixed to avoid the problem when ((p2.y - p1.y) < 1).
+	// Note that I didn't say "or (p3.x - p1.x) < 1", since that would be a
+	// degenerate triangle.
+	//
+	// The way around the problem is to swap x and y for p1, p2, and p3, and
+	// swap them again when storing in the image.
+	bool swap_x_and_y = false;
+	if( fabs(p2.xya.y() - p1.xya.y()) < 1 )
+	{
+		swap_x_and_y = true;
+		std::swap(p1.xya.x(), p1.xya.y());
+		std::swap(p2.xya.x(), p2.xya.y());
+		std::swap(p3.xya.x(), p3.xya.y());
+	}
+
+	vector3<number_type> dp1 = p2.xya - p1.xya;
+	vector3<number_type> dp2 = p3.xya - p1.xya;
+
+	color dc1 = p2.rgb - p1.rgb;
+	color dc2 = p3.rgb - p1.rgb;
+
+
+	// FIXME! Handle FP addition errors by using the corrected_sum function.
+
+	// Rasterization needs to be done in 2 segments:
+	// 1. p1.y <= y <= p2.y
+	//    p1.x <= x1 <= p2.x   or   p2.x <= x1 <= p1.x
+	//    p1.x <= x2 <= p3.x   or   p3.x <= x2 <= p1.x
+	// 2. p2.y <= y <= p3.y
+	//    p2.x <= x1 <= p3.x   or   p3.x <= x1 <= p2.x
+	//    p1.x <= x2 <= p3.x   or   p3.x <= x2 <= p1.x
+
+	vector3<number_type> dp1_dy = dp1 / dp1.y();
+	vector3<number_type> dp2_dy = dp2 / dp2.y();
+	color dc1_dy = dc1 * (1 / dp1.y());
+	color dc2_dy = dc2 * (1 / dp2.y());
+
+	// Segment 1.
+	number_type y = p1.xya.y();
+	number_type x1 = p1.xya.x();
+	number_type x2 = x1;
+	number_type a1 = p1.xya.z();
+	number_type a2 = a1;
+	color c1 = p1.rgb;
+	color c2 = c1;
+	for(; y < p2.xya.y(); y += 1)
+	{
+		draw_horizontal_line(img, x1, x2, y, c1, c2, a1, a2, swap_x_and_y);
+
+		x1 += dp1_dy.x();
+		x2 += dp2_dy.x();
+		a1 += dp1_dy.z();
+		a2 += dp2_dy.z();
+		c1 += dc1_dy;
+		c2 += dc2_dy;
+	}
+
+	if( y < p3.xya.y() )
+	{
+		// Segment 2.
+		vector3<number_type> dp3 = p3.xya - p2.xya;
+		color dc3 = p3.rgb - p2.rgb;
+		vector3<number_type> dp3_dy = dp3 / dp3.y();
+		color dc3_dy = dc3 * (1 / dp3.y());
+
+		for(; y < p3.xya.y(); y += 1)
+		{
+			draw_horizontal_line(img, x1, x2, y, c1, c2, a1, a2, swap_x_and_y);
+
+			x1 += dp3_dy.x();
+			x2 += dp2_dy.x();
+			a1 += dp3_dy.z();
+			a2 += dp2_dy.z();
+			c1 += dc3_dy;
+			c2 += dc2_dy;
+		}
+	}
+}
+
 void rasterize_triangle(const vertex& p1, const vertex& p2, const vertex& p3,
 	image<number_type>& image,
 	const raster<quick_vector<coord2<number_type> > >& fixed_samples)
@@ -122,24 +313,7 @@ void rasterize_triangle(const vertex& p1, const vertex& p2, const vertex& p3,
 				c *= factor;
 				alpha *= factor;
 
-				// Store the color value.
-				color& existing = image(x, y);
-
-				number_type zero(0);
-				number_type one(1);
-
-				number_type r = existing.r();
-				number_type g = existing.g();
-				number_type b = existing.b();
-				r = std::max(zero, std::min(one, r));
-				g = std::max(zero, std::min(one, g));
-				b = std::max(zero, std::min(one, b));
-
-				r = r * alpha + c.r() * (1 - alpha);
-				g = g * alpha + c.g() * (1 - alpha);
-				b = b * alpha + c.b() * (1 - alpha);
-
-				image(x, y).set(r,g,b);
+				put_alpha_pixel(image, x, y, c, alpha);
 			}
 		}
 	}
@@ -187,7 +361,8 @@ void rasterize_triangles(quick_vector<alpha_triangle> triangles, image<number_ty
 				percent_done = new_percent;
 			}
 		}
-		rasterize_triangle(iter->v1, iter->v2, iter->v3, image, samples);
+		//		rasterize_triangle(iter->v1, iter->v2, iter->v3, image, samples);
+		dda_rasterize_triangle(iter->v1, iter->v2, iter->v3, image);
 	}
 }
 
@@ -236,13 +411,17 @@ number_type calculate_error(const image<number_type>& ref, const image<number_ty
 {
 	number_type error(0);
 
-	for( size_t y = 0; y < ref.get_height(); ++y )
+	size_t width = ref.get_width();
+	size_t height = ref.get_height();
+
+	const color* ref_pixels = ref.raw_data();
+	const color* img_pixels = img.raw_data();
+
+	size_t max_pixel = width * height;
+	for( size_t i = 0; i < max_pixel; ++i )
 	{
-		for( size_t x = 0; x < ref.get_width(); ++x )
-		{
-			color difference = ref(x,y) - img(x,y);
-			error += difference.r() * difference.r() + difference.g() * difference.g() + difference.b() * difference.b();
-		}
+		color difference = (ref_pixels[i] - img_pixels[i]) * 256;
+		error += difference.r() * difference.r() + difference.g() * difference.g() + difference.b() * difference.b();
 	}
 	return error;
 }
@@ -359,7 +538,7 @@ void shuffle_range(quick_vector<pleb>& data, size_t index1, size_t index2, Rando
 {
 	if( !data.empty() )
 	{
-		std::cout << "Shuffling between " << index1 << " and " << index2 << std::endl;
+		//		std::cout << "Shuffling between " << index1 << " and " << index2 << std::endl;
 
 		size_t current = data.size() - 1;
 		while( current > 1 )
@@ -375,10 +554,31 @@ void shuffle_range(quick_vector<pleb>& data, size_t index1, size_t index2, Rando
 	}
 }
 
+void unique_random_list(quick_vector<size_t>& output, size_t min_value, size_t max_value, size_t count, Random<number_type>& random)
+{
+	output.clear();
+	output.reserve(count);
+
+	if( max_value < count )
+	{
+		throw std::runtime_error("output size is too large for the max value");
+	}
+
+	const size_t range = max_value - min_value;
+
+	while( output.size() < count )
+	{
+		size_t next_loc = min_value + random.next_int(range);
+		if( std::find(output.begin(), output.end(), next_loc) == output.end() )
+		{
+			output.push_back(next_loc);
+		}
+	}
+}
 
 void random_cross(const pleb& p1, const pleb& p2, int points, size_t count, quick_vector<pleb>& output, Random<number_type>& random)
 {
-	std::cout << "Generating random cross..." << std::endl;
+	//	std::cout << "Generating random cross..." << std::endl;
 	output.clear();
 	output.resize(count);
 
@@ -386,15 +586,9 @@ void random_cross(const pleb& p1, const pleb& p2, int points, size_t count, quic
 	quick_vector<size_t> point_locations;
 	point_locations.reserve(points);
 	const size_t num_data_points = p1.pleb_data.size() * 18;
-	std::cout << "Generating " << points << " points between 1 and " << num_data_points << std::endl;
-	while( point_locations.size() < points )
-	{
-		unsigned long loc = random.next_int(num_data_points);
-		if( (loc > 0) && (std::find(point_locations.begin(), point_locations.end(), loc) == point_locations.end()) )
-		{
-			point_locations.push_back(loc);
-		}
-	}
+	//	std::cout << "Generating " << points << " points between 1 and " << num_data_points << std::endl;
+
+	unique_random_list(point_locations, 1, num_data_points, points, random);
 	std::sort(point_locations.begin(), point_locations.end());
 
 	// Populate the output with the existing plebs...  Evenly divided.
@@ -517,6 +711,7 @@ void calculate_population_error(population& populous, const rc_pointer<image<num
 	best.clear();
 	worst.clear();
 
+	std::cout << "Converting and rasterizing...";
 	typedef ::image<number_type> image;
 	for( size_t i = 0; i < populous.size(); ++i )
 	{
@@ -525,13 +720,32 @@ void calculate_population_error(population& populous, const rc_pointer<image<num
 		data.image = rc_pointer<image>(new image(width, height));
 
 		quick_vector<alpha_triangle> triangles;
-		std::cout << "Converting and rasterizing pleb #" << i << " (" << populous[i].pleb_data.size() << " triangles)" << std::endl;
+		std::cout << "...#" << i << " (" << populous[i].pleb_data.size() << ")" << std::flush;
 		convert_to_triangles(populous[i], triangles);
 		rasterize_triangles(triangles, *data.image, samples);
 		data.error = calculate_error(*reference, *data.image);
 		populous[i].error = data.error;
 		add_to_statistics(data, count_of_each, best, worst);
 	}
+	std::cout << std::endl;
+}
+
+rc_pointer<image<number_type> > get_error_image(const image<number_type>& img1, const image<number_type>& img2)
+{
+	rc_pointer<image<number_type> > retval(new image<number_type>(img1.get_width(), img1.get_height()));
+
+	for( size_t y = 0; y < retval->get_height(); ++y )
+	{
+		for( size_t x = 0; x < retval->get_width(); ++x )
+		{
+			color difference = (img1(x,y) - img2(x,y));
+			(*retval)(x,y) = color(
+				difference.r() * difference.r(),
+				difference.g() * difference.g(),
+				difference.b() * difference.b());
+		}
+	}
+	return retval;
 }
 
 void run_generation(population& populous, const rc_pointer<image<number_type> >& reference,
@@ -552,11 +766,21 @@ void run_generation(population& populous, const rc_pointer<image<number_type> >&
 		char buffer[1024];
 		snprintf(buffer, sizeof(buffer), "%07d", generation_number);
 
+		// Dump the best image...
 		std::cout << "Generation " << buffer << ": Best error #" << i << " = " << best[i].error << " (" << best[i].pleb_index << ")" << std::endl;
 		io.output(string_format("genetic_triangles_best-%1-%2.tga", buffer, i), *best[i].image, gamma);
+
+		// Dump the worst image...
 		std::cout << "Generation " << buffer << ": Worst error #" << i << " = " << worst[i].error  << " (" << worst[i].pleb_index << ")" << std::endl;
 		io.output(string_format("genetic_triangles_worst-%1-%2.tga", buffer, i), *worst[i].image, gamma);
+
+		// Dump the error image...
+		rc_pointer<image<number_type> > error = get_error_image(*reference, *(best[i].image));
+		io.output(string_format("genetic_triangles_error-%1-%2.tga", buffer, i), *error, gamma);
 	}
+
+	// Dump the reference image (for debugging purposes)
+	io.output("genetic_triangles_reference.tga", *reference, gamma);
 }
 
 void write_population(const char* filename, const population& populous, size_t generation)
@@ -692,11 +916,12 @@ void cross_best_with_random(population& populous, size_t generation, const quick
 {
 	const number_type birth_rate = 0.1;
 	const size_t num_offspring = 3; // Must be > 2 for the random_cross function to do a proper shuffle.  I may want to fix this at some point.
+	const number_type death_rate = num_offspring * birth_rate; // Equal to the number that are born... For now.
 	population crossed;
-	pleb best_pleb = populous[best[0].pleb_index];
+	const pleb best_pleb = populous[best[0].pleb_index];
 
 	// Cross a bunch of plebs...
-	size_t num_to_cross = birth_rate * populous.size();
+	const size_t num_to_cross = birth_rate * populous.size();
 	for( size_t count = 0; count < num_to_cross; ++count )
 	{
 		// Yes, this could end up doing some cloning, and it won't matter -- odds are better with a smaller population size.
@@ -712,15 +937,24 @@ void cross_best_with_random(population& populous, size_t generation, const quick
 	// Mutate...
 	mutate_plebs(crossed, mutation_rate, random, width, height);
 
-	// Replace some random plebs, not just the bad guys.
-	std::cout << "Replacing:";
-	for( size_t i = 0; i < crossed.size(); ++i )
+	// Kill some.
+	const size_t num_to_kill = death_rate * populous.size();
+	std::cout << "Killing " << num_to_kill << " plebs:";
+	quick_vector<size_t> death_list;
+	unique_random_list(death_list, 0, populous.size(), num_to_kill, random);
+	std::sort(death_list.begin(), death_list.end(), std::greater<size_t>());
+	for( size_t i = 0; i < death_list.size(); ++i )
 	{
-		size_t random_guy = random.next_int(populous.size());
-		std::cout << " " << random_guy;
-		populous[random_guy] = crossed[i];
+		size_t guy_to_kill = death_list[i];
+		std::cout << " " << guy_to_kill;
+		populous.erase(populous.begin() + guy_to_kill);
 	}
 	std::cout << std::endl;
+
+
+	// Replace some random plebs, not just the bad guys.
+	std::cout << "Adding " << crossed.size() << " plebs." << std::endl;
+	populous.append(crossed);
 }
 
 void leave_alone(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random)
@@ -730,10 +964,8 @@ void leave_alone(population& populous, size_t generation, size_t width, size_t h
 
 void add_occasional_triangles(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random)
 {
-	const number_type max_triangles = 100;
-	const size_t reach_max_at = 20000;
-	//	static const number_type constant_factor = max_triangles / log(reach_max_at * exp(max_triangles));
-	//	number_type expected_triangles = constant_factor * log(generation);
+	const number_type max_triangles = 300;
+	const size_t reach_max_at = 100000;
 	number_type expected_triangles = generation * (max_triangles / reach_max_at);
 	size_t triangles_at_this_generation = std::min<size_t>(expected_triangles, max_triangles);
 
@@ -770,8 +1002,8 @@ int main(int argc, const char** argv)
 	const size_t height = reference->get_height();
 	const size_t samples_per_pixel = 1;
 	const number_type gamma = 1;
-	const size_t population_size = 100;
-	const int crossover_points = log(population_size / 2.0) / log(2.0);
+	const size_t initial_population_size = 300;
+	const int crossover_points = log(initial_population_size / 2.0) / log(2.0);
 	const int num_generations = 1000000;
 	const number_type mutation_rate = 0.50;
 	const size_t images_per_generation = 1;
@@ -785,8 +1017,8 @@ int main(int argc, const char** argv)
 	population populous;
 
 
-	const size_t starting_triangles = 1; // will increase in add_occasional_triangles
-	generate_random_population(width, height, random, population_size, starting_triangles, populous);
+	const size_t starting_triangles = 100; // will increase in add_occasional_triangles
+	generate_random_population(width, height, random, initial_population_size, starting_triangles, populous);
 
 	if( argc > 2 )
 	{
