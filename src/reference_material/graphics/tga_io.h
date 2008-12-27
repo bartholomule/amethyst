@@ -186,10 +186,15 @@ namespace amethyst
 		height = word(b1) + (word(b2) << 8);
 
 		i.get((char&)b1).get((char&)b2);
-		if((b1 != 24) && (b2 != 32))
+		if((b1 != 24) || ((b2 != 32) && (b2 != 0)))
 		{
 			std::cout << "Invalid constants..." << std::endl;
 			return trash_image;
+		}
+		bool flip_y = false;
+		if( b2 == 0 )
+		{
+			flip_y = true;
 		}
 
 		rc_pointer<image<T> > dest_ptr(new image<T>(width,height));
@@ -201,7 +206,14 @@ namespace amethyst
 			for(int x = 0; x < width; ++x)
 			{
 				i.get((char&)b).get((char&)g).get((char&)r);
-				dest(x,y).set(word(r)/256.0,
+
+				int y_pos = y;
+				if( flip_y )
+				{
+					y_pos = (height-1) - y;
+				}
+
+				dest(x,y_pos).set(word(r)/256.0,
 					word(g)/256.0,
 					word(b)/256.0);
 			}
