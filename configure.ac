@@ -263,6 +263,8 @@ AC_ARG_ENABLE(profile,
 PROFILE_VAL=$enableval, PROFILE_VAL="no")
 if test $PROFILE_VAL = "yes"; then
   PROFILE=1
+  CXXFLAGS="${CXXFLAGS} -pg"
+  LDFLAGS="${LDFLAGS} -pg"
 else
   PROFILE_VAL="no";
   PROFILE=0
