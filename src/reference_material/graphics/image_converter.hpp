@@ -1,5 +1,5 @@
 /*
- * $Id: image_converter.hpp,v 1.7 2008/06/21 22:25:10 kpharris Exp $
+ * $Id: image_converter.hpp,v 1.8 2008/12/29 17:26:46 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2003 Kevin Harris
@@ -97,32 +97,32 @@ namespace amethyst
 
 	// byte [0,255] --> double [0,1.0)
 	template<>
-	extern rgbcolor<double>
+	rgbcolor<double>
 	convert_color<double,unsigned char>(const rgbcolor<unsigned char>& color);
 
 	// double [0,1.0) --> byte [0,255]
 	template<>
-	extern rgbcolor<unsigned char>
+	rgbcolor<unsigned char>
 	convert_color<unsigned char,double>(const rgbcolor<double>& color);
 
 	// double --> double (gamma corrected)
 	template<>
-	extern rgbcolor<double>
+	rgbcolor<double>
 	gamma_convert_color<double,double>(const rgbcolor<double>& color, double gamma);
 
 	// byte [0,255] --> float [0,1.0)
 	template<>
-	extern rgbcolor<float>
+	rgbcolor<float>
 	convert_color<float,unsigned char>(const rgbcolor<unsigned char>& color);
 
 	// float [0,1.0) --> byte [0,255]
 	template<>
-	extern rgbcolor<unsigned char>
+	rgbcolor<unsigned char>
 	convert_color<unsigned char,float>(const rgbcolor<float>& color);
 
 	// float --> float (gamma corrected)
 	template<>
-	extern rgbcolor<float>
+	rgbcolor<float>
 	gamma_convert_color<float,float>(const rgbcolor<float>& color, double gamma);
 
 } // namespace amethyst

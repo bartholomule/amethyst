@@ -86,6 +86,7 @@
 #include <math/point3.hpp>
 #include <math/vector3.hpp>
 #include <cassert>
+#include <cstring>
 
 namespace amethyst
 {
@@ -178,8 +179,6 @@ namespace amethyst
 	};
 
 #define LINEAR(y,x) ((y)*4 + (x))
-#include <cstring>
-
 	template <class T>
 	matrix_4x4<T>::matrix_4x4(const T dat[16])
 	{

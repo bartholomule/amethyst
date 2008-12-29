@@ -60,7 +60,6 @@ namespace amethyst
 	template <class S>
 	bool tga_io<T>::basic_output(S& o, const image<T>& source) const
 	{
-		unsigned char r, g, b;
 		int x, y;
 		static unsigned char main_header[12] = {
 			0, // Length of identifier string

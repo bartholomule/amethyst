@@ -9,7 +9,7 @@ namespace amethyst
 	// doubles
 
 	template<>
-	extern rgbcolor<double>
+	rgbcolor<double>
 	convert_color<double,unsigned char>(const rgbcolor<unsigned char>& color)
 	{
 
@@ -23,7 +23,7 @@ namespace amethyst
 	}
 
 	template<>
-	extern rgbcolor<unsigned char>
+	rgbcolor<unsigned char>
 	convert_color<unsigned char,double>(const rgbcolor<double>& color)
 	{
 		//    std::cout << __PRETTY_FUNCTION__ << "---2" << std::endl;
@@ -36,7 +36,7 @@ namespace amethyst
 	}
 
 	template<>
-	extern rgbcolor<double>
+	rgbcolor<double>
 	gamma_convert_color<double,double>(const rgbcolor<double>& color, double gamma)
 	{
 		double foo = 1/gamma;
@@ -50,7 +50,7 @@ namespace amethyst
 	// Floats
 
 	template<>
-	extern rgbcolor<float>
+	rgbcolor<float>
 	convert_color<float,unsigned char>(const rgbcolor<unsigned char>& color)
 	{
 
@@ -64,7 +64,7 @@ namespace amethyst
 	}
 
 	template<>
-	extern rgbcolor<unsigned char>
+	rgbcolor<unsigned char>
 	convert_color<unsigned char,float>(const rgbcolor<float>& color)
 	{
 		//    std::cout << __PRETTY_FUNCTION__ << "---2" << std::endl;
@@ -77,7 +77,7 @@ namespace amethyst
 	}
 
 	template<>
-	extern rgbcolor<float>
+	rgbcolor<float>
 	gamma_convert_color<float,float>(const rgbcolor<float>& color, double gamma)
 	{
 		float foo = 1/gamma;

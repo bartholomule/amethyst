@@ -1,5 +1,5 @@
 /*
- * $Id: log_formatter.cpp,v 1.2 2006/04/05 05:59:35 kpharris Exp $
+ * $Id: log_formatter.cpp,v 1.3 2008/12/29 17:26:46 kpharris Exp $
  *
  * Part of "Amethyst" -- A playground for graphics development.
  * Copyright (C) 2006 Kevin Harris
@@ -27,6 +27,7 @@
 #include <time.h>
 
 #include <iostream>
+#include <cstring>
 
 #include "string_format.hpp"
 
