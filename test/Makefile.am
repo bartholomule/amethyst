@@ -8,7 +8,8 @@ AM_CXXFLAGS = -Wall
 
 BUILT_TESTS = \
 	test_quaternion \
-	test_disc
+	test_disc \
+	test_triangle
 
 TESTS = \
 	do_all_tests.sh \
@@ -32,4 +33,4 @@ test_raster_SOURCES = test_raster.cpp
 test_rgbcolor_SOURCES = test_rgbcolor.cpp
 test_quaternion_SOURCES = test_quaternion.cpp
 test_disc_SOURCES = test_disc.cpp
-
+test_triangle_SOURCES = test_triangle.cpp

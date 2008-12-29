@@ -1,407 +1,71 @@
 #define KH_USE_TIME_FOR_RANDOM
 
-#include <graphics/image.hpp>
-#include <graphics/tga_io.h>
-#include <graphics/rgbcolor.hpp>
-#include <graphics/samplegen2d.hpp>
-#include <math/point3.hpp>
-#include <general/quick_vector.hpp>
-#include <general/string_format.hpp>
+#include "amethyst/graphics/image.hpp"
+#include "amethyst/graphics/tga_io.h"
+#include "amethyst/general/quick_vector.hpp"
+#include "amethyst/general/string_format.hpp"
 #include "amethyst/general/random.hpp"
-#include <string>
+#include "amethyst/graphics/alpha_triangle_2d.hpp"
 
+#include <string>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <limits>
 
 using namespace amethyst;
 
 //typedef double number_type;
 typedef float number_type;
 typedef rgbcolor<number_type> color;
-typedef sample_generator_2d<number_type> generator;
-
-struct vertex
-{
-	color rgb;
-	point3<number_type> xya;
-};
-
-void compare_and_swap(vertex& p1, vertex& p2, size_t index)
-{
-	if( p2.xya[index] < p1.xya[index] )
-	{
-		std::swap(p2, p1);
-	}
-}
+typedef alpha_triangle_2d<number_type> alpha_triangle;
 
 // Add the term to the current sum, add the dropped bits to the correction
 // term, and return the new sum
 template <typename T>
 inline T corrected_sum(T current_sum, T term, T& correction)
 {
-  T sum1 = current_sum + term;
+  volatile T sum1 = current_sum + term;
   // In an ideal world, this would be zero: (x - (x + t) + t)
   correction += (current_sum - sum1) + term;
   return(sum1);
 }
 
-void put_alpha_pixel_unchecked(color* pixels, int width, int height, int x, int y, const color& c, number_type alpha)
+void rasterize_triangles(quick_vector<alpha_triangle> triangles, image<number_type>& img)
 {
-	color& existing = pixels[y * width + x];
-	number_type a1 = 1 - alpha;
-	existing.set(
-		existing.r() * alpha + c.r() * a1,
-		existing.g() * alpha + c.g() * a1,
-		existing.b() * alpha + c.b() * a1);
-}
-
-void put_alpha_pixel(image<number_type>& img, int x, int y, const color& c, number_type alpha)
-{
-	if( ( (x >= 0) && (x < img.get_width()) ) &&
-		( (y >= 0) && (y < img.get_height()) ) )
-	{
-		color& existing = img(x,y);
-		number_type a1 = 1 - alpha;
-		existing.set(
-			existing.r() * alpha + c.r() * a1,
-			existing.g() * alpha + c.g() * a1,
-			existing.b() * alpha + c.b() * a1);
-	}
-}
-
-// An inner loop of DDA (Bresenhem's algo) to draw a single horizontal line.
-void draw_horizontal_line(image<number_type>& img, number_type x1, number_type x2, number_type y, color c1, color c2, number_type a1, number_type a2, bool swap_x_and_y = false)
-{
-	// Go between x1 and x2, a1 and a2, c1 and c2
-	number_type dx = x2 - x1;
-
-	if( dx < 0 )
-	{
-		std::swap(x1, x2);
-		std::swap(c1, c2);
-		std::swap(a1, a2);
-		dx = x2 - x1;
-	}
-
-	color* pixels = img.reinterpret<color*>();
-	int width = img.get_width();
-	int height = img.get_height();
-
-	number_type a_dx =  (a2 - a1) / dx;
-	color cdx = (c2 - c1) * (1 / dx);
-
-	number_type a = a1;
-	color c = c1;
-
-	// Do the bounds checking here so it doesn't need to be done for each pixel.
-	if( x1 < 0 )
-	{
-		a = -x1 * a_dx;
-		c = -x1 * cdx;
-		x1 = 0;
-	}
-	if( x2 > width )
-	{
-		x2 = width - 1;
-	}
-
-	if( swap_x_and_y )
-	{
-		for( number_type x = x1; x <= x2; x += 1 )
-		{
-			put_alpha_pixel_unchecked(pixels, width, height, y, x, c, a);
-			a += a_dx;
-			c += cdx;
-		}
-	}
-	else
-	{
-		for( number_type x = x1; x <= x2; x += 1 )
-		{
-			put_alpha_pixel_unchecked(pixels, width, height, x, y, c, a);
-			a += a_dx;
-			c += cdx;
-		}
-	}
-}
-
-// An algorithm similar to Bresenems's line drawing, but for rasterizing an
-// alpha-blended triangle (one sample per pixel).
-//
-// At some point, this could be modified to draw the body of the triangle with
-// 1 sample per pixel (no need for more) and draw smooth edges using more
-// samples.
-void dda_rasterize_triangle(vertex p1, vertex p2, vertex p3, image<number_type>& img)
-{
-	// Do a sort of the 3 points by y coord.  This is done with 3 compare/swap operations.
-	compare_and_swap(p1, p2, 1);
-	compare_and_swap(p2, p3, 1);
-	compare_and_swap(p1, p2, 1);
-
-	// This needs to be fixed to avoid the problem when ((p2.y - p1.y) < 1).
-	// Note that I didn't say "or (p3.x - p1.x) < 1", since that would be a
-	// degenerate triangle.
-	//
-	// The way around the problem is to swap x and y for p1, p2, and p3, and
-	// swap them again when storing in the image.
-	bool swap_x_and_y = false;
-	if( fabs(p2.xya.y() - p1.xya.y()) < 1 )
-	{
-		swap_x_and_y = true;
-		std::swap(p1.xya.x(), p1.xya.y());
-		std::swap(p2.xya.x(), p2.xya.y());
-		std::swap(p3.xya.x(), p3.xya.y());
-	}
-
-	vector3<number_type> dp1 = p2.xya - p1.xya;
-	vector3<number_type> dp2 = p3.xya - p1.xya;
-
-	color dc1 = p2.rgb - p1.rgb;
-	color dc2 = p3.rgb - p1.rgb;
-
-
-	// FIXME! Handle FP addition errors by using the corrected_sum function.
-
-	// Rasterization needs to be done in 2 segments:
-	// 1. p1.y <= y <= p2.y
-	//    p1.x <= x1 <= p2.x   or   p2.x <= x1 <= p1.x
-	//    p1.x <= x2 <= p3.x   or   p3.x <= x2 <= p1.x
-	// 2. p2.y <= y <= p3.y
-	//    p2.x <= x1 <= p3.x   or   p3.x <= x1 <= p2.x
-	//    p1.x <= x2 <= p3.x   or   p3.x <= x2 <= p1.x
-
-	vector3<number_type> dp1_dy = dp1 / dp1.y();
-	vector3<number_type> dp2_dy = dp2 / dp2.y();
-	color dc1_dy = dc1 * (1 / dp1.y());
-	color dc2_dy = dc2 * (1 / dp2.y());
-
-	// Segment 1.
-	number_type y = p1.xya.y();
-	number_type x1 = p1.xya.x();
-	number_type x2 = x1;
-	number_type a1 = p1.xya.z();
-	number_type a2 = a1;
-	color c1 = p1.rgb;
-	color c2 = c1;
-	for(; y < p2.xya.y(); y += 1)
-	{
-		draw_horizontal_line(img, x1, x2, y, c1, c2, a1, a2, swap_x_and_y);
-
-		x1 += dp1_dy.x();
-		x2 += dp2_dy.x();
-		a1 += dp1_dy.z();
-		a2 += dp2_dy.z();
-		c1 += dc1_dy;
-		c2 += dc2_dy;
-	}
-
-	if( y < p3.xya.y() )
-	{
-		// Segment 2.
-		vector3<number_type> dp3 = p3.xya - p2.xya;
-		color dc3 = p3.rgb - p2.rgb;
-		vector3<number_type> dp3_dy = dp3 / dp3.y();
-		color dc3_dy = dc3 * (1 / dp3.y());
-
-		for(; y < p3.xya.y(); y += 1)
-		{
-			draw_horizontal_line(img, x1, x2, y, c1, c2, a1, a2, swap_x_and_y);
-
-			x1 += dp3_dy.x();
-			x2 += dp2_dy.x();
-			a1 += dp3_dy.z();
-			a2 += dp2_dy.z();
-			c1 += dc3_dy;
-			c2 += dc2_dy;
-		}
-	}
-}
-
-void rasterize_triangle(const vertex& p1, const vertex& p2, const vertex& p3,
-	image<number_type>& image,
-	const raster<quick_vector<coord2<number_type> > >& fixed_samples)
-{
-	// We're doing a simple projection (dropping the 'z'), so we can do all
-	// sorts of shortcuts.
-
-	// Stick the vertices in a array to simplify the searching, slope
-	// calculation, etc.
-	coord2<number_type> verts[3];
-	verts[0].set(p1.xya.x(), p1.xya.y());
-	verts[1].set(p2.xya.x(), p2.xya.y());
-	verts[2].set(p3.xya.x(), p3.xya.y());
-
-	// Precalculate the vectors defining the two sides of the triangle that
-	// include the first point (common corner).
-	coord2<number_type> v1(verts[1] - verts[0]);
-	coord2<number_type> v2(verts[2] - verts[0]);
-
-	// precalculate some constant values...
-	number_type v1xv2y = v1.x() * v2.y();
-	number_type v2xv1y = v2.x() * v1.y();
-
-	// Precalculate some color differences (for interpolation later)
-	color c1 = p1.rgb;
-	color c2 = p2.rgb - p1.rgb;
-	color c3 = p3.rgb - p1.rgb;
-	number_type a1 = p1.xya.z();
-	number_type a2 = p2.xya.z() - a1;
-	number_type a3 = p3.xya.z() - a1;
-
-	// Find a simple bounding value for y that contains the entire triangle
-	// (within the limits of the viewing area).
-	number_type y_min = std::min(std::min(verts[0].y(), verts[1].y()), verts[2].y());
-	number_type y_max = std::max(std::max(verts[0].y(), verts[1].y()), verts[2].y());
-
-	int y1 = std::max<int>(int(y_min - 1), 0);
-	int y2 = std::min<int>(int(y_max + 1), image.get_height());
-
-	number_type x_min = std::min(std::min(verts[0].x(), verts[1].x()), verts[2].x());
-	number_type x_max = std::max(std::max(verts[0].x(), verts[1].x()), verts[2].x());
-	int x1 = std::max<int>(int(x_min - 1), 0);
-	int x2 = std::min<int>(int(x_max + 1), image.get_width());
-
-	// Rasterize each potential line that intersects the projected triangle.
-	for( int y = y1; y < y2; ++y )
-	{
-		//		std::cout << string_format("x range=[%1,%2]", x1, x2) << std::endl;
-
-		// This loop does the actual rasterization for the current line (y),
-		// between the calculated min and max x values.
-		for( int x = x1; x < x2; ++x )
-		{
-			// Take some number of samples and check each to see if it is inside
-			// the triangle.  If so, interpolate the colors given at the three
-			// vertices.
-			color c(number_type(0));
-			number_type alpha(0);
-			size_t samples_inside = 0;
-
-			const quick_vector<coord2<number_type> >& samples = fixed_samples(x,y);
-
-			for( size_t i = 0; i < samples.size(); ++i )
-			{
-				// The vector between the sample point and the primary vertex.
-				coord2<number_type> v3(coord2<number_type>(
-												  samples[i].x() + x,
-												  samples[i].y() + y) -
-					verts[0]);
-
-				// Check if (x+sx, x+sy) is inside the triangle.
-				number_type beta = (
-					((v3.x() * v2.y()) - (v3.y() * v2.x())) /
-					((v1.x() * v2.y()) - (v1.y() * v2.x()))
-				);
-				number_type gamma = (v3.y() - beta * v1.y()) / v2.y();
-
-				if( (beta > 0) &&
-					(gamma > 0) &&
-					((beta + gamma) < 1) )
-				{
-					// We're inside the triangle... Call it a hit.
-					++samples_inside;
-
-					// Interpolate the colors at the corners...
-					alpha += a1 + beta * a2 + gamma * a3;
-					c += c1 + beta * c2 + gamma * c3;
-				}
-			}
-			if( samples_inside > 0 )
-			{
-				number_type factor = (1 / number_type(samples_inside));
-				c *= factor;
-				alpha *= factor;
-
-				put_alpha_pixel(image, x, y, c, alpha);
-			}
-		}
-	}
-}
-
-struct alpha_triangle
-{
-	vertex v1;
-	vertex v2;
-	vertex v3;
-};
-
-void rasterize_triangles(quick_vector<alpha_triangle> triangles, image<number_type>& image,
-	const raster<quick_vector<coord2<number_type> > >& samples, bool quiet = true)
-{
-	if( !quiet )
-	{
-		std::cout << "Rasterizing " << triangles.size() << " triangles." << std::endl;
-	}
-
 	// Blank the image...
-	for(int y = 0; y < image.get_height(); ++y)
+	size_t num_pixels = img.get_width() * img.get_height();
+	color* pixels = img.reinterpret<color*>();
+	for( size_t i = 0; i < num_pixels; ++i )
 	{
-		for(int x = 0; x <image.get_width(); ++x)
-		{
-			image(x,y).set(0,0,0);
-		}
+		pixels[i].set(0,0,0);
 	}
 
-	int percent_done = -1;
-
-	// Go through each image and rasterize it.
+	// Draw the triangles
 	for( quick_vector<alpha_triangle>::const_iterator iter = triangles.begin();
 		iter != triangles.end();
 		++iter )
 	{
-		if( !quiet )
-		{
-			int new_percent = 100 * (iter - triangles.begin()) / triangles.size();
-			if( new_percent != percent_done )
-			{
-				std::cout << string_format("Rasterizing (%1%%) triangle #%2 of %3", new_percent,
-					iter - triangles.begin(),
-					triangles.size()) << std::endl;
-				percent_done = new_percent;
-			}
-		}
-		//		rasterize_triangle(iter->v1, iter->v2, iter->v3, image, samples);
-		dda_rasterize_triangle(iter->v1, iter->v2, iter->v3, image);
+		dda_rasterize_triangle(img, *iter);
 	}
 }
 
-raster<quick_vector<coord2<number_type> > > get_samples(
-	int width, int height,
-	int samples_per_pixel,
-	rc_pointer<generator> sampler = rc_pointer<generator>())
-{
-	raster<quick_vector<coord2<number_type> > > samples(width,height);
-
-	for( int y = 0; y < height; ++y )
-	{
-		for( int x = 0; x < width; ++x )
-		{
-			if( sampler && samples_per_pixel > 1)
-			{
-				samples(x,y) = sampler->get_samples(samples_per_pixel);
-			}
-			else
-			{
-				samples(x,y) = quick_vector<coord2<number_type> >(1, coord2<number_type>(0.5, 0.5));
-			}
-		}
-	}
-	return samples;
-}
-
-void generate_random_triangles(quick_vector<alpha_triangle>& triangles, size_t count, int width, int height, Random<number_type>& r)
+void generate_random_triangles(quick_vector<alpha_triangle>& triangles,
+	size_t count, int width, int height, Random<number_type>& r)
 {
 	triangles.clear();
 	for( size_t i = 0; i < count; ++i )
 	{
 		alpha_triangle t;
 		t.v1.rgb = color(r.next(), r.next(), r.next());
-		t.v1.xya = point3<number_type>(r.next() * width, r.next() * height, r.next());
+		t.v1.xy = coord2<number_type>(r.next() * width, r.next() * height);
+		t.v1.a = r.next();
 		t.v2.rgb = color(r.next(), r.next(), r.next());
-		t.v2.xya = point3<number_type>(r.next() * width, r.next() * height, r.next());
+		t.v2.xy = coord2<number_type>(r.next() * width, r.next() * height);
+		t.v2.a = r.next();
 		t.v3.rgb = color(r.next(), r.next(), r.next());
-		t.v3.xya = point3<number_type>(r.next() * width, r.next() * height, r.next());
+		t.v3.xy = coord2<number_type>(r.next() * width, r.next() * height);
+		t.v3.a = r.next();
 
 		triangles.push_back(t);
 	}
@@ -410,6 +74,7 @@ void generate_random_triangles(quick_vector<alpha_triangle>& triangles, size_t c
 number_type calculate_error(const image<number_type>& ref, const image<number_type>& img)
 {
 	number_type error(0);
+	number_type addition_error(0);
 
 	size_t width = ref.get_width();
 	size_t height = ref.get_height();
@@ -421,9 +86,13 @@ number_type calculate_error(const image<number_type>& ref, const image<number_ty
 	for( size_t i = 0; i < max_pixel; ++i )
 	{
 		color difference = (ref_pixels[i] - img_pixels[i]) * 256;
-		error += difference.r() * difference.r() + difference.g() * difference.g() + difference.b() * difference.b();
+		error = corrected_sum(error,
+			( difference.r() * difference.r() +
+				difference.g() * difference.g() +
+				difference.b() * difference.b() ),
+			addition_error);
 	}
-	return error;
+	return error + addition_error;
 }
 
 struct pleb
@@ -524,12 +193,17 @@ void convert_to_triangles(pleb& p, quick_vector<alpha_triangle>& output)
 	output.resize(triangles);
 	for( size_t i = 0; i < triangles; ++i )
 	{
-		output[i].v1.rgb.set( p.pleb_data[i].pleb_verts[0].r, p.pleb_data[i].pleb_verts[0].g, p.pleb_data[i].pleb_verts[0].b) ;
-		output[i].v2.rgb.set( p.pleb_data[i].pleb_verts[1].r, p.pleb_data[i].pleb_verts[1].g, p.pleb_data[i].pleb_verts[1].b) ;
-		output[i].v3.rgb.set( p.pleb_data[i].pleb_verts[2].r, p.pleb_data[i].pleb_verts[2].g, p.pleb_data[i].pleb_verts[2].b) ;
-		output[i].v1.xya.set( p.pleb_data[i].pleb_verts[0].x, p.pleb_data[i].pleb_verts[0].y, p.pleb_data[i].pleb_verts[0].a) ;
-		output[i].v2.xya.set( p.pleb_data[i].pleb_verts[1].x, p.pleb_data[i].pleb_verts[1].y, p.pleb_data[i].pleb_verts[1].a) ;
-		output[i].v3.xya.set(p.pleb_data[i].pleb_verts[2].x, p.pleb_data[i].pleb_verts[2].y, p.pleb_data[i].pleb_verts[2].a) ;
+		output[i].v1.rgb.set( p.pleb_data[i].pleb_verts[0].r, p.pleb_data[i].pleb_verts[0].g, p.pleb_data[i].pleb_verts[0].b);
+		output[i].v1.xy.set( p.pleb_data[i].pleb_verts[0].x, p.pleb_data[i].pleb_verts[0].y);
+		output[i].v1.a = p.pleb_data[i].pleb_verts[0].a;
+
+		output[i].v2.rgb.set( p.pleb_data[i].pleb_verts[1].r, p.pleb_data[i].pleb_verts[1].g, p.pleb_data[i].pleb_verts[1].b);
+		output[i].v2.xy.set( p.pleb_data[i].pleb_verts[1].x, p.pleb_data[i].pleb_verts[1].y);
+		output[i].v2.a = p.pleb_data[i].pleb_verts[1].a;
+
+		output[i].v3.rgb.set( p.pleb_data[i].pleb_verts[2].r, p.pleb_data[i].pleb_verts[2].g, p.pleb_data[i].pleb_verts[2].b);
+		output[i].v3.xy.set(p.pleb_data[i].pleb_verts[2].x, p.pleb_data[i].pleb_verts[2].y);
+		output[i].v3.a = p.pleb_data[i].pleb_verts[2].a;
 	}
 }
 
@@ -702,8 +376,7 @@ void add_to_statistics(
 void calculate_population_error(population& populous, const rc_pointer<image<number_type> >& reference,
 	size_t count_of_each,
 	quick_vector<pleb_data>& best,
-	quick_vector<pleb_data>& worst,
-	raster<quick_vector<coord2<number_type> > >& samples)
+	quick_vector<pleb_data>& worst)
 {
 	size_t width = reference->get_width();
 	size_t height = reference->get_height();
@@ -722,7 +395,7 @@ void calculate_population_error(population& populous, const rc_pointer<image<num
 		quick_vector<alpha_triangle> triangles;
 		std::cout << "...#" << i << " (" << populous[i].pleb_data.size() << ")" << std::flush;
 		convert_to_triangles(populous[i], triangles);
-		rasterize_triangles(triangles, *data.image, samples);
+		rasterize_triangles(triangles, *data.image);
 		data.error = calculate_error(*reference, *data.image);
 		populous[i].error = data.error;
 		add_to_statistics(data, count_of_each, best, worst);
@@ -753,18 +426,17 @@ void run_generation(population& populous, const rc_pointer<image<number_type> >&
 	quick_vector<pleb_data>& worst,
 	size_t count_of_each,
 	size_t images_to_dump,
-	raster<quick_vector<coord2<number_type> > >& samples,
 	size_t generation_number,
 	number_type gamma,
 	image_io<number_type>& io)
 {
 	std::cout << "Running generation #" << generation_number << std::endl;
-	calculate_population_error(populous, reference, count_of_each, best, worst, samples);
+	calculate_population_error(populous, reference, count_of_each, best, worst);
 
 	for( size_t i = 0; i < images_to_dump; ++i )
 	{
 		char buffer[1024];
-		snprintf(buffer, sizeof(buffer), "%07d", generation_number);
+		snprintf(buffer, sizeof(buffer), "%07ld", generation_number);
 
 		// Dump the best image...
 		std::cout << "Generation " << buffer << ": Best error #" << i << " = " << best[i].error << " (" << best[i].pleb_index << ")" << std::endl;
@@ -847,7 +519,6 @@ typedef void (*generation_tweaker)(population& populous, size_t generation, size
 typedef void (*generation_crosser)(population& populous, size_t generation, const quick_vector<pleb_data>& best, const quick_vector<pleb_data>& worst, size_t crossover_points, number_type mutation_rate, size_t width, size_t height, Random<number_type>& random);
 
 void run_for_generations(population& populous, const rc_pointer<image<number_type> >& reference,
-	raster<quick_vector<coord2<number_type> > >& samples,
 	size_t starting_generation,
 	size_t generations,
 	size_t images_to_dump,
@@ -870,7 +541,7 @@ void run_for_generations(population& populous, const rc_pointer<image<number_typ
 
 		size_t amount_to_cross = 1 << crossover_points;
 
-		run_generation(populous, reference, best, worst, amount_to_cross, images_to_dump, samples, generation, gamma, io);
+		run_generation(populous, reference, best, worst, amount_to_cross, images_to_dump, generation, gamma, io);
 
 		if( (generation + 1) < generations )
 		{
@@ -965,8 +636,8 @@ void leave_alone(population& populous, size_t generation, size_t width, size_t h
 void add_occasional_triangles(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random)
 {
 	const number_type max_triangles = 300;
-	const size_t reach_max_at = 100000;
-	number_type expected_triangles = generation * (max_triangles / reach_max_at);
+	const size_t reach_max_at = 50000;
+	number_type expected_triangles = 1 + (generation * (max_triangles / reach_max_at));
 	size_t triangles_at_this_generation = std::min<size_t>(expected_triangles, max_triangles);
 
 	std::cout << "Generation " << generation << ": expect to have " << std::setprecision(6) << expected_triangles << " triangles..." << std::endl;
@@ -1000,7 +671,6 @@ int main(int argc, const char** argv)
 
 	const size_t width = reference->get_width();
 	const size_t height = reference->get_height();
-	const size_t samples_per_pixel = 1;
 	const number_type gamma = 1;
 	const size_t initial_population_size = 300;
 	const int crossover_points = log(initial_population_size / 2.0) / log(2.0);
@@ -1012,12 +682,9 @@ int main(int argc, const char** argv)
 
 	mersenne_twist_random<number_type> random;
 
-	raster<quick_vector<coord2<number_type> > > samples = get_samples(width, height, samples_per_pixel, rc_pointer<generator>(new jitter_sample_2d<number_type>(random)));
-
 	population populous;
 
-
-	const size_t starting_triangles = 100; // will increase in add_occasional_triangles
+	const size_t starting_triangles = 1; // will increase in add_occasional_triangles
 	generate_random_population(width, height, random, initial_population_size, starting_triangles, populous);
 
 	if( argc > 2 )
@@ -1029,7 +696,7 @@ int main(int argc, const char** argv)
 			{
 				return 1;
 			}
-			std::cout << "Continuing with generation " << starting_generation << std::endl;
+			std::cout << "Continuing with generation " << ++starting_generation << std::endl;
 		}
 		else
 		{
@@ -1041,9 +708,9 @@ int main(int argc, const char** argv)
 		std::cout << "Not continuing (not enough args)" << std::endl;
 	}
 
-	run_for_generations(populous, reference, samples, starting_generation, num_generations, images_per_generation, crossover_points, gamma, random, io, mutation_rate, population_file, &cross_best_with_random, &add_occasional_triangles);
+	run_for_generations(populous, reference, starting_generation, num_generations, images_per_generation, crossover_points, gamma, random, io, mutation_rate, population_file, &cross_best_with_random, &add_occasional_triangles);
 
-	//	run_for_generations(populous, reference, samples, starting_generation, num_generations, images_per_generation, crossover_points, gamma, random, io, mutation_rate, population_file, &cross_best_replace_worst, &add_occasional_triangles);
+	//	run_for_generations(populous, reference, starting_generation, num_generations, images_per_generation, crossover_points, gamma, random, io, mutation_rate, population_file, &cross_best_replace_worst, &add_occasional_triangles);
 
 	return 0;
 }

@@ -9,3 +9,5 @@ configure
 libtool
 missing
 depcomp
+config.guess
+config.sub

@@ -12,3 +12,5 @@ test_tokenizer
 test_fd_stream
 test_quaternion
 test_disc
+test_triangle
+test_triangle*.tga
