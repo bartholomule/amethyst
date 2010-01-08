@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <fstream>
 #include <limits>
+#include <map>
 
 using namespace amethyst;
 
@@ -19,6 +20,22 @@ using namespace amethyst;
 typedef float number_type;
 typedef rgbcolor<number_type> color;
 typedef alpha_triangle_2d<number_type> alpha_triangle;
+
+struct globals
+{
+	number_type birth_rate;
+	number_type death_rate;
+	number_type mutation_rate;
+	size_t images_per_generation;
+	std::string population_filename;
+	size_t min_triangles;
+	size_t max_triangles;
+	size_t generation_for_max;
+	size_t crossover_points;
+	size_t num_offspring;
+	size_t min_population_size;
+	size_t max_population_size;
+} GLOBALS;
 
 // Add the term to the current sum, add the dropped bits to the correction
 // term, and return the new sum
@@ -71,6 +88,20 @@ void generate_random_triangles(quick_vector<alpha_triangle>& triangles,
 	}
 }
 
+inline color squared_difference(const color& c1, const color& c2)
+{
+	/*
+	return color(
+		((c1.r() - c2.r()) * (c1.r() - c2.r())),
+		((c1.g() - c2.g()) * (c1.g() - c2.g())),
+		((c1.b() - c2.b()) * (c1.b() - c2.b())));
+	*/
+	return color(
+		fabs(c1.r() - c2.r()),
+		fabs(c1.g() - c2.g()),
+		fabs(c1.b() - c2.b()));
+}
+
 number_type calculate_error(const image<number_type>& ref, const image<number_type>& img)
 {
 	number_type error(0);
@@ -82,14 +113,16 @@ number_type calculate_error(const image<number_type>& ref, const image<number_ty
 	const color* ref_pixels = ref.raw_data();
 	const color* img_pixels = img.raw_data();
 
+	color min_color;
+	color max_color;
+	color average_color;
+
 	size_t max_pixel = width * height;
 	for( size_t i = 0; i < max_pixel; ++i )
 	{
-		color difference = (ref_pixels[i] - img_pixels[i]) * 256;
+		color difference = 256 * squared_difference(ref_pixels[i], img_pixels[i]);
 		error = corrected_sum(error,
-			( difference.r() * difference.r() +
-				difference.g() * difference.g() +
-				difference.b() * difference.b() ),
+			difference.r() + difference.g() + difference.b(),
 			addition_error);
 	}
 	return error + addition_error;
@@ -407,16 +440,44 @@ rc_pointer<image<number_type> > get_error_image(const image<number_type>& img1, 
 {
 	rc_pointer<image<number_type> > retval(new image<number_type>(img1.get_width(), img1.get_height()));
 
-	for( size_t y = 0; y < retval->get_height(); ++y )
+	const color* in_colors1 = img1.raw_data();
+	const color* in_colors2 = img2.raw_data();
+	color* out_pixels = retval->reinterpret<color*>();
+
+	color max_color = color(-100,-100,-100);
+	color error_sum = color(0,0,0);
+
+	size_t num_pixels = retval->get_width() * retval->get_height();
+
+	for( size_t i = 0; i < num_pixels; ++i )
 	{
-		for( size_t x = 0; x < retval->get_width(); ++x )
-		{
-			color difference = (img1(x,y) - img2(x,y));
-			(*retval)(x,y) = color(
-				difference.r() * difference.r(),
-				difference.g() * difference.g(),
-				difference.b() * difference.b());
-		}
+		color difference = squared_difference(in_colors1[i], in_colors2[i]);
+
+		max_color.set_r(std::max(max_color.r(), difference.r()));
+		max_color.set_g(std::max(max_color.g(), difference.g()));
+		max_color.set_b(std::max(max_color.b(), difference.b()));
+
+		error_sum += difference;
+
+		out_pixels[i] = difference;
+	}
+
+	const color average = error_sum * (1 / number_type(num_pixels));
+	const color scale(1/max_color.r(), 1/max_color.g(), 1/max_color.b());
+	const color desired_ave_color(0.5,0.5,0.5);
+	number_type gamma_r = std::log(average.r()) / std::log(desired_ave_color.r());
+	number_type gamma_g = std::log(average.g()) / std::log(desired_ave_color.g());
+	number_type gamma_b = std::log(average.b()) / std::log(desired_ave_color.b());
+
+	std::cout << "average color=" << average << " max color=" << max_color << " gamma=" << gamma_r << "," << gamma_g << "," << gamma_b << std::endl;
+
+	for( size_t i = 0; i < num_pixels; ++i )
+	{
+		color& pixel = out_pixels[i];
+		// Scale the color and gamma convert it.
+		pixel.set_r(std::pow(pixel.r() * scale.r(), 1 / gamma_r));
+		pixel.set_g(std::pow(pixel.g() * scale.g(), 1 / gamma_g));
+		pixel.set_b(std::pow(pixel.b() * scale.b(), 1 / gamma_b));
 	}
 	return retval;
 }
@@ -439,11 +500,11 @@ void run_generation(population& populous, const rc_pointer<image<number_type> >&
 		snprintf(buffer, sizeof(buffer), "%07ld", generation_number);
 
 		// Dump the best image...
-		std::cout << "Generation " << buffer << ": Best error #" << i << " = " << best[i].error << " (" << best[i].pleb_index << ")" << std::endl;
+		std::cout << "Generation " << buffer << ": Best error #" << i << " = " << std::fixed << best[i].error << " (" << best[i].pleb_index << ")" << std::endl;
 		io.output(string_format("genetic_triangles_best-%1-%2.tga", buffer, i), *best[i].image, gamma);
 
 		// Dump the worst image...
-		std::cout << "Generation " << buffer << ": Worst error #" << i << " = " << worst[i].error  << " (" << worst[i].pleb_index << ")" << std::endl;
+		std::cout << "Generation " << buffer << ": Worst error #" << i << " = " << std::fixed << worst[i].error  << " (" << worst[i].pleb_index << ")" << std::endl;
 		io.output(string_format("genetic_triangles_worst-%1-%2.tga", buffer, i), *worst[i].image, gamma);
 
 		// Dump the error image...
@@ -455,9 +516,9 @@ void run_generation(population& populous, const rc_pointer<image<number_type> >&
 	io.output("genetic_triangles_reference.tga", *reference, gamma);
 }
 
-void write_population(const char* filename, const population& populous, size_t generation)
+void write_population(const std::string& filename, const population& populous, size_t generation)
 {
-	std::ofstream output(filename);
+	std::ofstream output(filename.c_str());
 	output << generation << "\n";
 	output << " " << populous.size() << "\n";
 	for( population::const_iterator i = populous.begin(); i != populous.end(); ++i )
@@ -467,9 +528,9 @@ void write_population(const char* filename, const population& populous, size_t g
 	output.flush();
 }
 
-bool read_population(const char* filename, population& populous, size_t& generation)
+bool read_population(const std::string& filename, population& populous, size_t& generation)
 {
-	std::ifstream input(filename);
+	std::ifstream input(filename.c_str());
 
 	input >> generation;
 
@@ -516,18 +577,14 @@ void mutate_plebs(population& populous, number_type mutation_rate, Random<number
 }
 
 typedef void (*generation_tweaker)(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random);
-typedef void (*generation_crosser)(population& populous, size_t generation, const quick_vector<pleb_data>& best, const quick_vector<pleb_data>& worst, size_t crossover_points, number_type mutation_rate, size_t width, size_t height, Random<number_type>& random);
+typedef void (*generation_crosser)(population& populous, size_t generation, const quick_vector<pleb_data>& best, const quick_vector<pleb_data>& worst, size_t width, size_t height, Random<number_type>& random);
 
 void run_for_generations(population& populous, const rc_pointer<image<number_type> >& reference,
 	size_t starting_generation,
 	size_t generations,
-	size_t images_to_dump,
-	int crossover_points,
 	number_type gamma,
 	Random<number_type>& random,
 	image_io<number_type>& io,
-	number_type mutation_rate,
-	const char* population_file,
 	generation_crosser cross_generation,
 	generation_tweaker modify_generation)
 {
@@ -539,9 +596,9 @@ void run_for_generations(population& populous, const rc_pointer<image<number_typ
 		quick_vector<pleb_data> best;
 		quick_vector<pleb_data> worst;
 
-		size_t amount_to_cross = 1 << crossover_points;
+		size_t amount_to_cross = 1 << GLOBALS.crossover_points;
 
-		run_generation(populous, reference, best, worst, amount_to_cross, images_to_dump, generation, gamma, io);
+		run_generation(populous, reference, best, worst, amount_to_cross, GLOBALS.images_per_generation, generation, gamma, io);
 
 		if( (generation + 1) < generations )
 		{
@@ -558,12 +615,12 @@ void run_for_generations(population& populous, const rc_pointer<image<number_typ
 			}
 			std::cout << std::endl;
 			// Cross over..
-			cross_generation(populous, generation, best, worst, crossover_points, mutation_rate, width, height, random);
+			cross_generation(populous, generation, best, worst, width, height, random);
 
 			// Do any non-crossing modifications (such as adding new genes).
 			modify_generation(populous, generation, width, height, random);
 		}
-		write_population(population_file, populous, generation);
+		write_population(GLOBALS.population_filename, populous, generation);
 	}
 }
 
@@ -583,16 +640,38 @@ void cross_best_replace_worst(population& populous, size_t generation, const qui
 	}
 }
 
-void cross_best_with_random(population& populous, size_t generation, const quick_vector<pleb_data>& best, const quick_vector<pleb_data>& worst, size_t crossover_points, number_type mutation_rate, size_t width, size_t height, Random<number_type>& random)
+number_type triangles_at_generation(size_t generation)
 {
-	const number_type birth_rate = 0.1;
-	const size_t num_offspring = 3; // Must be > 2 for the random_cross function to do a proper shuffle.  I may want to fix this at some point.
-	const number_type death_rate = num_offspring * birth_rate; // Equal to the number that are born... For now.
+	number_type difference = (GLOBALS.max_triangles - GLOBALS.min_triangles);
+	number_type rate = number_type(GLOBALS.max_triangles - GLOBALS.min_triangles) / GLOBALS.generation_for_max;
+	number_type expected = GLOBALS.min_triangles + generation * rate;
+
+	std::cout << string_format("Generation %1 should have %2 triangles (max=%3, rate=%4)", generation, expected, GLOBALS.max_triangles, rate) << std::endl;
+
+	return std::min<number_type>(GLOBALS.max_triangles, expected);
+}
+
+void cross_best_with_random(population& populous, size_t generation, const quick_vector<pleb_data>& best, const quick_vector<pleb_data>& worst, size_t width, size_t height, Random<number_type>& random)
+{
 	population crossed;
 	const pleb best_pleb = populous[best[0].pleb_index];
 
 	// Cross a bunch of plebs...
-	const size_t num_to_cross = birth_rate * populous.size();
+	size_t num_to_cross = GLOBALS.birth_rate * populous.size();
+	if( (num_to_cross * GLOBALS.num_offspring) > GLOBALS.max_population_size )
+	{
+		// Replace the entire population.
+		num_to_cross = GLOBALS.max_population_size / GLOBALS.num_offspring;
+	}
+	else if( num_to_cross * GLOBALS.num_offspring < (GLOBALS.max_population_size - GLOBALS.num_offspring))
+	{
+		if( random.next() < GLOBALS.birth_rate )
+		{
+			// Add one more...
+			++num_to_cross;
+		}
+	}
+
 	for( size_t count = 0; count < num_to_cross; ++count )
 	{
 		// Yes, this could end up doing some cloning, and it won't matter -- odds are better with a smaller population size.
@@ -600,17 +679,24 @@ void cross_best_with_random(population& populous, size_t generation, const quick
 		std::cout << "Crossing " << best[0].pleb_index << " with random guy " << random_guy << std::endl;
 
 		population crossing;
-		random_cross(best_pleb, populous[random_guy], crossover_points, num_offspring, crossing, random);
+		random_cross(best_pleb, populous[random_guy], GLOBALS.crossover_points, GLOBALS.num_offspring, crossing, random);
 
 		crossed.append(crossing);
 	}
 
 	// Mutate...
-	mutate_plebs(crossed, mutation_rate, random, width, height);
+	mutate_plebs(crossed, GLOBALS.mutation_rate, random, width, height);
 
 	// Kill some.
-	const size_t num_to_kill = death_rate * populous.size();
-	std::cout << "Killing " << num_to_kill << " plebs:";
+	size_t num_to_kill = GLOBALS.death_rate * populous.size();
+
+	// Clamp the population size.
+	if( (populous.size() + crossed.size() - num_to_kill) > GLOBALS.max_population_size )
+	{
+		num_to_kill = std::min(populous.size(), populous.size() + crossed.size() - num_to_kill - GLOBALS.max_population_size);
+	}
+
+	std::cout << "Killing " << num_to_kill << " plebs (out of " << populous.size() << "):";
 	quick_vector<size_t> death_list;
 	unique_random_list(death_list, 0, populous.size(), num_to_kill, random);
 	std::sort(death_list.begin(), death_list.end(), std::greater<size_t>());
@@ -622,10 +708,21 @@ void cross_best_with_random(population& populous, size_t generation, const quick
 	}
 	std::cout << std::endl;
 
-
 	// Replace some random plebs, not just the bad guys.
 	std::cout << "Adding " << crossed.size() << " plebs." << std::endl;
 	populous.append(crossed);
+
+	// Come back to the minimum population size.
+	if( populous.size() < GLOBALS.min_population_size )
+	{
+		size_t triangles = triangles_at_generation(generation);
+		while( populous.size() < GLOBALS.min_population_size )
+		{
+			population::value_type pleb;
+			random_pleb(width, height, triangles, random, pleb);
+			populous.append(pleb);
+		}
+	}
 }
 
 void leave_alone(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random)
@@ -635,82 +732,512 @@ void leave_alone(population& populous, size_t generation, size_t width, size_t h
 
 void add_occasional_triangles(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random)
 {
-	const number_type max_triangles = 300;
-	const size_t reach_max_at = 50000;
-	number_type expected_triangles = 1 + (generation * (max_triangles / reach_max_at));
-	size_t triangles_at_this_generation = std::min<size_t>(expected_triangles, max_triangles);
-
-	std::cout << "Generation " << generation << ": expect to have " << std::setprecision(6) << expected_triangles << " triangles..." << std::endl;
+	size_t triangles = triangles_at_generation(generation);
 
 	if( populous.empty() )
 	{
-		populous.push_back(pleb(triangles_at_this_generation));
+		populous.push_back(pleb(triangles));
 	}
 
 	for( population::iterator i = populous.begin(); i != populous.end(); ++i )
 	{
-		if( i->pleb_data.size() < triangles_at_this_generation )
+		if( i->pleb_data.size() < triangles )
 		{
 			i->pleb_data.push_back(create_random_triangle(width, height, random));
 		}
 	}
 }
 
+enum parser_option_argtype
+{
+	E_OPT_ARG_NONE, E_OPT_ARG_REQUIRED, E_OPT_ARG_OPTIONAL
+};
+
+struct parser_option
+{
+	int opt_id;
+	char opt_short;
+	std::string opt_long;
+	parser_option_argtype arg_type;
+	std::string default_value;
+	std::string argname;
+	std::string description;
+};
+
+bool long_opt_equals(std::string name, const parser_option& opt)
+{
+	return (!opt.opt_long.empty()) && (opt.opt_long == name);
+}
+
+bool short_opt_equals(char c, const parser_option& opt)
+{
+	return (opt.opt_short != '\0') && (opt.opt_short == c);
+}
+
+class cmdline_parser
+{
+public:
+
+	int add_optional_arg(const std::string& longopt, char shortopt, const std::string& default_value, const std::string& description, const std::string& argname = "arg")
+	{
+		parser_option opt;
+		opt.opt_id = m_valid_options.size();
+		opt.opt_short = shortopt;
+		opt.opt_long = longopt;
+		opt.arg_type = E_OPT_ARG_OPTIONAL;
+		opt.default_value = default_value;
+		opt.description = description;
+		opt.argname = argname;
+		m_valid_options.push_back(opt);
+
+		return opt.opt_id;
+	}
+
+	int add_required_arg(const std::string& longopt, char shortopt, const std::string& description, const std::string& argname = "arg" )
+	{
+		parser_option opt;
+		opt.opt_id = m_valid_options.size();
+		opt.opt_short = shortopt;
+		opt.opt_long = longopt;
+		opt.arg_type = E_OPT_ARG_REQUIRED;
+		opt.description = description;
+		opt.argname = argname;
+		m_valid_options.push_back(opt);
+
+		return opt.opt_id;
+	}
+
+	int add_argless(const std::string& longopt, char shortopt, const std::string& description)
+	{
+		parser_option opt;
+		opt.opt_id = m_valid_options.size();
+		opt.opt_short = shortopt;
+		opt.opt_long = longopt;
+		opt.arg_type = E_OPT_ARG_NONE;
+		opt.description = description;
+		m_valid_options.push_back(opt);
+
+		return opt.opt_id;
+	}
+
+	int find_by_name(const std::string& longopt) const
+	{
+		quick_vector<parser_option>::const_iterator loc;
+		for( loc = m_valid_options.begin(); loc != m_valid_options.end(); ++loc )
+		{
+			if( long_opt_equals(longopt, *loc) )
+			{
+				break;
+			}
+		}
+
+		if( loc != m_valid_options.end() )
+		{
+			return loc->opt_id;
+		}
+		return -1;
+	}
+
+	int find_by_name(char shortopt) const
+	{
+		quick_vector<parser_option>::const_iterator loc;
+		for( loc = m_valid_options.begin(); loc != m_valid_options.end(); ++loc )
+		{
+			if( short_opt_equals(shortopt, *loc) )
+			{
+				break;
+			}
+		}
+
+		if( loc != m_valid_options.end() )
+		{
+			return loc->opt_id;
+		}
+		return -1;
+	}
+
+	bool opt_was_supplied(int id)
+	{
+		return m_parsed_options.find(id) != m_parsed_options.end();
+	}
+
+	bool opt_was_supplied(const std::string& name)
+	{
+		return opt_was_supplied(find_by_name(name));
+	}
+
+	std::string get_option_value(int id, const std::string& default_if_none)
+	{
+		value_map::const_iterator iter = m_parsed_options.find(id);
+		if( (iter != m_parsed_options.end()) && !iter->second.empty() )
+		{
+			return *iter->second.rbegin();
+		}
+		return default_if_none;
+	}
+
+	std::string get_option_value(const std::string& name, const std::string& default_if_none)
+	{
+		return get_option_value(find_by_name(name), default_if_none);
+	}
+
+	// Don't pass argv[0] in here.
+	template <typename iter_t>
+	bool parse(iter_t start, iter_t finish, quick_vector<std::string>& error_messages)
+	{
+		bool retval = true;
+		error_messages.clear();
+		m_parsed_options.clear();
+		size_t index = 0;
+		for(; start != finish; ++start )
+		{
+			++index;
+			std::string opt = *start;
+			std::string attached_value;
+
+			std::string::size_type equals = opt.find('=');
+			if( equals != std::string::npos )
+			{
+				if( (equals + 1) < opt.size() )
+				{
+					attached_value = opt.substr(equals + 1);
+				}
+				opt = opt.substr(0, equals);
+			}
+
+			char shortopt = '\0';
+			std::string longopt;
+
+			if( (opt.size() > 0) && (opt[0] == '-') )
+			{
+				// Could be short, could be long.
+				int id = -1;
+
+				if( opt.size() == 2 )
+				{
+					// Short opt, or --.
+					shortopt = opt[1];
+
+					id = find_by_name(shortopt);
+				}
+				else if( (opt.size() > 2) && (opt[1] == '-') )
+				{
+					longopt = opt.substr(2);
+
+					id = find_by_name(longopt);
+				}
+
+
+				if( id != -1 )
+				{
+					// We have a valid option.
+
+					const parser_option& po = m_valid_options[id];
+
+					if( po.arg_type == E_OPT_ARG_NONE )
+					{
+						if( equals == std::string::npos )
+						{
+							// Some random operation to create an entry for the matching ID.
+							m_parsed_options[id].clear();
+						}
+						else
+						{
+							error_messages.push_back(string_format("Option %1 (%2) illegally had an attached argument (\"%3\")", index, std::string(*start).substr(0, equals), attached_value));
+							retval = false;
+						}
+					}
+					else
+					{
+						// optional or required.
+						if( equals != std::string::npos )
+						{
+							m_parsed_options[id].push_back(attached_value);
+						}
+						else
+						{
+							// Not attached, check the next option.
+							if( start + 1 != finish )
+							{
+								std::string next = *(start + 1);
+								if( (next.size() <= 1) || (next[0] != '-') )
+								{
+									m_parsed_options[id].push_back(next);
+									++start;
+									++index;
+								}
+								else if( po.arg_type == E_OPT_ARG_OPTIONAL )
+								{
+									m_parsed_options[id].push_back(po.default_value);
+								}
+								else
+								{
+									error_messages.push_back(string_format("Option %1 (%2) requires an argument", index, *start));
+									retval = false;
+								}
+							}
+							else if( po.arg_type == E_OPT_ARG_OPTIONAL )
+							{
+								m_parsed_options[id].push_back(po.default_value);
+							}
+							else
+							{
+								error_messages.push_back(string_format("Option %1 (%2) requires an argument", index, *start));
+								retval = false;
+							}
+						}
+					}
+				}
+				else
+				{
+					error_messages.push_back(string_format("Option %1 (%2) is invalid in \"%3\"", index, std::string(*start).substr(0, equals), std::string(*start)));
+					retval = false;
+				}
+			}
+			else
+			{
+				error_messages.push_back(string_format("Non-option argument %1 is invalid: \"%2\"", index, *start));
+				retval = false;
+			}
+		}
+		return retval;
+	}
+
+	std::string get_help() const
+	{
+		std::string retval;
+		const size_t column_indent = 20;
+		const size_t line_width = 80;
+
+		retval += "Valid Options:\n";
+		for( quick_vector<parser_option>::const_iterator opt = m_valid_options.begin();
+			opt != m_valid_options.end();
+			++opt )
+		{
+			std::string opt_help;
+			std::string def;
+			if( opt->opt_short != '\0' )
+			{
+				opt_help.append(1, '-').append(1, opt->opt_short);
+			}
+			if( !opt->opt_long.empty() )
+			{
+				if( !opt_help.empty() )
+				{
+					opt_help.append(", ");
+				}
+				opt_help.append("--").append(opt->opt_long);
+			}
+			if( opt->arg_type == E_OPT_ARG_REQUIRED )
+			{
+				opt_help.append(" <").append(opt->argname).append(1, '>');
+			}
+			else if( opt->arg_type == E_OPT_ARG_OPTIONAL )
+			{
+				opt_help.append(" [").append(opt->argname).append(1, ']');
+				def = " (default is \"" + opt->default_value + "\")";
+			}
+
+			if( opt_help.size() >= column_indent )
+			{
+				opt_help.append(1, '\n');
+			}
+			else
+			{
+				opt_help.append(std::max<int>(1, column_indent - int(opt_help.size())), ' ');
+			}
+			opt_help.append(opt->description);
+			opt_help.append(def);
+
+			// Break up the line and append it to the running output.
+			while( (opt_help.size() > line_width) || (opt_help.find('\n') != std::string::npos) )
+			{
+				size_t newline_pos = opt_help.find('\n');
+				size_t space_pos = opt_help.rfind(' ', line_width);
+
+				size_t hardbreak = newline_pos;
+				if( newline_pos > line_width )
+				{
+					hardbreak = space_pos;
+				}
+				if( (hardbreak < column_indent) || (hardbreak == std::string::npos) )
+				{
+					// Just split at the column width because we found no spaces
+					retval.append(opt_help, 0, line_width - 1).append("-\n");;
+					opt_help = std::string(column_indent, ' ') + opt_help.substr(line_width - 1);
+				}
+				else
+				{
+					retval.append(opt_help, 0, hardbreak).append(1, '\n');
+					if( (hardbreak + 1) < opt_help.size() )
+					{
+						opt_help = std::string(column_indent, ' ') + opt_help.substr(hardbreak + 1);
+					}
+					else
+					{
+						opt_help.erase();
+					}
+				}
+			}
+			retval.append(opt_help).append(1, '\n');
+		}
+
+		return retval;
+	}
+
+private:
+	quick_vector<parser_option> m_valid_options;
+	typedef std::map<int, quick_vector<std::string> > value_map;
+	value_map m_parsed_options;
+};
+
+int string_to_int(const std::string& s)
+{
+	const char* sp = s.c_str();
+	const char* end = sp;
+
+	int retval = strtol(sp, (char**)&end, 10);
+
+	if( (end - sp) != s.length() )
+	{
+		throw std::runtime_error("invalid integer");
+	}
+	return retval;
+}
+
+double string_to_double(const std::string& s)
+{
+	const char* sp = s.c_str();
+	const char* end = sp;
+
+	double retval = strtod(sp, (char**)&end);
+
+	if( (end - sp) != s.length() )
+	{
+		throw std::runtime_error("invalid floating point number");
+	}
+	return retval;
+}
+
+bool parse_command_line(int argc, const char** argv,
+	int& num_generations, bool& resume, std::string& input_file)
+{
+	cmdline_parser parser;
+	parser.add_argless("help", 'h', "Show this help text");
+	parser.add_argless("continue", 'c', "Continue with saved population");
+	parser.add_required_arg("input-image", 'i', "Load image from <filename>", "filename");
+	parser.add_optional_arg("min-population-size", 'p', "300", "Set initial (and minimum) population size to [size]", "size");
+	parser.add_optional_arg("max-population-size", '\0', "300", "Set the the maximum population [size].  See --birth-rate.", "size");
+	parser.add_optional_arg("population-file", 'o', "genetic_triangles.population", "Write the population to [filename] at the end of each generation. If the --continue option is supplied as well, the population and starting generation will also be loaded from [filename]. ", "filename");
+	parser.add_optional_arg("max-generation", 'm', "1000000", "Run until generation [generation] is reached", "generation");
+	parser.add_optional_arg("image-count", '\0', "1", "Save [count] best and worst images at the end of each generation", "count");
+	parser.add_optional_arg("min-triangles", '\0', "1", "Set the minimum number of triangles (starting triangles) to [count]", "count");
+	parser.add_optional_arg("max-triangles", '\0', "300", "Set the maximum number of triangles (ending triangles) to [count]", "count");
+	parser.add_optional_arg("reach-max-at", '\0', "10000", "Reach the maximum number of triangles at generation [generation]", "generation");
+	parser.add_required_arg("crossover-points", '\0', "Use <points> different points when doing a genetic cross.  You probably do not want to change this.", "points");
+	parser.add_optional_arg("death-rate", '\0', "0.1", "The [rate] of population decrease each generation.", "rate");
+	parser.add_optional_arg("birth-rate", '\0', "0.1", "The [rate] of population increase each generation.  If this is larger than the death rate, the population size will increase until the --max-population-size value is reached and euthanasia is forced", "rate");
+	parser.add_optional_arg("mutation-rate", 'r', "1.0", "Set the probability of offspring mutation to [rate].\nSupplying 1.0 means every child will mutate\n", "rate");
+	parser.add_optional_arg("children", '\0', "3", "Set the number of children per crossing to [children].  Must be 2 or larger.", "children");
+
+	bool retval = true;
+
+	quick_vector<std::string> errs;
+	if( !parser.parse(argv + std::min(1, argc), argv + argc, errs) )
+	{
+		std::cerr << "Failed to parse: " << std::endl;
+		for( size_t i = 0; i < errs.size(); ++i )
+		{
+			std::cerr << "  " << errs[i] << std::endl;
+		}
+		retval = false;
+	}
+
+	if( parser.opt_was_supplied("help") || !retval )
+	{
+		std::cerr << parser.get_help();
+		return retval;
+	}
+
+	// Do all other option manipulation here.
+	input_file = parser.get_option_value("input-image", "");
+	if( input_file.empty() )
+	{
+		std::cerr << "No input image filename was supplied." << std::endl;
+		retval = false;
+	}
+	num_generations = string_to_int(parser.get_option_value("max-generations", "1000000"));
+	resume = parser.opt_was_supplied("continue");
+	GLOBALS.min_population_size = string_to_int(parser.get_option_value("min-population-size", "300"));
+	GLOBALS.max_population_size = string_to_int(parser.get_option_value("max-population-size", "300"));
+	GLOBALS.mutation_rate = string_to_double(parser.get_option_value("mutation-rate", "1.0"));
+	GLOBALS.birth_rate = string_to_double(parser.get_option_value("birth-rate", "0.1"));
+	GLOBALS.death_rate = string_to_double(parser.get_option_value("death-rate", "0.1"));
+	GLOBALS.images_per_generation = string_to_int(parser.get_option_value("image-count", "1"));
+	GLOBALS.population_filename = parser.get_option_value("population-file", "genetic_triangles.population");
+	GLOBALS.min_triangles = string_to_int(parser.get_option_value("min-triangles", "1"));
+	GLOBALS.max_triangles = string_to_int(parser.get_option_value("max-triangles", "300"));
+	GLOBALS.generation_for_max = string_to_int(parser.get_option_value("reach-max-at", "10000"));
+	GLOBALS.num_offspring = string_to_int(parser.get_option_value("children", "3"));
+
+	if( parser.opt_was_supplied("crossover-points") )
+	{
+		GLOBALS.crossover_points = string_to_int(parser.get_option_value("crossover-points", ""));
+	}
+	else
+	{
+		GLOBALS.crossover_points = log(GLOBALS.max_population_size / 2.0) / log(2.0);
+	}
+
+	return retval;
+}
 
 int main(int argc, const char** argv)
 {
-	tga_io<number_type> io;
+	int num_generations;
+	bool resume;
+	std::string image_filename;
 
-	if( argc < 2 )
+	if( !parse_command_line(argc, argv, num_generations, resume, image_filename) )
 	{
-		std::cerr << "Usage: " << argv[0] << " <REFERENCE IMAGE>" << std::endl;
 		return 1;
 	}
 
-	rc_pointer<image<number_type> > reference = io.input(argv[1]);
+	tga_io<number_type> io;
+
+	rc_pointer<image<number_type> > reference = io.input(image_filename);
 
 	const size_t width = reference->get_width();
 	const size_t height = reference->get_height();
 	const number_type gamma = 1;
-	const size_t initial_population_size = 300;
-	const int crossover_points = log(initial_population_size / 2.0) / log(2.0);
-	const int num_generations = 1000000;
-	const number_type mutation_rate = 0.50;
-	const size_t images_per_generation = 1;
-	const char* population_file = "genetic_triangles.population";
 	size_t starting_generation = 1;
+
+	if( (width <= 1) || (height <= 1) )
+	{
+		std::cerr << "Bad image file." << std::endl;
+		return 1;
+	}
 
 	mersenne_twist_random<number_type> random;
 
 	population populous;
 
-	const size_t starting_triangles = 1; // will increase in add_occasional_triangles
-	generate_random_population(width, height, random, initial_population_size, starting_triangles, populous);
+	generate_random_population(width, height, random,
+		GLOBALS.min_population_size, GLOBALS.min_triangles, populous);
 
-	if( argc > 2 )
+	if( resume )
 	{
-		if( argv[2] == std::string("--continue") )
+		std::cout << "continuing..." << std::endl;
+		if( !read_population(GLOBALS.population_filename, populous, starting_generation) )
 		{
-			std::cout << "continuing..." << std::endl;
-			if( !read_population(population_file, populous, starting_generation) )
-			{
-				return 1;
-			}
-			std::cout << "Continuing with generation " << ++starting_generation << std::endl;
+			return 1;
 		}
-		else
-		{
-			std::cout << "Not continuing (bad arg)" << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "Not continuing (not enough args)" << std::endl;
+		std::cout << "Continuing with generation " << ++starting_generation << std::endl;
 	}
 
-	run_for_generations(populous, reference, starting_generation, num_generations, images_per_generation, crossover_points, gamma, random, io, mutation_rate, population_file, &cross_best_with_random, &add_occasional_triangles);
-
-	//	run_for_generations(populous, reference, starting_generation, num_generations, images_per_generation, crossover_points, gamma, random, io, mutation_rate, population_file, &cross_best_replace_worst, &add_occasional_triangles);
+	run_for_generations(populous, reference,
+		starting_generation, num_generations,
+		gamma, random, io, &cross_best_with_random, &add_occasional_triangles);
 
 	return 0;
 }
