@@ -35,6 +35,8 @@ struct globals
 	size_t num_offspring;
 	size_t min_population_size;
 	size_t max_population_size;
+	size_t width;
+	size_t height;
 } GLOBALS;
 
 // Add the term to the current sum, add the dropped bits to the correction
@@ -220,22 +222,22 @@ std::istream& operator>>(std::istream& input, pleb& p)
 }
 
 
-void convert_to_triangles(pleb& p, quick_vector<alpha_triangle>& output)
+void convert_to_triangles(pleb& p, quick_vector<alpha_triangle>& output, int image_width, int image_height)
 {
 	size_t triangles = p.pleb_data.size();
 	output.resize(triangles);
 	for( size_t i = 0; i < triangles; ++i )
 	{
 		output[i].v1.rgb.set( p.pleb_data[i].pleb_verts[0].r, p.pleb_data[i].pleb_verts[0].g, p.pleb_data[i].pleb_verts[0].b);
-		output[i].v1.xy.set( p.pleb_data[i].pleb_verts[0].x, p.pleb_data[i].pleb_verts[0].y);
+		output[i].v1.xy.set( p.pleb_data[i].pleb_verts[0].x / 100.0 * image_width, p.pleb_data[i].pleb_verts[0].y / 100.0 * image_height);
 		output[i].v1.a = p.pleb_data[i].pleb_verts[0].a;
 
 		output[i].v2.rgb.set( p.pleb_data[i].pleb_verts[1].r, p.pleb_data[i].pleb_verts[1].g, p.pleb_data[i].pleb_verts[1].b);
-		output[i].v2.xy.set( p.pleb_data[i].pleb_verts[1].x, p.pleb_data[i].pleb_verts[1].y);
+		output[i].v2.xy.set( p.pleb_data[i].pleb_verts[1].x / 100.0 * image_width, p.pleb_data[i].pleb_verts[1].y / 100.0 * image_height);
 		output[i].v2.a = p.pleb_data[i].pleb_verts[1].a;
 
 		output[i].v3.rgb.set( p.pleb_data[i].pleb_verts[2].r, p.pleb_data[i].pleb_verts[2].g, p.pleb_data[i].pleb_verts[2].b);
-		output[i].v3.xy.set(p.pleb_data[i].pleb_verts[2].x, p.pleb_data[i].pleb_verts[2].y);
+		output[i].v3.xy.set(p.pleb_data[i].pleb_verts[2].x / 100.0 * image_width, p.pleb_data[i].pleb_verts[2].y / 100.0 * image_height);
 		output[i].v3.a = p.pleb_data[i].pleb_verts[2].a;
 	}
 }
@@ -319,13 +321,13 @@ void random_cross(const pleb& p1, const pleb& p2, int points, size_t count, quic
 	shuffle_range(output, last_index, num_data_points, random);
 }
 
-pleb::pleb_data_entry create_random_triangle(size_t width, size_t height, Random<number_type>& random)
+pleb::pleb_data_entry create_random_triangle(Random<number_type>& random)
 {
 	pleb::pleb_data_entry e;
 	for( size_t t = 0; t < 3; ++t )
 	{
-		e.pleb_verts[t].x = random.next_int(width);
-		e.pleb_verts[t].y = random.next_int(height);
+		e.pleb_verts[t].x = random.next_int(100);
+		e.pleb_verts[t].y = random.next_int(100);
 		e.pleb_verts[t].r = random.next();
 		e.pleb_verts[t].g = random.next();
 		e.pleb_verts[t].b = random.next();
@@ -334,12 +336,12 @@ pleb::pleb_data_entry create_random_triangle(size_t width, size_t height, Random
 	return e;
 }
 
-void random_pleb(size_t width, size_t height, size_t count, Random<number_type>& random, pleb& retval)
+void random_pleb(size_t count, Random<number_type>& random, pleb& retval)
 {
 	retval.pleb_data.resize(count);
 	for( size_t i = 0; i < count; ++i )
 	{
-		retval.pleb_data[i] = create_random_triangle(width, height, random);
+		retval.pleb_data[i] = create_random_triangle(random);
 	}
 }
 
@@ -350,7 +352,7 @@ void generate_random_population(size_t width, size_t height, Random<number_type>
 
 	for( size_t i = 0; i < count; ++i )
 	{
-		random_pleb(width, height, triangles, random, output[i]);
+		random_pleb(triangles, random, output[i]);
 	}
 }
 
@@ -427,7 +429,7 @@ void calculate_population_error(population& populous, const rc_pointer<image<num
 
 		quick_vector<alpha_triangle> triangles;
 		std::cout << "...#" << i << " (" << populous[i].pleb_data.size() << ")" << std::flush;
-		convert_to_triangles(populous[i], triangles);
+		convert_to_triangles(populous[i], triangles, width, height);
 		rasterize_triangles(triangles, *data.image);
 		data.error = calculate_error(*reference, *data.image);
 		populous[i].error = data.error;
@@ -500,11 +502,11 @@ void run_generation(population& populous, const rc_pointer<image<number_type> >&
 		snprintf(buffer, sizeof(buffer), "%07ld", generation_number);
 
 		// Dump the best image...
-		std::cout << "Generation " << buffer << ": Best error #" << i << " = " << std::fixed << best[i].error << " (" << best[i].pleb_index << ")" << std::endl;
+		std::cout << "Generation " << buffer << ": Best error #" << i << " = " << std::setprecision(3) << std::fixed << best[i].error << " (" << best[i].pleb_index << ")" << std::endl;
 		io.output(string_format("genetic_triangles_best-%1-%2.tga", buffer, i), *best[i].image, gamma);
 
 		// Dump the worst image...
-		std::cout << "Generation " << buffer << ": Worst error #" << i << " = " << std::fixed << worst[i].error  << " (" << worst[i].pleb_index << ")" << std::endl;
+		std::cout << "Generation " << buffer << ": Worst error #" << i << " = " << std::setprecision(3) << std::fixed << worst[i].error  << " (" << worst[i].pleb_index << ")" << std::endl;
 		io.output(string_format("genetic_triangles_worst-%1-%2.tga", buffer, i), *worst[i].image, gamma);
 
 		// Dump the error image...
@@ -542,8 +544,12 @@ bool read_population(const std::string& filename, population& populous, size_t& 
 
 	for( population::iterator i = populous.begin(); i != populous.end(); ++i )
 	{
-		input >> *i;
+		if( !(input >> *i) )
+		{
+			return false;
+		}
 	}
+	return true;
 }
 
 void mutate_plebs(population& populous, number_type mutation_rate, Random<number_type>& random, size_t max_width, size_t max_height)
@@ -719,7 +725,7 @@ void cross_best_with_random(population& populous, size_t generation, const quick
 		while( populous.size() < GLOBALS.min_population_size )
 		{
 			population::value_type pleb;
-			random_pleb(width, height, triangles, random, pleb);
+			random_pleb(triangles, random, pleb);
 			populous.append(pleb);
 		}
 	}
@@ -743,7 +749,7 @@ void add_occasional_triangles(population& populous, size_t generation, size_t wi
 	{
 		if( i->pleb_data.size() < triangles )
 		{
-			i->pleb_data.push_back(create_random_triangle(width, height, random));
+			i->pleb_data.push_back(create_random_triangle(random));
 		}
 	}
 }
@@ -1119,6 +1125,43 @@ double string_to_double(const std::string& s)
 	return retval;
 }
 
+rc_pointer<image<number_type> > scale_image(const rc_pointer<image<number_type> >& img, size_t width, size_t height, size_t spp = 1)
+{
+	rc_pointer<image<number_type> > dest(new image<number_type>(width, height));
+
+	unsigned source_width = img->get_width();
+	unsigned source_height = img->get_height();
+
+	number_type y_factor = source_height / number_type(height);
+	number_type x_factor = source_width / number_type(width);
+	number_type half_spp = number_type(spp) / 2;
+
+	for( unsigned y = 0; y < height; ++y )
+	{
+		for( unsigned x = 0; x < width; ++x )
+		{
+			color target(0,0,0);
+			for( unsigned yspp = 0; yspp < spp; ++yspp )
+			{
+				number_type yshift = yspp - half_spp;
+				unsigned source_ypos = std::min<unsigned>(source_height - 1, std::max<int>(0, int(y_factor * (y + yshift) + 0.5)));
+
+				for( unsigned xspp = 0; xspp < spp; ++xspp )
+				{
+					number_type xshift = xspp - half_spp;
+					unsigned source_xpos = std::min<unsigned>(source_width - 1, std::max<int>(0, int(x_factor * (x + xshift) + 0.5)));
+
+					target += (*img)(source_xpos, source_ypos);
+				}
+			}
+			target /= number_type(spp * spp);
+			(*dest)(x, y) = target;
+		}
+	}
+
+	return dest;
+}
+
 bool parse_command_line(int argc, const char** argv,
 	int& num_generations, bool& resume, std::string& input_file)
 {
@@ -1139,6 +1182,8 @@ bool parse_command_line(int argc, const char** argv,
 	parser.add_optional_arg("birth-rate", '\0', "0.1", "The [rate] of population increase each generation.  If this is larger than the death rate, the population size will increase until the --max-population-size value is reached and euthanasia is forced", "rate");
 	parser.add_optional_arg("mutation-rate", 'r', "1.0", "Set the probability of offspring mutation to [rate].\nSupplying 1.0 means every child will mutate\n", "rate");
 	parser.add_optional_arg("children", '\0', "3", "Set the number of children per crossing to [children].  Must be 2 or larger.", "children");
+	parser.add_optional_arg("width", '\0', "0", "Set the output image width", "width");
+	parser.add_optional_arg("height", '\0', "0", "Set the output image height", "height");
 
 	bool retval = true;
 
@@ -1179,6 +1224,8 @@ bool parse_command_line(int argc, const char** argv,
 	GLOBALS.max_triangles = string_to_int(parser.get_option_value("max-triangles", "300"));
 	GLOBALS.generation_for_max = string_to_int(parser.get_option_value("reach-max-at", "10000"));
 	GLOBALS.num_offspring = string_to_int(parser.get_option_value("children", "3"));
+	GLOBALS.width = string_to_int(parser.get_option_value("width", "0"));
+	GLOBALS.height = string_to_int(parser.get_option_value("height", "0"));
 
 	if( parser.opt_was_supplied("crossover-points") )
 	{
@@ -1207,22 +1254,34 @@ int main(int argc, const char** argv)
 
 	rc_pointer<image<number_type> > reference = io.input(image_filename);
 
-	const size_t width = reference->get_width();
-	const size_t height = reference->get_height();
+	const size_t ref_width = reference->get_width();
+	const size_t ref_height = reference->get_height();
 	const number_type gamma = 1;
 	size_t starting_generation = 1;
 
-	if( (width <= 1) || (height <= 1) )
+	if( (ref_width <= 1) || (ref_height <= 1) )
 	{
 		std::cerr << "Bad image file." << std::endl;
 		return 1;
+	}
+
+	if( GLOBALS.width == 0 || GLOBALS.height == 0)
+	{
+		GLOBALS.width = ref_width;
+		GLOBALS.height = ref_height;
+	}
+
+	// Scale the image to match the global size...
+	if( GLOBALS.width != ref_width || GLOBALS.height != ref_height )
+	{
+		reference = scale_image(reference, GLOBALS.width, GLOBALS.height);
 	}
 
 	mersenne_twist_random<number_type> random;
 
 	population populous;
 
-	generate_random_population(width, height, random,
+	generate_random_population(GLOBALS.width, GLOBALS.height, random,
 		GLOBALS.min_population_size, GLOBALS.min_triangles, populous);
 
 	if( resume )
@@ -1230,6 +1289,7 @@ int main(int argc, const char** argv)
 		std::cout << "continuing..." << std::endl;
 		if( !read_population(GLOBALS.population_filename, populous, starting_generation) )
 		{
+			std::cerr << "failed to read population..." << std::endl;
 			return 1;
 		}
 		std::cout << "Continuing with generation " << ++starting_generation << std::endl;

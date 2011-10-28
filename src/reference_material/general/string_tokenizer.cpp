@@ -1,5 +1,5 @@
 /*
- * $Id: string_tokenizer.cpp,v 1.1 2006/03/27 03:44:27 kpharris Exp $
+ * $Id: string_tokenizer.cpp,v 1.2 2011/10/28 00:49:04 kpharris Exp $
  *
  * Part of "Amethyst" a playground for graphics development
  * Copyright (C) 2004 Kevin Harris
@@ -57,7 +57,7 @@ namespace amethyst
 			char const* ptr;
 			for( ptr = str; ptr != str_end; ++ptr )
 			{
-				char* token = strchr(delims, *ptr);
+				const char* token = strchr(delims, *ptr);
 				if( token && *token)
 				{
 					// We've got a delimiter...
