@@ -92,10 +92,11 @@ string GenerateFileHeader(const string& license = GPL_License)
 
 
   time_t current_time;
+  tm time_struct;
   time(&current_time);
-  tm* time_struct = localtime(&current_time);
+  localtime_s(&time_struct, &current_time);
   char year_text[6];
-  sprintf(year_text, "%d", (time_struct->tm_year) + 1900);
+  sprintf(year_text, "%d", (time_struct.tm_year) + 1900);
 
 
   string header = (string("/*\n") +
