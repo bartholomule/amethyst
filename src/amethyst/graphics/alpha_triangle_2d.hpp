@@ -165,7 +165,7 @@ namespace amethyst
 			c = c1 - x1 * cdx;
 			x1 = 0;
 		}
-		if( x2 > width )
+		if( (x2 + 0.5) >= width )
 		{
 			x2 = T(width - 1);
 		}

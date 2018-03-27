@@ -63,8 +63,8 @@
  */
 
 #include <graphics/raster.hpp>
-#include <graphics/tga_io.hpp>
 #include <graphics/rgbcolor.hpp>
+#include <graphics/image_loader.hpp>
 #include <graphics/samplegen2d.hpp>
 #include <general/string_format.hpp>
 #include <string>
@@ -112,8 +112,7 @@ void generate_image(const std::string& filename,
 		}
 	}
 	std::cerr << "Saving image " << filename << std::endl;
-	tga_io<number_type> output;
-	output.output(filename, image, gamma);
+	save_image(filename, image, gamma);
 }
 
 int main(int argc, const char** argv)
@@ -147,7 +146,7 @@ int main(int argc, const char** argv)
 			for( size_t i = 0; i < sizeof(sample_counts) / sizeof(*sample_counts); ++i )
 			{
 				generate_image(
-					string_format("cs5600_program02-%1-%2-%3.tga",
+					string_format("cs5600_program02-%1-%2-%3.ppm",
 						generators[j].first,
 						sample_counts[i],
 						gamma),

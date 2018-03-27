@@ -9,7 +9,7 @@
 #include "graphics/triangle.hpp"
 #include "graphics/aggregate.hpp"
 #include "graphics/raster.hpp"
-#include "graphics/tga_io.hpp"
+#include "graphics/image_loader.hpp"
 #include "graphics/rgbcolor.hpp"
 
 #include <iostream>
@@ -84,7 +84,6 @@ int main(int argc, char** argv)
     }
   }
   std::cerr << "Saving image..." << std::endl;
-  tga_io<float_type> output;
-  output.output("figure_3_1.tga", image);
+  save_image("figure_3_1.ppm", image);
   return 0; 
 }

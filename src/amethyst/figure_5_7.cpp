@@ -9,8 +9,8 @@
 #include "amethyst/graphics/triangle.hpp"
 #include "amethyst/graphics/aggregate.hpp"
 #include "amethyst/graphics/raster.hpp"
-#include "amethyst/graphics/tga_io.hpp"
 #include "amethyst/graphics/rgbcolor.hpp"
+#include "amethyst/graphics/image_loader.hpp"
 #include "amethyst/math/coord2.hpp"
 #include "amethyst/graphics/pinhole_camera.hpp"
 
@@ -114,8 +114,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	tga_io<float_type> output;
-	output.output("figure_5_7.tga", image);
+	save_image("figure_5_7.ppm", image);
 	return 0;
 }
 

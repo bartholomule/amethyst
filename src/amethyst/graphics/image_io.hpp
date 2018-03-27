@@ -21,31 +21,33 @@
 namespace amethyst
 {
 
-	template <class T>
+	template <class T, typename ColorType = rgbcolor<T>>
 	class image_io
 	{
 	public:
 		image_io() = default;
 		virtual ~image_io() = default;
 
-		bool output(const std::string& filename, const image<T>& source) const
+		virtual std::string default_extension() const = 0;
+
+		bool output(const std::string& filename, const raster<ColorType>& source) const
 		{
 			std::filebuf f;
-			f.open(filename.c_str(), std::ios_base::out);
+			f.open(filename.c_str(), std::ios_base::out | std::ios_base::binary);
 			return output(f, source);
 		}
 
-		bool output(const std::string& filename, const image<T>& source, T gamma) const
+		bool output(const std::string& filename, const raster<ColorType>& source, T gamma) const
 		{
-			image<T> foo = convert_image<T>(source, gamma);
+			raster<ColorType> foo = convert_image<T>(source, gamma);
 
 			std::filebuf f;
-			f.open(filename.c_str(), std::ios_base::out);
+			f.open(filename.c_str(), std::ios_base::out | std::ios_base::binary);
 			return output(f, foo);
 		}
 
-		virtual bool output(std::ostream& o, const image<T>& source) const = 0;
-		virtual bool output(std::streambuf& o, const image<T>& source) const = 0;
+		virtual bool output(std::ostream& o, const raster<ColorType>& source) const = 0;
+		virtual bool output(std::streambuf& o, const raster<ColorType>& source) const = 0;
 
 		void output_byte(std::streambuf& stream, unsigned char data) const
 		{
@@ -57,15 +59,48 @@ namespace amethyst
 			stream.put(data);
 		}
 
-		std::shared_ptr<image<T>> input(const std::string& filename) const
+		void output_string(std::streambuf& stream, const std::string& data) const
 		{
-			std::ifstream i(filename.c_str());
+			stream.sputn(data.c_str(), data.size());
+		}
+
+		void output_string(std::ostream& stream, const std::string& data) const
+		{
+			stream.write(data.c_str(), data.size());
+		}
+
+		bool input_byte(std::istream& i, char& c) const
+		{
+			i.get(c);
+			return bool(i);
+		}
+		void output_word_be(std::streambuf& o, int16_t c) const
+		{
+			o.sputc(char(c >> 8));
+			o.sputc(char(c & 0xff));
+		}
+		void output_word_be(std::ostream& o, int16_t c) const
+		{
+			o.put(char(c >> 8));
+			o.put(char(c & 0xff));
+		}
+		bool input_word_be(std::istream& i, int16_t& c) const
+		{
+			char low, high;
+			i.get(high).get(low);
+			c = (int16_t(high) << 8) + (int16_t(low) & 0xff);
+			std::cout << "low=" << (int(low) & 0xff) << " high=" << (int(high) & 0xff) << " c=" << c << std::endl;
+			return bool(i);
+		}
+
+		raster<ColorType> input(const std::string& filename) const
+		{
+			std::ifstream i(filename.c_str(), std::ios::binary);
 			return input(i);
 		}
-		virtual std::shared_ptr<image<T>> input(std::istream& i) const = 0;
+		virtual raster<ColorType> input(std::istream& i) const = 0;
 	protected:
 	};
-
 } // namespace amethyst
 
 #endif /* !defined(KH_IMAGEOUT_H) */

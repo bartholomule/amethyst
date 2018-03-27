@@ -64,96 +64,9 @@ namespace amethyst
 	 * @see rgbcolor
 	 *
 	 */
-	template <class T>
-	class image : public raster<rgbcolor<T> >
-	{
-
-	private:
-
-	protected:
-
-	public:
-		/** Default constructor */
-		image();
-
-		image(const raster<rgbcolor<T> >& r);
-
-		/** Size-specified constructor.  Creates a width by height sized image */
-		image(size_t width, size_t height);
-
-		/** Destructor */
-		virtual ~image();
-
-		/** Copy constructor */
-		image(const image& old);
-
-		/** Assignment operator */
-		image& operator= (const image& old);
-
-	}; // class image
-
-	//------------------------------------
-	// Default constructor for class image
-	//------------------------------------
-	template <class T>
-	image<T>::image(): raster<rgbcolor<T> >()
-	{
-
-	} // image()
-
-	template <class T>
-	image<T>::image(const raster<rgbcolor<T> >& r) :
-		raster<rgbcolor<T> >(r)
-	{
-	}
-
-	//--------------------------------------------
-	// Size-specified  constructor for class image
-	//--------------------------------------------
-	template <class T>
-	image<T>::image(size_t width, size_t height)
-		: raster<rgbcolor<T>>(width, height)
-	{
-
-	} // image(w,h)
-
-	//---------------------------
-	// Destructor for class image
-	//---------------------------
-	template <class T>
-	image<T>::~image()
-	{
-
-	} // ~image()
-
-	//---------------------------------
-	// Copy constructor for class image
-	//---------------------------------
-	template <class T>
-	image<T>::image(const image<T>& old):
-		raster<rgbcolor<T> >(old)
-	{
-
-	} // image(image)
-
-	//------------------------------------
-	// Assignment operator for class image
-	//------------------------------------
-	template <class T>
-	image<T>& image<T>::operator= (const image<T>& old)
-	{
-		// Generic check for self-assignment
-		if( &old != this )
-		{
-			// The class currently has no members, but if they are added, they need
-			// to be assigned here.
-
-			raster<rgbcolor<T> >::operator=(old);
-		}
-		return(*this);
-	} // image::operator=(image)
-
-} // namespace amethyst
+	template <typename T>
+	using image = raster<rgbcolor<T>>;
+}
 
 
 #endif /* !defined(AMETHYST__IMAGE_HPP) */

@@ -31,8 +31,8 @@
 
 
 #include "graphics/raster.hpp"
-#include "graphics/ppm_io.hpp"
 #include "graphics/rgbcolor.hpp"
+#include "graphics/image_loader.hpp"
 #include <string>
 
 #include <iostream>
@@ -49,7 +49,7 @@ void program1()
 {
 	unsigned char values[3] = { 0, 127, 255 };
 	// I'll spit these 27 squares out in 3 rows of 9.
-	raster<rgbcolor<unsigned char> > image(SQUARE_SIZE * 9, SQUARE_SIZE * 3);
+	image<uint8_t> image(SQUARE_SIZE * 9, SQUARE_SIZE * 3);
 	for( int r = 0; r < 3; ++r )
 	{
 		for( int pix_y = 0; pix_y < SQUARE_SIZE; ++pix_y )
@@ -163,8 +163,7 @@ void program1_extra()
 		}
 	}
 
-	ppm_io<number_type> output;
-	output.output("cs5600_program01_extra.ppm", image);
+	save_image("cs5600_program01_extra.ppm", image);
 }
 
 int main(int argc, const char** argv)

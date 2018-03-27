@@ -1,7 +1,7 @@
 #define KH_USE_TIME_FOR_RANDOM
 
 #include "amethyst/graphics/image.hpp"
-#include "amethyst/graphics/tga_io.hpp"
+#include "amethyst/graphics/image_loader.hpp"
 #include <vector>
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/general/random.hpp"
@@ -37,6 +37,7 @@ struct globals
 	size_t max_population_size;
 	size_t width;
 	size_t height;
+	std::shared_ptr<image_io<number_type>> io;
 } GLOBALS;
 
 // Add the term to the current sum, add the dropped bits to the correction
@@ -361,7 +362,7 @@ struct pleb_data
 {
 	size_t pleb_index;
 	number_type error;
-	std::shared_ptr<amethyst::image<number_type> > image;
+	amethyst::image<number_type> image;
 };
 
 bool pleb_is_better(const pleb_data& p1, const pleb_data& p2)
@@ -409,48 +410,47 @@ void add_to_statistics(
 
 }
 
-void calculate_population_error(population& populous, const std::shared_ptr<image<number_type> >& reference,
+void calculate_population_error(population& populous, const image<number_type>& reference,
 	size_t count_of_each,
 	std::vector<pleb_data>& best,
 	std::vector<pleb_data>& worst)
 {
-	size_t width = reference->get_width();
-	size_t height = reference->get_height();
+	size_t width = reference.get_width();
+	size_t height = reference.get_height();
 
 	best.clear();
 	worst.clear();
 
 	std::cout << "Converting and rasterizing...";
-	typedef ::image<number_type> image;
 	for( size_t i = 0; i < populous.size(); ++i )
 	{
 		pleb_data data;
 		data.pleb_index = i;
-		data.image = std::make_shared<image>(width, height);
+		data.image = image<number_type>(width, height);
 
 		std::vector<alpha_triangle> triangles;
 		std::cout << "...#" << i << " (" << populous[i].pleb_data.size() << ")" << std::flush;
 		convert_to_triangles(populous[i], triangles, width, height);
-		rasterize_triangles(triangles, *data.image);
-		data.error = calculate_error(*reference, *data.image);
+		rasterize_triangles(triangles, data.image);
+		data.error = calculate_error(reference, data.image);
 		populous[i].error = data.error;
 		add_to_statistics(data, count_of_each, best, worst);
 	}
 	std::cout << std::endl;
 }
 
-std::shared_ptr<image<number_type> > get_error_image(const image<number_type>& img1, const image<number_type>& img2)
+image<number_type> get_error_image(const image<number_type>& img1, const image<number_type>& img2)
 {
-	std::shared_ptr<image<number_type> > retval(new image<number_type>(img1.get_width(), img1.get_height()));
+	image<number_type> retval(img1.get_width(), img1.get_height());
 
 	const color* in_colors1 = img1.raw_data();
 	const color* in_colors2 = img2.raw_data();
-	color* out_pixels = retval->reinterpret<color*>();
+	color* out_pixels = retval.reinterpret<color*>();
 
 	color max_color = color(-100,-100,-100);
 	color error_sum = color(0,0,0);
 
-	size_t num_pixels = retval->get_width() * retval->get_height();
+	size_t num_pixels = retval.get_width() * retval.get_height();
 
 	for( size_t i = 0; i < num_pixels; ++i )
 	{
@@ -485,7 +485,7 @@ std::shared_ptr<image<number_type> > get_error_image(const image<number_type>& i
 	return retval;
 }
 
-void run_generation(population& populous, const std::shared_ptr<image<number_type> >& reference,
+void run_generation(population& populous, const image<number_type>& reference,
 	std::vector<pleb_data>& best,
 	std::vector<pleb_data>& worst,
 	size_t count_of_each,
@@ -504,19 +504,19 @@ void run_generation(population& populous, const std::shared_ptr<image<number_typ
 
 		// Dump the best image...
 		std::cout << "Generation " << buffer << ": Best error #" << i << " = " << std::setprecision(3) << std::fixed << best[i].error << " (" << best[i].pleb_index << ")" << std::endl;
-		io.output(string_format("genetic_triangles_best-%1-%2.tga", buffer, i), *best[i].image, gamma);
+		io.output(string_format("genetic_triangles_best-%1-%2.%3", buffer, i, io.default_extension()), best[i].image, gamma);
 
 		// Dump the worst image...
 		std::cout << "Generation " << buffer << ": Worst error #" << i << " = " << std::setprecision(3) << std::fixed << worst[i].error  << " (" << worst[i].pleb_index << ")" << std::endl;
-		io.output(string_format("genetic_triangles_worst-%1-%2.tga", buffer, i), *worst[i].image, gamma);
+		io.output(string_format("genetic_triangles_worst-%1-%2.%3", buffer, i, io.default_extension()), worst[i].image, gamma);
 
 		// Dump the error image...
-		std::shared_ptr<image<number_type> > error = get_error_image(*reference, *(best[i].image));
-		io.output(string_format("genetic_triangles_error-%1-%2.tga", buffer, i), *error, gamma);
+		image<number_type> error = get_error_image(reference, best[i].image);
+		io.output(string_format("genetic_triangles_error-%1-%2.%3", buffer, i, io.default_extension()), error, gamma);
 	}
 
 	// Dump the reference image (for debugging purposes)
-	io.output("genetic_triangles_reference.tga", *reference, gamma);
+	io.output("genetic_triangles_reference." + io.default_extension(), reference, gamma);
 }
 
 void write_population(const std::string& filename, const population& populous, size_t generation)
@@ -586,7 +586,7 @@ void mutate_plebs(population& populous, number_type mutation_rate, Random<number
 typedef void (*generation_tweaker)(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random);
 typedef void (*generation_crosser)(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, Random<number_type>& random);
 
-void run_for_generations(population& populous, const std::shared_ptr<image<number_type> >& reference,
+void run_for_generations(population& populous, const image<number_type>& reference,
 	size_t starting_generation,
 	size_t generations,
 	number_type gamma,
@@ -595,8 +595,8 @@ void run_for_generations(population& populous, const std::shared_ptr<image<numbe
 	generation_crosser cross_generation,
 	generation_tweaker modify_generation)
 {
-	const size_t width = reference->get_width();
-	const size_t height = reference->get_height();
+	const size_t width = reference.get_width();
+	const size_t height = reference.get_height();
 
 	for( size_t generation = starting_generation; generation < generations; ++generation )
 	{
@@ -1126,12 +1126,12 @@ double string_to_double(const std::string& s)
 	return retval;
 }
 
-std::shared_ptr<image<number_type> > scale_image(const std::shared_ptr<image<number_type> >& img, size_t width, size_t height, size_t spp = 1)
+image<number_type> scale_image(const image<number_type>& img, size_t width, size_t height, size_t spp = 1)
 {
-	std::shared_ptr<image<number_type> > dest(new image<number_type>(width, height));
+	image<number_type> dest(width, height);
 
-	size_t source_width = img->get_width();
-	size_t source_height = img->get_height();
+	size_t source_width = img.get_width();
+	size_t source_height = img.get_height();
 
 	number_type y_factor = source_height / number_type(height);
 	number_type x_factor = source_width / number_type(width);
@@ -1152,11 +1152,11 @@ std::shared_ptr<image<number_type> > scale_image(const std::shared_ptr<image<num
 					number_type xshift = xspp - half_spp;
 					size_t source_xpos = std::min<size_t>(source_width - 1, std::max<int>(0, int(x_factor * (x + xshift) + 0.5)));
 
-					target += (*img)(source_xpos, source_ypos);
+					target += img(source_xpos, source_ypos);
 				}
 			}
 			target /= number_type(spp * spp);
-			(*dest)(x, y) = target;
+			dest(x, y) = target;
 		}
 	}
 
@@ -1214,6 +1214,7 @@ bool parse_command_line(int argc, const char** argv,
 	}
 	num_generations = string_to_int(parser.get_option_value("max-generations", "1000000"));
 	resume = parser.opt_was_supplied("continue");
+	GLOBALS.io = getImageLoader<number_type>(input_file);
 	GLOBALS.min_population_size = string_to_int(parser.get_option_value("min-population-size", "300"));
 	GLOBALS.max_population_size = string_to_int(parser.get_option_value("max-population-size", "300"));
 	GLOBALS.mutation_rate = string_to_double(parser.get_option_value("mutation-rate", "1.0"));
@@ -1241,6 +1242,7 @@ bool parse_command_line(int argc, const char** argv,
 }
 
 int main(int argc, const char** argv)
+try
 {
 	int num_generations;
 	bool resume;
@@ -1251,12 +1253,10 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	tga_io<number_type> io;
+	image<number_type> reference = GLOBALS.io->input(image_filename);
 
-	std::shared_ptr<image<number_type> > reference = io.input(image_filename);
-
-	const size_t ref_width = reference->get_width();
-	const size_t ref_height = reference->get_height();
+	const size_t ref_width = reference.get_width();
+	const size_t ref_height = reference.get_height();
 	const number_type gamma = 1;
 	size_t starting_generation = 1;
 
@@ -1298,7 +1298,12 @@ int main(int argc, const char** argv)
 
 	run_for_generations(populous, reference,
 		starting_generation, num_generations,
-		gamma, random, io, &cross_best_with_random, &add_occasional_triangles);
+		gamma, random, *GLOBALS.io, &cross_best_with_random, &add_occasional_triangles);
 
 	return 0;
+}
+catch (const std::runtime_error& e)
+{
+	std::cerr << "Exception escaped: " << e.what() << std::endl;
+	return 1;
 }

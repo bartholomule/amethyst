@@ -107,6 +107,9 @@ namespace amethyst
 	template<>
 	rgbcolor<uint16_t> convert_color<uint16_t, double>(const rgbcolor<double>& color);
 
+	template<>
+	rgbcolor<double> convert_color<double, uint16_t>(const rgbcolor<uint16_t>& color);
+
 	// double --> double (gamma corrected)
 	template<>
 	rgbcolor<double>

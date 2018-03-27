@@ -17,8 +17,8 @@
 
 namespace amethyst
 {
-	template <class T>
-	class tga_io: public image_io<T>
+	template <typename T, typename ColorType = rgbcolor<T>>
+	class tga_io: public image_io<T,ColorType>
 	{
 	public:
 		tga_io():image_io<T>() { }
@@ -27,21 +27,23 @@ namespace amethyst
 		using image_io<T>::output;
 		using image_io<T>::input;
 
-		bool output(std::ostream& o, const image<T>& source) const override;
-		bool output(std::streambuf& stream, const image<T>& source) const override;
+		std::string default_extension() const override { return "tga";	}
 
-		template <class S> bool basic_output(S& o, const image<T>& source) const;
+		bool output(std::ostream& o, const raster<ColorType>& source) const override;
+		bool output(std::streambuf& stream, const raster<ColorType>& source) const override;
 
-		std::shared_ptr<image<T>> input(std::istream& i) const override;
+		template <class S> bool basic_output(S& o, const raster<ColorType>& source) const;
+
+		raster<ColorType> input(std::istream& i) const override;
 
 	private:
 		using byte = unsigned char;
 		using word = uint16_t;
 	};
 
-	template <class T>
+	template <typename T, typename ColorType>
 	template <class S>
-	bool tga_io<T>::basic_output(S& o, const image<T>& source) const
+	bool tga_io<T,ColorType>::basic_output(S& o, const raster<ColorType>& source) const
 	{
 		size_t x, y;
 		static unsigned char main_header[12] = {
@@ -91,7 +93,7 @@ namespace amethyst
 	}
 
 	/*
-	  bool tga_io<T>::output(std::streambuf& stream, image<T> const& source) const
+	  bool tga_io<T,ColorType>::output(std::streambuf& stream, raster<ColorType> const& source) const
 
 	  Write a targa file to a stream buffer.
 
@@ -106,23 +108,21 @@ namespace amethyst
 	  nearly 3x as fast as the nearly identical function using std::ostream.
 	  Additionly, I think this function avoids locale transformations.
    */
-	template <class T>
-	bool tga_io<T>::output(std::streambuf& stream, image<T> const& source) const
+	template <typename T, typename ColorType>
+	bool tga_io<T,ColorType>::output(std::streambuf& stream, raster<ColorType> const& source) const
 	{
 		return basic_output(stream, source);
 	}
 
-	template <class T>
-	bool tga_io<T>::output(std::ostream& o, const image<T>& source) const
+	template <typename T, typename ColorType>
+	bool tga_io<T,ColorType>::output(std::ostream& o, const raster<ColorType>& source) const
 	{
 		return basic_output(o, source);
 	}
 
-	template <class T>
-	std::shared_ptr<image<T> > tga_io<T>::input(std::istream& i) const
+	template <typename T, typename ColorType>
+	raster<ColorType> tga_io<T, ColorType>::input(std::istream& i) const
 	{
-		// Statics with constructors are bad.  Fix this.
-		static std::shared_ptr<image<T> > trash_image(new image<T>(1,1));
 		byte version;
 		byte b1, b2;
 		byte r, g, b;
@@ -130,10 +130,10 @@ namespace amethyst
 
 		i.ignore(2);
 		i.get((char&)version);
-		if(version != 2)
+		if (version != 2)
 		{
 			std::cout << "Incorrect version (" << int(version) << ")" << std::endl;
-			return trash_image;
+			return {};
 		}
 		else
 		{
@@ -148,20 +148,18 @@ namespace amethyst
 		height = word(b1) + (word(b2) << 8);
 
 		i.get((char&)b1).get((char&)b2);
-		if((b1 != 24) || ((b2 != 32) && (b2 != 0)))
+		if ((b1 != 24) || ((b2 != 32) && (b2 != 0)))
 		{
 			std::cout << "Invalid constants..." << std::endl;
-			return trash_image;
+			return { };
 		}
 		bool flip_y = false;
-		if( b2 == 0 )
+		if (b2 == 0)
 		{
 			flip_y = true;
 		}
 
-		auto dest_ptr = std::make_shared<image<T>>(width, height);
-
-		image<T>& dest = *dest_ptr;
+		raster<ColorType> dest { size_t(width), size_t(height) };
 
 		for(int y = 0; y < height; ++y)
 		{
@@ -180,7 +178,7 @@ namespace amethyst
 		}
 		std::cout << "Loaded image of size " << width << "x" << height << std::endl;
 
-		return dest_ptr;
+		return dest;
 	}
 
 } // namespace amethyst

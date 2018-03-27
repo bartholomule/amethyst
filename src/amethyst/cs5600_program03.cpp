@@ -49,8 +49,8 @@
  */
 
 #include <graphics/image.hpp>
-#include <graphics/tga_io.hpp>
 #include <graphics/rgbcolor.hpp>
+#include <graphics/image_loader.hpp>
 #include <graphics/samplegen2d.hpp>
 #include <math/point3.hpp>
 #include <vector>
@@ -365,7 +365,6 @@ int main(int argc, const char** argv)
 
 		// Project and rasterize the triangles.
 		image<number_type> image(data.width, data.height);
-		tga_io<number_type> output;
 		raster<std::vector<coord2<number_type> > > samples =get_samples(data.width, data.height,
 			data.samples_per_pixel,
 			std::shared_ptr<generator>(new jitter_sample_2d<number_type>()));
@@ -373,15 +372,15 @@ int main(int argc, const char** argv)
 		std::cout << "rasterizing with antialiasing" << std::endl;
 		rasterize_triangles(data, image, samples);
 		std::cout << "Writing data to file.." << std::endl;
-		output.output(string_format("cs5600_program03_antialiased-%1spp-%2.tga", samples(0,0).size(), data.gamma), image, data.gamma);
-		output.output(string_format("cs5600_program03_antialiased-%1spp-%2.tga", samples(0,0).size(), 1.7), image, 1.7);
+		save_image(string_format("cs5600_program03_antialiased-%1spp-%2.ppm", samples(0,0).size(), data.gamma), image, data.gamma);
+		save_image(string_format("cs5600_program03_antialiased-%1spp-%2.ppm", samples(0,0).size(), 1.7), image, 1.7);
 
 		std::cout << "rasterizing" << std::endl;
 		samples = get_samples(data.width, data.height, 1);
 		rasterize_triangles(data, image, samples);
 		std::cout << "Writing data to file.." << std::endl;
-		output.output(string_format("cs5600_program03-%1spp-%2.tga", samples(0,0).size(), data.gamma), image, data.gamma);
-		output.output(string_format("cs5600_program03-%1spp-%2.tga", samples(0,0).size(), 1.7), image, 1.7);
+		save_image(string_format("cs5600_program03-%1spp-%2.ppm", samples(0,0).size(), data.gamma), image, data.gamma);
+		save_image(string_format("cs5600_program03-%1spp-%2.ppm", samples(0,0).size(), 1.7), image, 1.7);
 	}
 	else
 	{

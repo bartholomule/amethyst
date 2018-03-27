@@ -10,8 +10,8 @@
 #include "graphics/triangle.hpp"
 #include "graphics/aggregate.hpp"
 #include "graphics/raster.hpp"
-#include "graphics/tga_io.hpp"
 #include "graphics/rgbcolor.hpp"
+#include "graphics/image_loader.hpp"
 #include "math/coord2.hpp"
 #include "graphics/pinhole_camera.hpp"
 
@@ -88,8 +88,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	tga_io<float_type> output;
-	output.output("figure_4_5.tga", image);
+	save_image("figure_4_5.ppm", image);
 	return 0;
 }
 
