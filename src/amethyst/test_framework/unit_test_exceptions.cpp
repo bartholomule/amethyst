@@ -38,6 +38,9 @@ namespace amethyst
 		{
 		}
 
+        std::string what(const test_exception& e) { return e.reason; }
+        std::string what(const std::exception& e) { return e.what(); }
+
 		AMETHYST_DEFINE_EXCEPTION(test_aborted);
 		AMETHYST_DEFINE_EXCEPTION(never_thrown); // Never thrown, used as a dummy exception
 	}

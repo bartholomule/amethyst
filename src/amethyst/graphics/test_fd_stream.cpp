@@ -1,7 +1,6 @@
 #include "general/fd_stream.hpp"
 #include "general/string_format.hpp"
 #include "general/base_logger.hpp"
-#include "general/rc_pointer.hpp"
 
 #include "test_framework/testinclude.hpp"
 
@@ -30,17 +29,25 @@ int main(int argc, const char** argv)
 	amethyst::fd_ostream foo;
 	foo << "Hello." << std::endl;
 
-	amethyst::fd_ostream bar(2);
+	amethyst::fd_ostream bar(amethyst::get_std_handle(2));
 	foo << "Goodbye." << std::endl;
 
-	rc_pointer<barf> b(new barf(10));
+	std::shared_ptr<barf> b(new barf(10));
 	foo << b << std::endl;
 
 	std::cout << "opening baz.txt" << std::endl;
+#if defined(WINDOWS)
+    HANDLE baz = CreateFile("baz.txt", GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+#else
 	int baz = open("baz.txt", O_RDWR | O_CREAT, 0644);
+#endif
 	amethyst::fd_ostream bazzer(baz);
 	bazzer << "Testing..." << std::endl;
+#if defined(WINDOWS)
+    CloseHandle(baz);
+#else
 	close(baz);
+#endif
 	std::cout << amethyst::string_format("closing baz.txt (%1)", baz) << std::endl;
 
 

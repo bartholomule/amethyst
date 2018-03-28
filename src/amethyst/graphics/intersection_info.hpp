@@ -23,6 +23,8 @@
 #define            AMETHYST__INTERSECTION_INFO_HPP
 
 #include "amethyst/graphics/conditional_value.hpp"
+#include "amethyst/general/defaulted_value.hpp"
+#include "amethyst/graphics/shape_fwd.hpp"
 #include <vector>
 #include "amethyst/math/vector3.hpp"
 #include "amethyst/math/coord2.hpp"
@@ -31,9 +33,6 @@
 
 namespace amethyst
 {
-  template <class T>
-  class shape;
-
   /**
    *
    * Information about an intersection (point-based intersection).
@@ -45,19 +44,6 @@ namespace amethyst
   template<class T>
   class intersection_info
   {
-
-    struct ibool
-    {
-      bool value;
-
-      ibool(bool val=false):value(val) { }
-      ibool(const ibool& ib): value(ib.value) { }
-      operator bool() const { return value; }
-      ibool& operator=(const ibool& ib) { value = ib.value; return *this; }
-    };
-
-  private:
-
   protected:
     typedef conditional_value<const shape<T>*, ibool> conditional_shape;
     typedef conditional_value<T, ibool> conditional_scalar;

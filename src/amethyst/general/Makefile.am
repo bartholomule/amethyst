@@ -17,5 +17,5 @@ libamethyst_general_la_LDFLAGS = -shared -rpath @prefix@/lib -version-info 1
 
 INCLUDES = -I$(top_srcdir)/include
 
-noinst_PROGRAMS = quick_vector_vs_std_vector_perf
-quick_vector_vs_std_vector_perf_SOURCES = quick_vector_vs_std_vector_perf.cc
+noinst_PROGRAMS = std::vector_vs_std_vector_perf
+std::vector_vs_std_vector_perf_SOURCES = quick_vector_vs_std_vector_perf.cc

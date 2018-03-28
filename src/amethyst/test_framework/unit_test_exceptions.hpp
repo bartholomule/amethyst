@@ -37,6 +37,12 @@ namespace amethyst
 			test_information info;
 		};
 
+        std::string what(const test_exception& e);
+        std::string what(const std::exception& e);
+
+        template<typename T>
+        std::string what(const T& t) { return ""; }
+
 		// Declare a function 
 #define AMETHYST_DECLARE_EXCEPTION_HELPER(full_name) \
 		struct full_name : public test_exception \

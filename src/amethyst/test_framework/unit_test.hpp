@@ -115,15 +115,15 @@ do { \
 		unit_test::test_failed(e.info, ::amethyst::string_format("(noticed on %1:%2) Aborted: %3", __FILE__, __LINE__, e.reason)); \
 		throw; \
 	} \
-	catch( const catchtype& c ) catchblock \
-	catch( ... ) catchallblock \
+	catch(const catchtype& ex) catchblock \
+	catch(...) catchallblock \
 } while(0)
 
 #define TEST_EXCEPTION_THROW(exception_test_body) \
 TEST_EXCEPTION_GENERIC_TRYBLOCK( \
 	{ exception_test_body; unit_test::test_failed(local_info, ::amethyst::string_format("Test did not throw for \"%1\"", #exception_test_body)); }, \
 	::amethyst::test::never_thrown_exception, \
-	{ }, \
+	{ (void) ex; }, \
 	{ unit_test::test_passed(local_info); } \
 )
 
@@ -131,7 +131,7 @@ TEST_EXCEPTION_GENERIC_TRYBLOCK( \
 TEST_EXCEPTION_GENERIC_TRYBLOCK( \
 	{ exception_test_body; unit_test::test_failed(local_info, ::amethyst::string_format("Test did not throw for \"%1\"", #exception_test_body)); }, \
 	exception_type, \
-	{ unit_test::test_passed(local_info); }, \
+	{ (void) ex; unit_test::test_passed(local_info); }, \
 	{ unit_test::test_failed(local_info, ::amethyst::string_format("Caught unexpected exception (not %1) in \"%2\"", #exception_type, #exception_test_body)); } \
 )
 
@@ -139,7 +139,7 @@ TEST_EXCEPTION_GENERIC_TRYBLOCK( \
 TEST_EXCEPTION_GENERIC_TRYBLOCK( \
 	{ exception_test_body; unit_test::test_passed(local_info); }, \
 	::amethyst::test::never_thrown_exception, \
-	{ unit_test::test_failed(local_info, ::amethyst::string_format("Test threw exception in \"%1\"", #exception_test_body)); }, \
+	{ unit_test::test_failed(local_info, ::amethyst::string_format("Test threw exception in \"%1\": %2", #exception_test_body, amethyst::test::what(ex))); }, \
 	{ unit_test::test_failed(local_info, ::amethyst::string_format("Test threw exception in \"%1\"", #exception_test_body)); } \
 )
 
@@ -147,7 +147,7 @@ TEST_EXCEPTION_GENERIC_TRYBLOCK( \
 TEST_EXCEPTION_GENERIC_TRYBLOCK( \
 	{ exception_test_body; unit_test::test_passed(local_info); }, \
 	exception_type, \
-	{ unit_test::test_failed(local_info, ::amethyst::string_format("Test threw the disallowed exception (%1) in \"%2\"", #exception_type, #exception_test_body)); }, \
+	{ unit_test::test_failed(local_info, ::amethyst::string_format("Test threw the disallowed exception (%1) in \"%2\": %3", #exception_type, #exception_test_body, amethyst::test::what(ex))); }, \
 	{ unit_test::test_passed(local_info); } \
 )
 

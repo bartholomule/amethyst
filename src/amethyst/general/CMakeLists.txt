@@ -8,3 +8,5 @@ add_library(amethyst_general
 	extra_exceptions.cpp
 	string_dumpable.cpp
 )
+
+unit_test(test_tokenizer LIBS amethyst_general)

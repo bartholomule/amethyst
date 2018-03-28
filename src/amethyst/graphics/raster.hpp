@@ -25,6 +25,7 @@
 #include "amethyst/general/textized.hpp"
 #include "amethyst/general/extra_exceptions.hpp"
 #include "amethyst/general/template_functions.hpp"
+#include "amethyst/general/string_format.hpp"
 #include <string>
 
 namespace amethyst
@@ -473,8 +474,8 @@ namespace amethyst
 	{
 		size_t old_width = this->width;
 		size_t old_height = this->height;
-		int old_mid_x = old_width / 2;
-		int old_mid_y = old_height / 2;
+		int old_mid_x = int(old_width / 2);
+		int old_mid_y = int(old_height / 2);
 		T* old_data = raster_data;
 
 		// If there is no change, return, doing nothing.
@@ -503,9 +504,9 @@ namespace amethyst
 		if( old_data && raster_data )
 		{
 			int olx = cx - old_mid_x;
-			int oux = cx + (old_width - old_mid_x);
+			int oux = cx + (int(old_width) - old_mid_x);
 			int oly = cy - old_mid_y;
-			int ouy = cy + (old_height - old_mid_y);
+			int ouy = cy + (int(old_height) - old_mid_y);
 
 			size_t min_x = my_max(olx, 0);
 			size_t max_x = my_min(oux, int(width));
@@ -518,7 +519,7 @@ namespace amethyst
 			// Copy any useful data.
 			for( size_t y = min_y; y < max_y; ++y )
 			{
-				size_t old_lin_y = ((old_y + y_shift) * old_width) + min_x + x_shift;
+				size_t old_lin_y = ((y + y_shift) * old_width) + min_x + x_shift;
 				size_t lin_y = (y * width) + min_x;
 
 				std::copy(old_data + old_lin_y, old_data + old_lin_y + (max_x - min_x), raster_data + lin_y);

@@ -40,3 +40,8 @@ add_library(amethyst_graphics
 	tga_io.hpp
 	triangle.hpp
 )
+
+unit_test(test_disc LIBS amethyst_general amethyst_graphics)
+unit_test(test_quaternion LIBS amethyst_general amethyst_graphics)
+unit_test(test_raster LIBS amethyst_general amethyst_graphics)
+unit_test(test_fd_stream LIBS amethyst_general)

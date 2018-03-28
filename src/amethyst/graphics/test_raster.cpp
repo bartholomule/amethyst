@@ -5,7 +5,6 @@
 using namespace std;
 
 #include "graphics/raster.hpp"
-#include "general/useful_functions.hpp"
 #include "test_framework/testinclude.hpp"
 #include <cstring>
 
@@ -28,7 +27,7 @@ ostream& operator<<(ostream& o, const amethyst::raster<T>& r)
     }
     o << " |" << endl;
   }
-  
+
   o << s << endl;
   return o;
 }
@@ -51,20 +50,20 @@ int main(int argc, char** argv)
   int error_count = 0;
   const char* passed = "Passed";
   const char* failed = "FAILED!";
-  
+
   try
   {
     cout << "------------------------------" << endl;
     cout << ( "Creating a " +
-	      int_to_str(width) + "x" + int_to_str(height) +
+	      std::to_string(width) + "x" + std::to_string(height) +
 	      " raster" )
 	 << endl;
     cout << "------------------------------" << endl;
 
     irast sized(width,height);
     TEST_RESULT_NAMED(( "to see if the size of a " +
-			int_to_str(width) + "x" + int_to_str(height) +
-			" raster is " + int_to_str(width * height) ),
+			std::to_string(width) + "x" + std::to_string(height) +
+			" raster is " + std::to_string(width * height) ),
 		      sized.get_numpixels() == width * height,
 		      passed,
 		      ERROR_TEXT(failed));
@@ -95,14 +94,14 @@ int main(int argc, char** argv)
 		       (sized[8][8] == 8) &&
 		       (sized[9][9] == 9) &&
 		       // Some randomly chosen non-diag elements.
-		       (sized[4][7] == 11) &&	
+		       (sized[4][7] == 11) &&
 		       (sized[9][6] == 15) &&
-		       (sized[2][0] ==  2) &&	
+		       (sized[2][0] ==  2) &&
 		       (sized[3][9] == 12)
 		      ),
 		      passed,
 		      ERROR_TEXT(failed));
-		     
+
 
     TEST_EXCEPTION_NAMED("to copy same-sized raster scanlines",
 			 sized[0] = sized[4] = sized[9];
@@ -130,17 +129,17 @@ int main(int argc, char** argv)
 		       (sized[4][9] == 9) && // copied from 9 (on the diag)
 		       // Some randomly chosen non-diag elements.
 		       (sized[9][6] == 15) &&
-		       (sized[2][0] ==  2) &&	
+		       (sized[2][0] ==  2) &&
 		       (sized[3][9] == 12)
 		      ),
 		      passed,
-		      ERROR_TEXT(failed));    
-			 
+		      ERROR_TEXT(failed));
+
     //    cout << r << endl;
 
-    cout << "------------------------" << endl;    
+    cout << "------------------------" << endl;
     cout << "Creating an empty raster" << endl;
-    cout << "------------------------" << endl;    
+    cout << "------------------------" << endl;
     irast empty;
 
     TEST_RESULT_NAMED("to see if the size of an empty raster is 0",
@@ -161,8 +160,8 @@ int main(int argc, char** argv)
 		       (empty.get_height() == 0)
 		      ),
 		      passed,
-		      ERROR_TEXT(failed));    
-    
+		      ERROR_TEXT(failed));
+
     TEST_EXCEPTION_NAMED("to assign outside bounds",
 			 empty[0][0] = 100,
 			 ERROR_TEXT(failed),
@@ -171,7 +170,7 @@ int main(int argc, char** argv)
     TEST_EXCEPTION_NAMED("to see if empty rasters forbids indexing",
 			 empty[0];,
 			 ERROR_TEXT(failed),
-			 passed);        
+			 passed);
 
     cout << "---------------------------" << endl;
     cout << "Creating full-raster copies" << endl;
@@ -179,11 +178,11 @@ int main(int argc, char** argv)
     const irast copied_cons(sized);
 
     // This is a modified copy of a test above... Just the name and variable
-    // were changed.  
+    // were changed.
     TEST_RESULT_NAMED("to see if raster's copy constructor worked",
 		      (
 		       (copied_cons.get_width()  == width) &&
-		       (copied_cons.get_height() == height) &&		       
+		       (copied_cons.get_height() == height) &&
 		       // All of the diagonal elements not modified...
 		       (copied_cons[1][1] == 1) &&
 		       (copied_cons[2][2] == 2) &&
@@ -201,7 +200,7 @@ int main(int argc, char** argv)
 		       (copied_cons[4][9] == 9) && // copied from 9 (on the diag)
 		       // Some randomly chosen non-diag elements.
 		       (copied_cons[9][6] == 15) &&
-		       (copied_cons[2][0] ==  2) &&	
+		       (copied_cons[2][0] ==  2) &&
 		       (copied_cons[3][9] == 12)
 		      ),
 		      passed,
@@ -209,7 +208,7 @@ int main(int argc, char** argv)
 
     irast copied_assign; copied_assign = sized;
     // This is a modified copy of a test above... Just the name and variable
-    // were changed.  
+    // were changed.
     TEST_RESULT_NAMED("to see if raster's assignment operator worked",
 		      (
 		       (copied_assign.get_width()  == width) &&
@@ -231,17 +230,17 @@ int main(int argc, char** argv)
 		       (copied_assign[4][9] == 9) && // copied from 9 (on the diag)
 		       // Some randomly chosen non-diag elements.
 		       (copied_assign[9][6] == 15) &&
-		       (copied_assign[2][0] ==  2) &&	
+		       (copied_assign[2][0] ==  2) &&
 		       (copied_assign[3][9] == 12)
 		      ),
 		      passed,
-		      ERROR_TEXT(failed));    
+		      ERROR_TEXT(failed));
 
     TEST_EXCEPTION_NAMED("to see if raster::operator() throws properly",
 			 copied_cons(100,100),
 			 ERROR_TEXT(failed),
 			 passed);
-    
+
     TEST_EXCEPTION_NAMED("to see if raster::operator()const throws properly",
 			 copied_assign(100,100),
 			 ERROR_TEXT(failed),
@@ -257,7 +256,7 @@ int main(int argc, char** argv)
 			 sub_sized = sized.sub_raster(0,0, 100,100),
 			 ERROR_TEXT(failed),
 			 passed);
-    
+
     TEST_EXCEPTION_NAMED("to see if sub rasters can be created in proper range",
 			 sub_sized = sized.sub_raster(1,1, 8,10),
 			 passed,
@@ -268,7 +267,7 @@ int main(int argc, char** argv)
 		       (sub_sized.get_height() == 10)),
 		      passed,
 		      ERROR_TEXT(failed));
-    
+
     TEST_EXCEPTION_NAMED("to copy different-sized scanlines (disallowed)",
 			 sub_sized[0] = sized[0],
 			 ERROR_TEXT(failed),
@@ -285,7 +284,7 @@ int main(int argc, char** argv)
 
 
     unsigned cw1 = 11, ch1 = 5;
-    
+
     crast hello_rast(cw1, ch1);
 
     for(unsigned y = 0; y < hello_rast.get_height(); ++y)
@@ -308,14 +307,14 @@ int main(int argc, char** argv)
 
     // Get rid of the extra line full of nulls (which was used for comparison).
     hello_rast.resize(hello_rast.get_width(), hello_rast.get_height() - 1);
-    
+
 
     // shift everything by 1 in both x and y, by way of a resize.
     crast char_rast01 = hello_rast;
     char_rast01.resize(char_rast01.get_width(),
 		       char_rast01.get_height(),
-		       (char_rast01.get_width() / 2) + 1,
-		       (char_rast01.get_height() / 2) - 1,
+		       int(char_rast01.get_width() / 2) + 1,
+		       int(char_rast01.get_height() / 2) - 1,
 		       '*');
     TEST_RESULT_NAMED("to see if resizing can do simple shifts",
 		      ((hello_rast.get_numpixels() == char_rast01.get_numpixels()) &&
@@ -331,18 +330,18 @@ int main(int argc, char** argv)
     cout << endl;
     cout << "FIXME! Insert more tests for both raster::resize functions here!" << endl;
     cout << endl;
-    
+
     if( !error_count )
     {
-      
-      cout << "--------------------------------" << endl;    
+
+      cout << "--------------------------------" << endl;
       cout << "*** All raster tests passed. ***" << endl;
-      cout << "--------------------------------" << endl;    
+      cout << "--------------------------------" << endl;
       return 0;
     }
     else
     {
-      cout << "------------------------------" << endl;    
+      cout << "------------------------------" << endl;
       cout << "ERROR: Failed " << error_count << " raster tests." << endl;
       cout << "------------------------------" << endl;
       return(2);
