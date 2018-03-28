@@ -45,26 +45,20 @@ namespace amethyst
    class aggregate : public shape<T>
    {
    public:
-      typedef std::shared_ptr<shape<T> > shape_pointer_type;
-      typedef std::vector<shape_pointer_type> shape_list_type;
+       using parent = shape<T>;
+      using shape_ptr = std::shared_ptr<shape<T>>;
+      using shape_list = std::vector<shape_ptr>;
 
-   private:
-      shape_list_type shape_list;
-
-   protected:
-
-   public:
-      /** Default constructor */
-      aggregate();
-
-      /** Destructor */
-      virtual ~aggregate();
-
-      /** Copy constructor */
-      aggregate(const aggregate& old);
-
-      /** Assignment operator */
-      aggregate& operator= (const aggregate& old);
+      aggregate() = default;
+      virtual ~aggregate() = default;
+      aggregate(const aggregate& old) = default;
+      aggregate(aggregate&& old)
+          : parent(std::move(old)) 
+          , m_shape_list(...)
+      {
+      }
+      aggregate& operator=(const aggregate& old) = default;
+      aggregate& operator=(aggregate&& old);
 
       /** Returns if the given point is inside the shape. */
       virtual bool inside(const point3<T>& p) const;
@@ -104,8 +98,8 @@ namespace amethyst
          intersection_capabilities caps = intersection_capabilities::ALL;
 
          // Checkme! Are any of these capabilities disjoint (like the ones in the object capabilities)?
-         for( typename shape_list_type::const_iterator iter = shape_list.begin();
-              iter != shape_list.end();
+         for( typename shape_list::const_iterator iter = m_shape_list.begin();
+              iter != m_shape_list.end();
               ++iter )
          {
             caps &= (*iter)->get_intersection_capabilities();
@@ -114,67 +108,21 @@ namespace amethyst
       }
       virtual object_capabilities get_object_capabilities() const;
 
-      void add(shape_pointer_type& sp);
+      void add(shape_ptr& sp);
       size_t size() const;
-      shape_pointer_type& operator[](size_t index);
-      const shape_pointer_type& operator[](size_t index) const;
+      shape_ptr& operator[](size_t index);
+      const shape_ptr& operator[](size_t index) const;
+
+   private:
+       shape_list m_shape_list;
    }; // class aggregate
-
-
-
-   //----------------------------------------
-   // Default constructor for class aggregate
-   //----------------------------------------
-   template<class T>
-   aggregate<T>::aggregate():
-      shape<T>()
-   {
-
-   } // aggregate()
-
-   //-------------------------------
-   // Destructor for class aggregate
-   //-------------------------------
-   template<class T>
-   aggregate<T>::~aggregate()
-   {
-
-   } // ~aggregate()
-
-   //-------------------------------------
-   // Copy constructor for class aggregate
-   //-------------------------------------
-   template<class T>
-   aggregate<T>::aggregate(const aggregate<T>& old):
-      shape<T>(old),
-      shape_list(old.shape_list)
-   {
-      // Insert any copy-assignment here. DELETEME
-   } // aggregate(aggregate)
-
-   //----------------------------------------
-   // Assignment operator for class aggregate
-   //----------------------------------------
-   template<class T>
-   aggregate<T>& aggregate<T>::operator= (const aggregate<T>& old)
-   {
-      // Generic check for self-assignment
-      if( &old != this )
-      {
-         shape_list = old.shape_list;
-
-         shape<T>::operator=(old);
-      }
-      return(*this);
-   } // aggregate::operator=(aggregate)
-
 
    template <class T>
    bool aggregate<T>::inside(const point3<T>& p) const
    {
       bool inside_something = false;
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           ( ( iter != shape_list.end() ) &&
+      for( typename shape_list::const_iterator iter = m_shape_list.begin();
+           ( ( iter != m_shape_list.end() ) &&
               !inside_something );
            ++iter )
       {
@@ -191,8 +139,8 @@ namespace amethyst
    bool aggregate<T>::intersects(const sphere<T>& s) const
    {
       bool intersects_something = false;
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           ( ( iter != shape_list.end() ) &&
+      for( typename shape_list::const_iterator iter = m_shape_list.begin();
+           ( ( iter != m_shape_list.end() ) &&
               !intersects_something );
            ++iter )
       {
@@ -208,8 +156,8 @@ namespace amethyst
    bool aggregate<T>::intersects(const plane<T>& p) const
    {
       bool intersects_something = false;
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           ( ( iter != shape_list.end() ) &&
+      for( typename shape_list::const_iterator iter = m_shape_list.begin();
+           ( ( iter != m_shape_list.end() ) &&
               !intersects_something );
            ++iter )
       {
@@ -227,8 +175,8 @@ namespace amethyst
       bool hit_something = false;
       T closest = line.limits().end() + 1;
 
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           ( iter != shape_list.end() );
+      for( typename shape_list::const_iterator iter = m_shape_list.begin();
+           ( iter != m_shape_list.end() );
            ++iter )
       {
          T dist;
@@ -266,8 +214,8 @@ namespace amethyst
       // Clear it out...
       intersection = intersection_info<T>();
 
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           ( iter != shape_list.end() );
+      for( typename shape_list::const_iterator iter = m_shape_list.begin();
+           ( iter != m_shape_list.end() );
            ++iter )
       {
          intersection_info<T> temp_intersection;
@@ -351,8 +299,8 @@ namespace amethyst
       // Clear it out...
       intersection = intersection_info<T>();
 
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           ( iter != shape_list.end() );
+      for( typename shape_list::const_iterator iter = m_shape_list.begin();
+           ( iter != m_shape_list.end() );
            ++iter )
       {
          intersection_info<T> temp_intersection;
@@ -442,8 +390,8 @@ namespace amethyst
 
 		std::string level_indent = "  ";
 
-		for( typename shape_list_type::const_iterator iter = shape_list.begin();
-			  iter != shape_list.end();
+		for( typename shape_list::const_iterator iter = m_shape_list.begin();
+			  iter != m_shape_list.end();
            ++iter )
       {
          retval += (*iter)->to_string(indentation, level_indent) + "\n";
@@ -461,8 +409,8 @@ namespace amethyst
       caps |= object_capabilities::CONTAINER;
       caps &= ~object_capabilities::IMPLICIT;
 
-      for( typename shape_list_type::const_iterator iter = shape_list.begin();
-           iter != shape_list.end();
+      for( typename shape_list::const_iterator iter = m_shape_list.begin();
+           iter != m_shape_list.end();
            ++iter )
       {
          object_capabilities obj_caps = (*iter)->get_object_capabilities();
@@ -492,27 +440,27 @@ namespace amethyst
    }
 
    template <class T>
-   void aggregate<T>::add(shape_pointer_type& sp)
+   void aggregate<T>::add(shape_ptr& sp)
    {
-      shape_list.push_back(sp);
+      m_shape_list.push_back(sp);
    }
 
    template <class T>
    size_t aggregate<T>::size() const
    {
-      return shape_list.size();
+      return m_shape_list.size();
    }
 
    template <class T>
-   typename aggregate<T>::shape_pointer_type& aggregate<T>::operator[](size_t index)
+   typename aggregate<T>::shape_ptr& aggregate<T>::operator[](size_t index)
    {
-      return shape_list[index];
+      return m_shape_list[index];
    }
 
    template <class T>
-   const typename aggregate<T>::shape_pointer_type& aggregate<T>::operator[](size_t index) const
+   const typename aggregate<T>::shape_ptr& aggregate<T>::operator[](size_t index) const
    {
-      return shape_list[index];
+      return m_shape_list[index];
    }
 
 } // namespace amethyst

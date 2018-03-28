@@ -38,6 +38,8 @@ namespace amethyst
 #endif
 
 
+    // 0 = stdin, 1 = stdout, 2 = stderr
+    file_handle_type get_std_handle(int unix_number);
 
 	/**
 	 *
@@ -51,11 +53,7 @@ namespace amethyst
 	{
 
 	public:
-#if defined(WINDOWS)
-		explicit fd_ostream(file_handle_type file_descriptor = GetStdHandle(STD_OUTPUT_HANDLE));
-#else
-		explicit fd_ostream(file_handle_type file_descriptor = 1);
-#endif
+        explicit fd_ostream(file_handle_type file_descriptor = get_std_handle(1));
 		fd_ostream(const fd_ostream& old) = delete;
 		fd_ostream(fd_ostream&& old);
 		virtual ~fd_ostream();

@@ -4,6 +4,7 @@
 #include "math/coord3.hpp"
 #include "math/vector3.hpp"
 #include "math/mat_4x4.hpp"
+#include "general/defines.hpp"
 
 #include <iosfwd>
 

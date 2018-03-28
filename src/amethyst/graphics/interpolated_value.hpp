@@ -78,7 +78,7 @@ namespace amethyst
 		parametric_type parameter;
 		interpolation_type value;
 
-		interpolation_point(): parameter(), value() { }
+        interpolation_point() = default;
 		interpolation_point(const parametric_type& p, const interpolation_type& v):
 			parameter(p),
 			value(v)

@@ -27,7 +27,25 @@
 
 namespace amethyst
 {
-	/**
+    file_handle_type get_std_handle(int unix_number)
+    {
+#ifdef WINDOWS
+        switch (unix_number)
+        {
+        case 0:
+            return GetStdHandle(STD_INPUT_HANDLE);
+        case 1:
+            return GetStdHandle(STD_OUTPUT_HANDLE);
+        case 2:
+            return GetStdHandle(STD_ERROR_HANDLE);
+        }
+        return nullptr;
+#else
+        return unix_number;
+#endif
+    }
+
+    /**
 	 *
 	 * A private class for handling the streambuf operations.
 	 *
@@ -39,7 +57,7 @@ namespace amethyst
 	{
 		friend class fd_ostream;
 	public:
-		fd_ostreambuf(file_handle_type file_descriptor) 
+		fd_ostreambuf(file_handle_type file_descriptor)
 			: m_fd(file_descriptor)
 		{
 		}
