@@ -226,6 +226,8 @@ namespace amethyst
 		 */
 		scanline& operator=(const scanline& line);
 
+        size_t width() const { return my_raster.get_width(); }
+
 	private:
 		/**
 		 * The constructor that only class raster can invoke.
@@ -550,12 +552,12 @@ namespace amethyst
 			// (1) Fill above the copied rectangle, if it needs it...
 			for( size_t y = 0; y < min_y; ++y )
 			{
-				std::fill(raster_data + y * width, raster_data + y * (width + 1), fill);
+				std::fill(raster_data + y * width, raster_data + (y + 1) * width, fill);
 			}
 			// (2) Fill below the copied rectangle, if it needs it...
 			for( size_t y = max_y; y < height; ++y )
 			{
-				std::fill(raster_data + y * width, raster_data + y * (width + 1), fill);
+				std::fill(raster_data + y * width, raster_data + (y + 1) * width, fill);
 			}
 			// (3) Fill the gap on the left (if any)
 			if( min_x > 0 )
