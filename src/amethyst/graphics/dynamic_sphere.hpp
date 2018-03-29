@@ -45,19 +45,8 @@ namespace amethyst
     template <class T>
     class dynamic_sphere : public shape<T>
     {
-
-    private:
-
-        std::shared_ptr<interpolated_value<T, coord3<T>>> center;
-        std::shared_ptr<interpolated_value<T, T>> radius;
-
-    protected:
-
     public:
-        /** Default constructor */
-        dynamic_sphere();
-
-        /** Secondary (sized) constructor */
+        dynamic_sphere() : dynamic_sphere(point3<T>(0, 0, 0), 1) { }
         dynamic_sphere(const point3<T>& c, T rad);
 
         dynamic_sphere(const point3<T>& c1, T t1,
@@ -65,15 +54,23 @@ namespace amethyst
                        T rad1, T tr1,
                        T rad2, T tr2);
 
-        /** Destructor */
-        virtual ~dynamic_sphere();
+        virtual ~dynamic_sphere() = default;
+        dynamic_sphere(const dynamic_sphere& old) = default;
+        dynamic_sphere& operator=(const dynamic_sphere& old) = default;
+        dynamic_sphere(dynamic_sphere&& old)
+            : shape<T>(std::move(old))
+            , center(std::move(old.center))
+            , radius(std::move(old.radius))
+        {
+        }
 
-        /** Copy constructor */
-        dynamic_sphere(const dynamic_sphere& old);
-
-        /** Assignment operator */
-        dynamic_sphere& operator= (const dynamic_sphere& old);
-
+        dynamic_sphere& operator=(dynamic_sphere&& old)
+        {
+            shape<T>::operator=(std::move(old));
+            center.swap(old.center);
+            radius.swap(old.radius);
+            return *this;
+        }
 
         point3<T> get_center(T time) const
         {
@@ -128,94 +125,32 @@ namespace amethyst
 
     private:
         coord2<T> get_uv(const point3<T>& location, T time) const;
-    }; // class dynamic_sphere
 
+        using center_type = interpolation_point<T, coord3<T>>;
+        using radius_type = interpolation_point<T, T>;
 
+        std::shared_ptr<interpolated_value<T, coord3<T>>> center;
+        std::shared_ptr<interpolated_value<T, T>> radius;
+    };
 
-    //-------------------------------------
-    // Default constructor for class dynamic_sphere
-    //-------------------------------------
     template <class T>
-    dynamic_sphere<T>::dynamic_sphere() :
-        shape<T>(),
-        center(create_interpolation<T, point3<T>>(vector3<T>(0, 0, 0), point3<T>(0, 0, 0)).clone_new()),
-        radius(create_interpolation<T, T>(T(1), T(1)).clone_new())
+    dynamic_sphere<T>::dynamic_sphere(const point3<T>& c, T rad)
+        : center(create_interpolation<T, coord3<T>>(c, c))
+        , radius(create_interpolation<T, T>(rad, rad))
     {
-
-    } // dynamic_sphere()
-
-    //----------------------------------------
-    // Secondary constructor for class dynamic_sphere
-    //----------------------------------------
-    template <class T>
-    dynamic_sphere<T>::dynamic_sphere(const point3<T>& c, T rad) :
-        shape<T>(),
-        center(create_interpolation<T, point3<T>>(c, c).clone_new()),
-        radius(create_interpolation<T, T>(rad, rad).clone_new())
-    {
-
-    } // dynamic_sphere(point3,T)
+    }
 
     template <class T>
     dynamic_sphere<T>::dynamic_sphere(const point3<T>& c1, T t1,
-                                      const point3<T>& c2, T t2,
-                                      T rad1, T tr1,
-                                      T rad2, T tr2) :
-        shape<T>()
+        const point3<T>& c2, T t2,
+        T rad1, T tr1,
+        T rad2, T tr2)
+        // FIXME! These two lines should be identical in the output, but they don't do the same thing.  So there is a bug in the interpolation, but the second looks better.
+        // : center(create_interpolation<T, coord3<T>>(center_type(t1, c1.getcoord()), center_type(t2, c2.getcoord())))
+        : center(create_interpolation<T, coord3<T>>(std::vector<center_type>({ center_type(t1, c1.getcoord()), center_type(t2, c2.getcoord()) })))
+        , radius(create_interpolation<T, T>(radius_type(tr1, rad1), radius_type(tr2, rad2)))
     {
-        typedef interpolation_point<T, coord3<T>> center_point_type;
-
-        std::vector<center_point_type> points(2);
-        points[0] = center_point_type(t1, coord3<T>(c1.x(), c1.y(), c1.z()));
-        points[1] = center_point_type(t2, coord3<T>(c2.x(), c2.y(), c2.z()));
-        center = std::shared_ptr<interpolated_value<T, coord3<T>>>(create_interpolation<T, coord3<T>>(points).clone_new());
-
-
-        typedef interpolation_point<T, T> radius_type;
-        std::vector<radius_type> rads(2);
-        rads[0] = radius_type(tr1, rad1);
-        rads[1] = radius_type(tr2, rad2);
-        radius = std::shared_ptr<interpolated_value<T, T>>(create_interpolation<T, T>(rads).clone_new());
-    } // dynamic_sphere(point3,T,point3,T,T,T,T,T)
-
-    //----------------------------
-    // Destructor for class dynamic_sphere
-    //----------------------------
-    template <class T>
-    dynamic_sphere<T>::~dynamic_sphere()
-    {
-
-    } // ~dynamic_sphere()
-
-    //----------------------------------
-    // Copy constructor for class dynamic_sphere
-    //----------------------------------
-    template <class T>
-    dynamic_sphere<T>::dynamic_sphere(const dynamic_sphere<T>& old) :
-        shape<T>(old),
-        center(old.center),
-        radius(old.radius)
-    {
-
-    } // dynamic_sphere(dynamic_sphere)
-
-    //-------------------------------------
-    // Assignment operator for class dynamic_sphere
-    //-------------------------------------
-    template <class T>
-    dynamic_sphere<T>& dynamic_sphere<T>::operator= (const dynamic_sphere<T>& old)
-    {
-        // Generic check for self-assignment
-        if (&old != this)
-        {
-            center = old.center;
-            radius = old.radius;
-
-            shape<T>::operator=(old);
-        }
-        return *this;
-    } // dynamic_sphere::operator=(dynamic_sphere)
-
+    }
 
     // Returns if the given point is inside the dynamic_sphere.
     template <class T>

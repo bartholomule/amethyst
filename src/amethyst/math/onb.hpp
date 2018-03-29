@@ -1,25 +1,4 @@
-/*
- * $Id: onb.hpp,v 1.7 2004/05/17 07:06:32 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-#if       !defined(AMETHYST__ONB_HPP)
-#define            AMETHYST__ONB_HPP
+#pragma once
 
 /*
    onb.hpp -- A class to represent an ortho-normal basis.
@@ -50,137 +29,105 @@ namespace amethyst
     class onb
     {
     public:
-        inline onb() :
-            u(1, 0, 0),
-            v(0, 1, 0),
-            w(0, 0, 1)
+        inline onb()
+            : m_w(0, 0, 1)
+            , m_v(0, 1, 0)
+            , m_u(1, 0, 0)
         {
         }
 
         // An ONB where only the direction of w matters...
-        inline onb(const vector3<T>& a) :
-            w(unit(a))
+        inline onb(const vector3<T>& a)
+            : m_w(unit(a))
+            , m_v(perp_vector(m_w))
+            , m_u(crossprod(m_v, m_w))
         {
-            v = perp_vector(w);
-            u = crossprod(v, w);
         }
 
         // An ONB where the direction of u,v, and w matter...
         // a and b define a plane, where a is in the direction of w, b is in the
         // direction of v, and u is the normal to this plane.
-        inline onb(const vector3<T>& a, const vector3<T>& b) :
-            v(unit(b)),
-            w(unit(a))
+        inline onb(const vector3<T>& a, const vector3<T>& b)
+            : m_w(unit(a))
+            , m_v(unit(b))
+            , m_u(crossprod(m_v, m_w))
         {
-            u = crossprod(v, w);
         }
 
         // An ONB where the direction of u,v, and w are fully specified.
-        inline onb(const vector3<T>& a, const vector3<T>& b, const vector3<T>& c) :
-            u(unit(a)),
-            v(unit(b)),
-            w(unit(c))
+        inline onb(const vector3<T>& a, const vector3<T>& b, const vector3<T>& c)
+            : m_w(unit(c))
+            , m_v(unit(b))
+            , m_u(unit(a))
         {
         }
 
-        inline onb(const onb<T>& o) : u(o.u), v(o.v), w(o.w)
-        {
-        }
-
-        inline onb<T>& operator=(const onb<T>& o)
-        {
-            if (&o != this)
-            {
-                u = o.u;
-                v = o.v;
-                w = o.w;
-            }
-            return *this;
-        }
+        onb(const onb<T>& o) = default;
+        onb<T>& operator=(const onb<T>& o) = default;
 
         // Take an external coord, and convert to one for this ONB
         inline coord3<T> into_onb(const coord3<T>& c) const
         {
             vector3<T> cv(c);
-            return coord3<T>(dotprod(cv, u), dotprod(cv, v), dotprod(cv, w));
+            return coord3<T>(dotprod(cv, m_u), dotprod(cv, m_v), dotprod(cv, m_w));
         }
 
         // Take an external point, and convert to one for this ONB
         inline point3<T> into_onb(const point3<T>& c) const
         {
             vector3<T> cv(c.x(), c.y(), c.z());
-            return point3<T>(dotprod(cv, u), dotprod(cv, v), dotprod(cv, w));
+            return point3<T>(dotprod(cv, m_u), dotprod(cv, m_v), dotprod(cv, m_w));
         }
 
         // Take an external vector, and convert to one for this ONB
         inline vector3<T> into_onb(const vector3<T>& c) const
         {
-            return vector3<T>(dotprod(c, u), dotprod(c, v), dotprod(c, w));
+            return vector3<T>(dotprod(c, m_u), dotprod(c, m_v), dotprod(c, m_w));
         }
 
         // Take an internal coord, and convert to one for a 'global' ONB.
         inline coord3<T> outof_onb(const coord3<T>& c) const
         {
-            vector3<T> cv(u * c.x() + v * c.y() + w * c.z());
+            vector3<T> cv(m_u * c.x() + m_v * c.y() + m_w * c.z());
             return coord3<T>(cv.x(), cv.y(), cv.z());
         }
 
         // Take an internal point, and convert to one for a 'global' ONB.
         inline point3<T> outof_onb(const point3<T>& c) const
         {
-            vector3<T> cv(u * c.x() + v * c.y() + w * c.z());
+            vector3<T> cv(m_u * c.x() + m_v * c.y() + m_w * c.z());
             return point3<T>(cv.x(), cv.y(), cv.z());
         }
 
         // Take an internal vector, and convert to one for a 'global' ONB.
         inline vector3<T> outof_onb(const vector3<T>& c) const
         {
-            return u * c.x() + v * c.y() + w * c.z();
+            return m_u * c.x() + m_v * c.y() + m_w * c.z();
         }
 
-        inline const vector3<T>& get_u() const
-        {
-            return u;
-        }
-        inline const vector3<T>& get_v() const
-        {
-            return v;
-        }
-        inline const vector3<T>& get_w() const
-        {
-            return w;
-        }
-
-        inline vector3<T>& get_u()
-        {
-            return u;
-        }
-        inline vector3<T>& get_v()
-        {
-            return v;
-        }
-        inline vector3<T>& get_w()
-        {
-            return w;
-        }
+        inline const vector3<T>& u() const { return m_u; }
+        inline const vector3<T>& v() const { return m_v; }
+        inline const vector3<T>& w() const { return m_w; }
+        inline vector3<T>& u() { return m_u; }
+        inline vector3<T>& v() { return m_v; }
+        inline vector3<T>& w() { return m_w; }
 
     private:
-        vector3<T> u, v, w;
+        vector3<T> m_w;
+        vector3<T> m_v;
+        vector3<T> m_u;
     };
 
     template <class T>
     std::ostream& operator<<(std::ostream& o, const onb<T>& b)
     {
-        o << "onb( " << b.get_u() << ", " << b.get_v() << ", " << b.get_w() << ")";
+        o << "onb( " << b.u() << ", " << b.v() << ", " << b.w() << ")";
         return o;
     }
 
     template <typename T>
     std::string inspect(const onb<T>& b)
     {
-        return "onb( " + inspect(b.get_u()) + ", " + inspect(b.get_v()) + ", " + inspect(b.get_w()) + ")";
+        return "onb( " + inspect(b.u()) + ", " + inspect(b.v()) + ", " + inspect(b.w()) + ")";
     }
-
-} // namespace amethyst
-
-#endif /* !defined(AMETHYST__ONB_HPP) */
+}

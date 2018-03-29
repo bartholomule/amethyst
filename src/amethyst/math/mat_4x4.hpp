@@ -1,5 +1,4 @@
-#if    !defined(KH_MAT_4X4_H)
-#define         KH_MAT_4X4_H
+#pragma once
 
 /*
    mat_4x4.h
@@ -92,7 +91,7 @@ namespace amethyst
 {
     template <class T> class matrix_4x4;
 
-    template <class T> matrix_4x4<T> invert (const matrix_4x4<T>& rktMAT);
+    template <class T> matrix_4x4<T> invert (const matrix_4x4<T>& mat);
 
     template <class T> std::ostream& operator<<(std::ostream& o, const matrix_4x4<T>& m);
 
@@ -100,30 +99,17 @@ namespace amethyst
     class matrix_4x4
     {
     public:
-        inline matrix_4x4() {
-        }
+        matrix_4x4() = default;
         matrix_4x4(const T dat[16]);
         matrix_4x4(const T dat[16], const T inv[16]);
         matrix_4x4(const matrix_4x4<T>& m);
-        inline ~matrix_4x4() {
-        }
+        ~matrix_4x4() = default;
         matrix_4x4<T>& operator=(const matrix_4x4<T>& m);
 
-        inline const T* operator[](int index)  const
-        {
-            return &data[index * 4];
-        }
-        inline T* operator[](int index)
-        {
-            return &data[index * 4];
-        }
-
-        inline T& operator()(int row, int column) {
-            return data[row * 4 + column];
-        }
-        inline const T& operator()(int row, int column) const {
-            return data[row * 4 + column];
-        }
+        inline const T* operator[](int row) const { return &data[row * 4]; }
+        inline T* operator[](int row) { return &data[row * 4]; }
+        inline T& operator()(int row, int column) { return data[row * 4 + column]; }
+        inline const T& operator()(int row, int column) const { return data[row * 4 + column]; }
 
         inline coord3<T> multiply(const coord3<T>& c, T homogeneous = 1, bool divide = true) const;
         matrix_4x4<T> operator*(const matrix_4x4<T>& mat) const;
@@ -137,9 +123,7 @@ namespace amethyst
 
         matrix_4x4<T> operator+(const matrix_4x4<T>& mat) const;
         matrix_4x4<T> operator-(const matrix_4x4<T>& mat) const;
-        inline matrix_4x4<T> operator-() const {
-            return (*this) * (-1);
-        }
+        inline matrix_4x4<T> operator-() const { return (*this) * T(-1); }
 
         matrix_4x4<T> operator*(T d) const;
 
@@ -158,7 +142,6 @@ namespace amethyst
         void set_rotate_y(T theta);
         void set_rotate_z(T theta);
 
-
         // These transform an external item to the internal coord system.
         coord3<T> transform_as_point(const coord3<T>& c) const;
         coord3<T> transform_as_vector(const coord3<T>& c) const;
@@ -169,7 +152,6 @@ namespace amethyst
         coord3<T> ext_transform_as_vector(const coord3<T>& c) const;
         coord3<T> ext_transform_as_normal(const coord3<T>& c) const;
 
-
         static matrix_4x4<T> identity();
         static matrix_4x4<T> make_translate(const coord3<T>& amount);
         static matrix_4x4<T> make_scale(const coord3<T>& amount);
@@ -179,9 +161,7 @@ namespace amethyst
 
         friend std::ostream& operator<< <>(std::ostream& o, const matrix_4x4<T>&m);
 
-        matrix_4x4<T> inverse() const {
-            return matrix_4x4<T>(inverse_data, data);
-        }
+        matrix_4x4<T> inverse() const { return matrix_4x4<T>(inverse_data, data); }
 
     private:
         T data[16];
@@ -876,11 +856,11 @@ namespace amethyst
         are performed on the augmented portion (turning it into the inverse).
      */
     template <class T>
-    matrix_4x4<T> invert (const matrix_4x4<T>& rktMAT)
+    matrix_4x4<T> invert (const matrix_4x4<T>& mat)
     {
         int i, j, k;
         T factor;
-        matrix_4x4<T> a = rktMAT;
+        matrix_4x4<T> a = mat;
         // B is the identity, A will be turned into the identity and B the inverse.
         matrix_4x4<T> b = matrix_4x4<T>::identity();
         T temp_row[4];
@@ -940,7 +920,4 @@ namespace amethyst
         }
         return b;
     }
-
-} // end namespace amethyst
-
-#endif /* !defined(KH_MAT_4X4_H) */
+}

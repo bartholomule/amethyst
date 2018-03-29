@@ -1,5 +1,4 @@
-#if       !defined(KH_QUATERNION_H)
-#define            KH_QUATERNION_H
+#pragma once
 
 #include "math/coord3.hpp"
 #include "math/vector3.hpp"
@@ -494,8 +493,5 @@ namespace amethyst
         return "{" + inspect(q.getReal()) + "," + inspect(q.getImag()) + "}";
     }
 
-} // end namespace amethyst
-
-#endif /* !defined(KH_QUATERNION_H) */
-
+}
 

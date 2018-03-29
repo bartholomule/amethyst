@@ -666,9 +666,9 @@ namespace amethyst
     }
 
     template <class T, class IT>
-    interpolated_pair<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>
-    create_interpolation(const IT& i1,
-                         const IT& i2,
+    std::shared_ptr<interpolated_pair<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>>
+    create_interpolation(const interpolation_point<T, IT>& i1,
+                         const interpolation_point<T, IT>& i2,
                          endpoint_behavior b = ENDPOINT_STOP,
                          interpolation_method method = INTERP_CUBIC)
     {
@@ -676,12 +676,12 @@ namespace amethyst
 
         user_interpolation<T, IT, fn_ptr> interpolation = get_interpolation_function<T, IT>(method);
 
-        return interpolated_pair<T, IT, user_interpolation<T, IT, fn_ptr>>(i1, i2, interpolation, b);
+        return std::make_shared<interpolated_pair<T, IT, user_interpolation<T, IT, fn_ptr>>>(i1, i2, interpolation, b);
     }
 
 
     template <class T, class IT>
-    interpolated_vector<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>
+    std::shared_ptr<interpolated_vector<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>>
     create_interpolation(const std::vector<interpolation_point<T, IT>>& vec,
                          endpoint_behavior b = ENDPOINT_STOP,
                          interpolation_method method = INTERP_CUBIC)
@@ -690,11 +690,11 @@ namespace amethyst
 
         user_interpolation<T, IT, fn_ptr> interpolation = get_interpolation_function<T, IT>(method);
 
-        return interpolated_vector<T, IT, user_interpolation<T, IT, fn_ptr>>(vec, interpolation, b);
+        return std::make_shared<interpolated_vector<T, IT, user_interpolation<T, IT, fn_ptr>>>(vec, interpolation, b);
     }
 
     template <class T, class IT>
-    interpolated_vector<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>
+    std::shared_ptr<interpolated_vector<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>>
     create_interpolation(const IT& i1, const IT& i2, const IT& i3, T exponent = 1,
                          endpoint_behavior b = ENDPOINT_STOP,
                          interpolation_method method = INTERP_CUBIC)

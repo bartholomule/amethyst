@@ -122,7 +122,7 @@ std::shared_ptr<color_interp> get_colors()
     interp.push_back(interp_type(0.97, color(1, 0, 0))); // red
     interp.push_back(interp_type(1.00, color(1, 0, 0))); // red
 
-    return std::shared_ptr<color_interp>(create_interpolation<number_type, color>(interp).clone_new());
+    return create_interpolation<number_type, color>(interp);
 }
 
 void program1_extra()

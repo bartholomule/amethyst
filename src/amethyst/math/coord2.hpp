@@ -1,27 +1,4 @@
-/*
- * $Id: coord2.hpp,v 1.6 2004/04/18 21:36:49 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if    !defined(AMETHYST__COORD2_HPP)
-#define         AMETHYST__COORD2_HPP
-
+#pragma once
 /*
    coord2.hpp
 
@@ -65,23 +42,24 @@ namespace amethyst
         /* union to allow accesses to both indirectly through an array, and directly
            through a name, without adding any extra processing time or space
            requirements */
-        union  coord2_union
+        union coord2_union
         {
-            coord2_union()
+            coord2_union() = default;
+            coord2_union(const coord2_union& old)
+                : direct{ old.direct.x, old.direct.y }
             {
             }
-            coord2_union(T x, T y)
+
+            coord2_union(T x, T y) { direct.x = x; direct.y = y; }
+            T& operator[](int index) { return array.coords[index]; }
+            T operator[](int index) const { return array.coords[index]; }
+            coord2_union& operator=(const coord2_union& old)
             {
-                direct.x = x; direct.y = y;
+                direct.x = old.direct.x;
+                direct.y = old.direct.y;
+                return *this;
             }
-            T& operator[](int index)
-            {
-                return array.coords[index];
-            }
-            T operator[](int index) const
-            {
-                return array.coords[index];
-            }
+
             coord2_direct direct;
             coord2_array array;
         };
@@ -96,51 +74,25 @@ namespace amethyst
         };
         typedef T base;
 
-        coord2()
-        {
-        }
-        inline coord2(T x, T y) : coords(x, y)
-        {
-        }
-        inline coord2(const coord2& old_coord) : coords(old_coord.coords)
-        {
-        }
+        coord2() = default;
+        coord2(T x, T y) : coords(x, y) { }
+        coord2(const coord2& old_coord) : coords(old_coord.coords) { }
 
-        inline void set(T x, T y)
+        void set(T x, T y)
         {
-            coords.direct.x = x; coords.direct.y = y;
+            coords.direct.x = x;
+            coords.direct.y = y;
         }
 
         /* Accessors */
-        inline T& operator[](int coord_index)
-        {
-            return coords[coord_index];
-        }
+        T& operator[](int coord_index) { return coords[coord_index]; }
+        T operator[](int coord_index) const { return coords[coord_index]; }
+        T& x() { return coords.direct.x; }
+        T x() const { return coords.direct.x; }
+        T& y() { return coords.direct.y; }
+        T y() const { return coords.direct.y; }
 
-        inline T operator[](int coord_index) const
-        {
-            return coords[coord_index];
-        }
-
-        T& x()
-        {
-            return coords.direct.x;
-        }
-        T  x() const
-        {
-            return coords.direct.x;
-        }
-        T& y()
-        {
-            return coords.direct.y;
-        }
-        T  y() const
-        {
-            return coords.direct.y;
-        }
-
-
-        coord2& operator=(const coord2& old_coord);
+        coord2& operator=(const coord2& old) { coords = old.coords; return *this; }
         coord2& operator+=(const coord2& p2);
         coord2& operator-=(const coord2& p2);
         coord2& operator*=(const coord2& p2); // Piecewise multiplication.
@@ -152,23 +104,11 @@ namespace amethyst
         coord2& operator/=(U factor);
 
         /* Functions that more relate to vectors, but are needed */
-        inline T length()          const
+        inline T length() const
         {
             return T(sqrt(double(x() * x() + y() * y())));
         }
-    }; // class coord2
-
-    template <class T>
-    inline coord2<T>& coord2<T>::operator=(const coord2<T>& old_coord)
-    {
-        // No self-assignment comparison is done, because the compare/jump
-        // should take longer than the assignment (for built-in types).
-        coords.direct.x = old_coord.coords.direct.x;
-        coords.direct.y = old_coord.coords.direct.y;
-
-        return *this;
-    }
-
+    };
 
     template <class T>
     inline coord2<T>& coord2<T>::operator+=(const coord2<T>& p2)
@@ -353,6 +293,4 @@ namespace amethyst
         return "{" + inspect(c.x()) + "," + inspect(c.y()) + "}";
     }
 
-} // namespace amethyst
-
-#endif /* !defined(AMETHYST__COORD2_HPP) */
+}

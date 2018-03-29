@@ -1,26 +1,4 @@
-/*
- * $Id: interval.hpp,v 1.6 2004/04/07 05:10:06 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__INTERVAL_HPP)
-#define            AMETHYST__INTERVAL_HPP
+#pragma once
 
 /*
    interval.hpp -- A simple class for use in creating/testing intervals.
@@ -49,7 +27,7 @@ namespace amethyst
 {
     //
     // interval class:
-    // A class representing a range of numbers (between to constraints)
+    // A class representing a range of numbers (between two constraints)
     //
     // It can be used to find:
     //   1. If a number is inside an interval
@@ -74,39 +52,23 @@ namespace amethyst
     template <class T>
     class interval
     {
-    private:
-        T a;
-        T b;
-        bool is_empty;
-
     public:
-        //
-        // Default constructor -- Sets the interval to be empty
-        //
-        explicit interval(bool empty = true) :
-            a(T(0)), b(T(0)), is_empty(empty)
+        interval() = default;
+        interval(T first, T second)
+            : a(first)
+            , b(second)
+            , is_empty(false)
         {
-        }
-
-        //
-        // Secondary constructor -- Sets an interval to a given range
-        //
-        interval(T a, T b) : is_empty(false)
-        {
-            this->a = a;
-            this->b = b;
             if (b < a)
             {
-                std::swap(this->a, this->b);
+                std::swap(a, b);
             }
             // This doesn't use the ==, as any swapping based on the < has already
             // been done, so if we test < again, and it fails, then it must be empty.
-            is_empty = !(this->a < this->b);
-        } // interval(T,T)
+            is_empty = !(a < b);
+        }
 
-        //
         // Find out if a point is inside the interval (generic)
-        //
         template <class U>
         bool inside(U d) const
         {
@@ -115,11 +77,9 @@ namespace amethyst
                 return false;
             }
             return (a < d) && (d < b);
-        } // inside(T) const
+        }
 
-        //
         // Find out if a point is outside the interval (generic)
-        //
         template <class U>
         bool outside(U d) const
         {
@@ -131,12 +91,9 @@ namespace amethyst
             // of the >= and <= operators to minimize the number of operators that
             // must be defined for types used within an interval.
             return !((a < d) && (d < b));
-        } // outside(T) const
+        }
 
-
-        //
         // Find out if two intervals overlap
-        //
         bool overlaps(const interval& i2) const
         {
             if (empty() || i2.empty())
@@ -192,12 +149,12 @@ namespace amethyst
                 // b is inside of i2
                 return true;
             }
-            else if (((a <= i2.a) && (i2.a <= a)))
+            else if ((a <= i2.a) && (i2.a <= a))
             {
                 // i1.a == i2.a -- There MUST be some overlap.
                 return true;
             }
-            else if (((b <= i2.b) && (i2.b <= b)))
+            else if ((b <= i2.b) && (i2.b <= b))
             {
                 // i1.b == i2.b -- There MUST be some overlap.
                 return true;
@@ -215,11 +172,9 @@ namespace amethyst
             //
             //
             return false;
-        } // overlaps(const interval&) const
+        }
 
-        //
         // Return if the interval i2 is a subset of this interval.
-        //
         bool subset(const interval& i2) const
         {
             if (empty() || i2.empty())
@@ -227,33 +182,29 @@ namespace amethyst
                 return false;
             }
             return (a <= i2.a) && (i2.b <= b);
-        } // subset(const interval&) const
+        }
 
-        bool empty() const
-        {
-            return is_empty;
-        }
-        T begin() const
-        {
-            return a;
-        }
-        T end()   const
-        {
-            return b;
-        }
+        bool empty() const { return is_empty; }
+        T begin() const { return a; }
+        T end() const { return b; }
 
         void set(T begin, T end)
         {
             a = begin; b = end;
             if (b < a)
             {
-                std::swap(this->a, this->b);
+                std::swap(a, b);
             }
             // This doesn't use the ==, as any swapping based on the < has already
             // been done, so if we test < again, and it fails, then it must be empty.
-            is_empty = !(this->a < this->b);
-        } // set(T,T)
-    }; // class interval<T>
+            is_empty = !(a < b);
+        }
+
+    private:
+        T a = T(0);
+        T b = T(0);
+        bool is_empty = true;
+    };
 
 
     //
@@ -287,13 +238,8 @@ namespace amethyst
         {
             result = interval<T>(std::max(i1.begin(), i1.begin()), i1.end());
         }
-        else
-        {
-            // Is a case here even valid?
-            std::cout << "Unexpected input: " << i1 << " and " << i2 << std::endl;
-        }
         return result;
-    } // get_overlap(const interval&) const
+    }
 
     //
     // Return the interval created by subtracting the interval i2 from
@@ -330,17 +276,9 @@ namespace amethyst
         {
             return interval<T>(std::max(i1.begin(), i2.end()), i1.end());
         }
-        // FIXME! logic and implementation.  What case is left?
-        /*
-           else
-           {
-           return(interval<T>(std::min(i1.begin(),i2.begin()),
-           std::max(i1.end(),i2.end())));
-           }
-         */
         // Return an empty interval...
         return interval<T>();
-    } // operator-(const interval&, const interval&)
+    }
 
 
     //
@@ -421,7 +359,6 @@ namespace amethyst
         return t1.end() <= u;
     }
 
-
     template <class T>
     std::ostream& operator<< (std::ostream& o, const interval<T>& i)
     {
@@ -436,7 +373,7 @@ namespace amethyst
             o << "[" << i.begin() << "," << i.end() << "]";
         }
         return o;
-    } // operator << (ostream&,const interval&)
+    }
 
     template <typename T>
     std::string inspect(const interval<T>& i)
@@ -446,9 +383,5 @@ namespace amethyst
             return "[empty]";
         }
         return "[" + inspect(i.begin()) + "," + inspect(i.end()) + "]";
-
     }
-
-
-} // namespace amethyst
-#endif /* !defined(AMETHYST__INTERVAL_HPP) */
+}

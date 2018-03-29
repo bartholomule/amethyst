@@ -70,7 +70,7 @@ namespace amethyst
         , m_freq(M_PI / line_width)
         , m_scale(scale)
         , m_noise(rnd, 16) // For our purposes, 16 elements is plenty and will speed things up over the default.
-        , m_colors(create_interpolation<T, color_type>(color_type(0.06, 0.04, 0.02), color_type(0.4, 0.2, 0.1), color_type(0.8, 0.8, 0.8), 2).clone_new())
+        , m_colors(create_interpolation<T, color_type>(color_type(0.06, 0.04, 0.02), color_type(0.4, 0.2, 0.1), color_type(0.8, 0.8, 0.8), 2))
         , m_octaves(octaves)
     {
     }

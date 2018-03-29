@@ -1,27 +1,4 @@
-/*
- * $Id: coord3.hpp,v 1.6 2008/06/22 17:28:28 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if    !defined(AMETHYST__COORD3_HPP)
-#define         AMETHYST__COORD3_HPP
-
+#pragma once
 /*
    coord3.hpp
 
@@ -71,22 +48,25 @@ namespace amethyst
         /* union to allow accesses to both indirectly through an array, and directly
            through a name, without adding any extra processing time or space
            requirements */
-        union  coord3_union
+        union coord3_union
         {
-            coord3_union()
-            {
-            }
+            coord3_union() = default;
             coord3_union(T x, T y, T z)
+                : direct{ x, y, z }
             {
-                direct.x = x; direct.y = y; direct.z = z;
             }
-            inline T& operator[](unsigned index)
+            coord3_union(const coord3_union& old)
+                : direct{ old.direct.x, old.direct.y, old.direct.z }
             {
-                return array.coords[index];
             }
-            inline T operator[](unsigned index) const
+            T& operator[](unsigned index) { return array.coords[index]; }
+            T operator[](unsigned index) const { return array.coords[index]; }
+            coord3_union& operator=(const coord3_union& old)
             {
-                return array.coords[index];
+                direct.x = old.direct.x;
+                direct.y = old.direct.y;
+                direct.z = old.direct.z;
+                return *this;
             }
             coord3_direct direct;
             coord3_array array;
@@ -102,20 +82,12 @@ namespace amethyst
         };
         typedef T base;
 
-        coord3()
-        {
-        }
-        inline coord3(T u) : coords(u, u, u)
-        {
-        }
-        inline coord3(T x, T y, T z) : coords(x, y, z)
-        {
-        }
-        inline coord3(const coord3& old_coord) : coords(old_coord.coords)
-        {
-        }
+        coord3() = default;
+        explicit coord3(T u) : coords(u, u, u) { }
+        coord3(T x, T y, T z) : coords(x, y, z) { }
+        coord3(const coord3& old_coord) = default;
 
-        inline void set(T x, T y, T z)
+        void set(T x, T y, T z)
         {
             coords.direct.x = x;
             coords.direct.y = y;
@@ -123,42 +95,16 @@ namespace amethyst
         }
 
         /* Accessors */
-        inline T& operator[](unsigned coord_index)
-        {
-            return coords[coord_index];
-        }
+        T& operator[](unsigned coord_index) { return coords[coord_index]; }
+        T operator[](unsigned coord_index) const { return coords[coord_index]; }
+        T& x() { return coords.direct.x; }
+        T x() const { return coords.direct.x; }
+        T& y() { return coords.direct.y; }
+        T y() const { return coords.direct.y; }
+        T& z() { return coords.direct.z; }
+        T z() const { return coords.direct.z; }
 
-        inline T operator[](unsigned coord_index) const
-        {
-            return coords[coord_index];
-        }
-
-        T& x()
-        {
-            return coords.direct.x;
-        }
-        T  x() const
-        {
-            return coords.direct.x;
-        }
-        T& y()
-        {
-            return coords.direct.y;
-        }
-        T  y() const
-        {
-            return coords.direct.y;
-        }
-        T& z()
-        {
-            return coords.direct.z;
-        }
-        T  z() const
-        {
-            return coords.direct.z;
-        }
-
-        coord3& operator= (const coord3& old_coord);
+        coord3& operator= (const coord3& old_coord) = default;
         coord3& operator+=(const coord3& p2);
         coord3& operator-=(const coord3& p2);
         coord3& operator*=(const coord3& p2); // Piecewise multiplication.
@@ -177,19 +123,6 @@ namespace amethyst
         }
 
     };
-
-    template <class T>
-    inline coord3<T>& coord3<T>::operator=(const coord3<T>& old_coord)
-    {
-        // No self-assignment comparison is done, because the compare/jump
-        // should take longer than the assignment (for built-in types).
-        coords.direct.x = old_coord.coords.direct.x;
-        coords.direct.y = old_coord.coords.direct.y;
-        coords.direct.z = old_coord.coords.direct.z;
-
-        return *this;
-    }
-
 
     template <class T>
     inline coord3<T>& coord3<T>::operator+=(const coord3<T>& p2)
@@ -364,7 +297,4 @@ namespace amethyst
     {
         return "{" + inspect(c.x()) + "," + inspect(c.y()) + "," + inspect(c.z()) + "}";
     }
-
-} // namespace amethyst
-
-#endif /* !defined(AMETHYST__COORD3_HPP) */
+}
