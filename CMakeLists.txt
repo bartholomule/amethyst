@@ -5,4 +5,3 @@ include(cmake/utils.cmake)
 
 enable_testing()
 add_subdirectory(src)
-add_subdirectory(test)
