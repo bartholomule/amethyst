@@ -15,7 +15,6 @@
 typedef amethyst::point3<double> point;
 typedef amethyst::vector3<double> vec;
 
-using namespace std;
 
 using amethyst::string_format;
 

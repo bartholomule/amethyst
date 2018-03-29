@@ -2,16 +2,8 @@
 #include "test_framework/testinclude.hpp"
 
 #include <iostream>
-using namespace std;
 
 #define ERROR_TEXT(text) ((++error_count), text)
-
-template <class T>
-ostream& operator<<(ostream& o, const amethyst::rgbcolor<T>& c)
-{
-    o << "<" << c.r() << ", " << c.g() << ", " << c.b() << ">";
-    return o;
-}
 
 int main(int, char**)
 {
@@ -23,9 +15,9 @@ int main(int, char**)
 
     color blah01;
 
-    cout << "-------------------------------------" << endl;
-    cout << "Testing rgbcolor member functions/ops" << endl;
-    cout << "-------------------------------------" << endl;
+    std::cout << "-------------------------------------" << std::endl;
+    std::cout << "Testing rgbcolor member functions/ops" << std::endl;
+    std::cout << "-------------------------------------" << std::endl;
 
     TEST_RESULT_NAMED("to see if get/set functions work",
                       ((blah01.set_r(1), (blah01.r() == 1)) && // single r
@@ -98,9 +90,9 @@ int main(int, char**)
                       passed,
                       ERROR_TEXT(failed));
 
-    cout << "-------------------------------------" << endl;
-    cout << "Testing rgbcolor global functions/ops" << endl;
-    cout << "-------------------------------------" << endl;
+    std::cout << "-------------------------------------" << std::endl;
+    std::cout << "Testing rgbcolor global functions/ops" << std::endl;
+    std::cout << "-------------------------------------" << std::endl;
 
     color blah10 = 2 * blah01;
     TEST_RESULT_NAMED("to see if global binary operator * (specific) works",
@@ -138,9 +130,9 @@ int main(int, char**)
                       9, 10, 11 };
 
     color* foo = reinterpret_cast<color*>(&barfola);
-    cout << "------------------------" << endl;
-    cout << "Testing reinterpretation" << endl;
-    cout << "------------------------" << endl;
+    std::cout << "------------------------" << std::endl;
+    std::cout << "Testing reinterpretation" << std::endl;
+    std::cout << "------------------------" << std::endl;
 
     TEST_RESULT_NAMED("to see if reverse reinterpretation works as required",
                       (((foo[0][0] == 0) && (foo[0][1] == 1) && (foo[0][2] == 2)) &&
@@ -176,16 +168,16 @@ int main(int, char**)
     if (!error_count)
     {
 
-        cout << "----------------------------------" << endl;
-        cout << "*** All rgbcolor tests passed. ***" << endl;
-        cout << "----------------------------------" << endl;
+        std::cout << "----------------------------------" << std::endl;
+        std::cout << "*** All rgbcolor tests passed. ***" << std::endl;
+        std::cout << "----------------------------------" << std::endl;
         return 0;
     }
     else
     {
-        cout << "---------------------------------" << endl;
-        cout << "ERROR: Failed " << error_count << " rgbcolor tests." << endl;
-        cout << "---------------------------------" << endl;
+        std::cout << "---------------------------------" << std::endl;
+        std::cout << "ERROR: Failed " << error_count << " rgbcolor tests." << std::endl;
+        std::cout << "---------------------------------" << std::endl;
         return 2;
     }
 

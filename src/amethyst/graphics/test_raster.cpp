@@ -2,7 +2,6 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
 
 #include "graphics/raster.hpp"
 #include "test_framework/testinclude.hpp"
@@ -11,12 +10,12 @@ using namespace std;
 typedef amethyst::raster<int> irast;
 
 template <class T>
-ostream& operator<<(ostream& o, const amethyst::raster<T>& r)
+std::ostream& operator<<(std::ostream& o, const amethyst::raster<T>& r)
 {
 
-    string s = "+" + string(r.get_width() * 4 + 1, '-') + "+";
+    std::string s = "+" + std::string(r.get_width() * 4 + 1, '-') + "+";
 
-    o << s << endl;
+    o << s << std::endl;
 
     for (unsigned y = 0; y < r.get_height(); ++y)
     {
@@ -26,10 +25,10 @@ ostream& operator<<(ostream& o, const amethyst::raster<T>& r)
             const auto& v = r[y][x];
             o << " " << setw(3) << (isprint(v) ? v : '#');
         }
-        o << " |" << endl;
+        o << " |" << std::endl;
     }
 
-    o << s << endl;
+    o << s << std::endl;
     return o;
 }
 
@@ -62,12 +61,12 @@ int main(int argc, char** argv)
 
     try
     {
-        cout << "------------------------------" << endl;
-        cout << ("Creating a " +
+        std::cout << "------------------------------" << std::endl;
+        std::cout << ("Creating a " +
                  std::to_string(width) + "x" + std::to_string(height) +
                  " raster")
-             << endl;
-        cout << "------------------------------" << endl;
+             << std::endl;
+        std::cout << "------------------------------" << std::endl;
 
         irast sized(width, height);
         TEST_RESULT_NAMED(("to see if the size of a " +
@@ -144,11 +143,11 @@ int main(int argc, char** argv)
                           passed,
                           ERROR_TEXT(failed));
 
-        //    cout << r << endl;
+        //    std::cout << r << std::endl;
 
-        cout << "------------------------" << endl;
-        cout << "Creating an empty raster" << endl;
-        cout << "------------------------" << endl;
+        std::cout << "------------------------" << std::endl;
+        std::cout << "Creating an empty raster" << std::endl;
+        std::cout << "------------------------" << std::endl;
         irast empty;
 
         TEST_RESULT_NAMED("to see if the size of an empty raster is 0",
@@ -181,9 +180,9 @@ int main(int argc, char** argv)
                              ERROR_TEXT(failed),
                              passed);
 
-        cout << "---------------------------" << endl;
-        cout << "Creating full-raster copies" << endl;
-        cout << "---------------------------" << endl;
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "Creating full-raster copies" << std::endl;
+        std::cout << "---------------------------" << std::endl;
         const irast copied_cons(sized);
 
         // This is a modified copy of a test above... Just the name and variable
@@ -255,9 +254,9 @@ int main(int argc, char** argv)
                              ERROR_TEXT(failed),
                              passed);
 
-        cout << "-----------------------" << endl;
-        cout << "Creating sub-rasters..." << endl;
-        cout << "-----------------------" << endl;
+        std::cout << "-----------------------" << std::endl;
+        std::cout << "Creating sub-rasters..." << std::endl;
+        std::cout << "-----------------------" << std::endl;
 
         irast sub_sized;
 
@@ -282,14 +281,14 @@ int main(int argc, char** argv)
                              ERROR_TEXT(failed),
                              passed);
 
-        cout << "-------------------------------------------------------------------" << endl;
-        cout << "Reinterpreting rasters (normally dangerous, if done incorrectly)..." << endl;
-        cout << "-------------------------------------------------------------------" << endl;
+        std::cout << "-------------------------------------------------------------------" << std::endl;
+        std::cout << "Reinterpreting rasters (normally dangerous, if done incorrectly)..." << std::endl;
+        std::cout << "-------------------------------------------------------------------" << std::endl;
 
         typedef amethyst::raster<char> crast;
 
         const char* hello_data = "^Hello1..^n^.Hello2.^n^..Hello3^n^...Hello^n\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
-        //    cout << hello_data << endl;
+        //    std::cout << hello_data << std::endl;
 
 
         unsigned cw1 = 11, ch1 = 5;
@@ -310,9 +309,9 @@ int main(int argc, char** argv)
                           ERROR_TEXT(failed));
 
 
-        cout << "-------------------" << endl;
-        cout << "Resizing rasters..." << endl;
-        cout << "-------------------" << endl;
+        std::cout << "-------------------" << std::endl;
+        std::cout << "Resizing rasters..." << std::endl;
+        std::cout << "-------------------" << std::endl;
 
         // Get rid of the extra line full of nulls (which was used for comparison).
         hello_rast.resize(hello_rast.get_width(), hello_rast.get_height() - 1);
@@ -359,29 +358,29 @@ int main(int argc, char** argv)
 
 
 
-        cout << endl;
-        cout << "FIXME! Insert more tests for both raster::resize functions here!" << endl;
-        cout << endl;
+        std::cout << std::endl;
+        std::cout << "FIXME! Insert more tests for both raster::resize functions here!" << std::endl;
+        std::cout << std::endl;
 
         if (!error_count)
         {
 
-            cout << "--------------------------------" << endl;
-            cout << "*** All raster tests passed. ***" << endl;
-            cout << "--------------------------------" << endl;
+            std::cout << "--------------------------------" << std::endl;
+            std::cout << "*** All raster tests passed. ***" << std::endl;
+            std::cout << "--------------------------------" << std::endl;
             return 0;
         }
         else
         {
-            cout << "------------------------------" << endl;
-            cout << "ERROR: Failed " << error_count << " raster tests." << endl;
-            cout << "------------------------------" << endl;
+            std::cout << "------------------------------" << std::endl;
+            std::cout << "ERROR: Failed " << error_count << " raster tests." << std::endl;
+            std::cout << "------------------------------" << std::endl;
             return 2;
         }
     }
     catch (std::exception& e)
     {
-        cerr << "TEST ERROR: An exception leaked out: " << e.what() << endl;
+        std::cerr << "TEST ERROR: An exception leaked out: " << e.what() << std::endl;
         return 1;
     }
 }

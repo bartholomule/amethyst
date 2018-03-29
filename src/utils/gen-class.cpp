@@ -44,7 +44,6 @@
 #include <time.h>
 #include <cstdio>
 #include <cstdlib>
-using namespace std;
 
 // Put your name here...
 static const string AuthorName = "Kevin Harris";
