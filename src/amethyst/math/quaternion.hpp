@@ -337,7 +337,7 @@ namespace amethyst
     template <class T>
     inline quaternion<T> makeQuaternion(T angle, const coord3<T>& line)
     {
-        angle *= M_PI / 180;
+        angle *= T(M_PI / 180.0);
         T real = cos(angle / 2);
         return quaternion<T>(real, sin(angle / 2) * line);
     }
@@ -347,7 +347,7 @@ namespace amethyst
     template <class T, class vector_type>
     inline quaternion<T> makeUnitQuaternion(T angle, const vector_type& line)
     {
-        angle *= M_PI / 180;
+        angle *= T(M_PI / 180.0);
         T real = cos(angle / 2);
         T norm = length(line);
 

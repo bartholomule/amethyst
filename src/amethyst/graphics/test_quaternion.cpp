@@ -11,7 +11,7 @@ namespace
     typedef float base_type;
     typedef vector3<base_type> coord;
     typedef quaternion<base_type> quat;
-    const base_type epsilon = 0.0001;
+    const base_type epsilon = 0.0001f;
 }
 
 AUTO_UNIT_TEST(quaternion_unit)
