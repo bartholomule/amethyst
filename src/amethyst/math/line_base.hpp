@@ -80,13 +80,13 @@ namespace amethyst
     template <typename T, typename point_type, typename vector_type>
     std::ostream& operator<<(std::ostream& o, const line_base<T,point_type,vector_type>& l)
     {
-        o << "|" << l.o() << ", " << l.v() << "|";
+        o << "|" << l.o() << ", " << l.v() << ", " << l.limits() << "|";
         return o;
     }
 
     template <typename T, typename point_type, typename vector_type>
     std::string inspect(const line_base<T,point_type,vector_type>& l)
     {
-        return "|" + inspect(l.o()) + ", " + inspect(l.v()) + "|";
+        return "|" + inspect(l.o()) + ", " + inspect(l.v()) + ", " + l.limits() + "|";
     }
 }
