@@ -93,16 +93,38 @@ namespace amethyst
         T y() const { return coords.direct.y; }
 
         coord2& operator=(const coord2& old) { coords = old.coords; return *this; }
-        coord2& operator+=(const coord2& p2);
-        coord2& operator-=(const coord2& p2);
-        coord2& operator*=(const coord2& p2); // Piecewise multiplication.
-        coord2& operator*=(T factor);
-        coord2& operator/=(T factor);
+        coord2& operator+=(const coord2& p2)
+        {
+            coords.direct.x += p2.coords.direct.x;
+            coords.direct.y += p2.coords.direct.y;
+            return *this;
+        }
+        coord2& operator-=(const coord2& p2)
+        {
+            coords.direct.x -= p2.coords.direct.x;
+            coords.direct.y -= p2.coords.direct.y;
+            return *this;
+        }
+        coord2& operator*=(const coord2& p2) // Piecewise multiplication.
+        {
+            coords.direct.x *= p2.coords.direct.x;
+            coords.direct.y *= p2.coords.direct.y;
+            return *this;
+        }
         template <class U>
-        coord2& operator*=(U factor);
+        coord2& operator*=(U factor)
+        {
+            coords.direct.x = T(coords.direct.x * factor);
+            coords.direct.y = T(coords.direct.y * factor);
+            return *this;
+        }
         template <class U>
-        coord2& operator/=(U factor);
-
+        coord2& operator/=(U factor)
+        {
+            coords.direct.x = T(coords.direct.x / factor);
+            coords.direct.y = T(coords.direct.y / factor);
+            return *this;
+        }
         /* Functions that more relate to vectors, but are needed */
         inline T length() const
         {
@@ -110,123 +132,43 @@ namespace amethyst
         }
     };
 
-    template <class T>
-    inline coord2<T>& coord2<T>::operator+=(const coord2<T>& p2)
-    {
-        coords.direct.x += p2.coords.direct.x;
-        coords.direct.y += p2.coords.direct.y;
-
-        return *this;
-    }
-
-    template <class T>
-    inline coord2<T>& coord2<T>::operator-=(const coord2<T>& p2)
-    {
-        coords.direct.x -= p2.coords.direct.x;
-        coords.direct.y -= p2.coords.direct.y;
-
-        return *this;
-    }
-
-    // Piecewise multiplication...
-    template <class T>
-    inline coord2<T>& coord2<T>::operator*=(const coord2<T>& p2)
-    {
-        coords.direct.x *= p2.coords.direct.x;
-        coords.direct.y *= p2.coords.direct.y;
-
-        return *this;
-    }
-
-    template <class T>
-    inline coord2<T>& coord2<T>::operator*=(T factor)
-    {
-        coords.direct.x *= factor;
-        coords.direct.y *= factor;
-
-        return *this;
-    }
-
-    template <class T>
-    inline coord2<T>& coord2<T>::operator/=(T factor)
-    {
-        coords.direct.x /= factor;
-        coords.direct.y /= factor;
-
-        return *this;
-    }
-
-    template <class T>
-    template <class U>
-    inline coord2<T>& coord2<T>::operator*=(U factor)
-    {
-        coords.direct.x = T(coords.direct.x * factor);
-        coords.direct.y = T(coords.direct.y * factor);
-
-        return *this;
-    }
-
-    template <class T>
-    template <class U>
-    inline coord2<T>& coord2<T>::operator/=(U factor)
-    {
-        coords.direct.x = T(coords.direct.x / factor);
-        coords.direct.y = T(coords.direct.y / factor);
-
-        return *this;
-    }
-
-
     /* non-member math functions (also inlined for an attempt at some speed) */
     template <class T>
-    inline coord2<T> operator+(const coord2<T>& p1, const coord2<T>& p2)
+    inline coord2<T> operator+(coord2<T> p1, const coord2<T>& p2)
     {
-        coord2<T> p(p1); p += p2; return p;
+        p1 += p2;
+        return p1;
     }
     template <class T>
-    inline coord2<T> operator-(const coord2<T>& p1, const coord2<T>& p2)
+    inline coord2<T> operator-(coord2<T> p1, const coord2<T>& p2)
     {
-        coord2<T> p(p1); p -= p2; return p;
+        p1 -= p2;
+        return p1;
     }
-    template <class T>
-    inline coord2<T> operator*(const coord2<T>& p1, T d)
+    template <class T, typename U>
+    inline coord2<T> operator*(coord2<T> p1, U d)
     {
-        coord2<T> p(p1); p *= d;  return p;
+        p1 *= d;
+        return p1;
     }
-    template <class T>
-    inline coord2<T> operator*(T d, const coord2<T>& p1)
+    template <class T, typename U>
+    inline coord2<T> operator*(U d, coord2<T> p1)
     {
-        coord2<T> p(p1); p *= d;  return p;
+        p1 *= d;
+        return p1;
     }
-    template <class T>
-    inline coord2<T> operator/(const coord2<T>& p1, T d)
+    template <class T, typename U>
+    inline coord2<T> operator/(coord2<T> p1, U d)
     {
-        coord2<T> p(p1); p /= d;  return p;
-    }
-
-    template <class T, class U>
-    inline coord2<T> operator*(const coord2<T>& p1, U d)
-    {
-        coord2<T> p(p1); p *= d;  return p;
-    }
-
-    template <class T, class U>
-    inline coord2<T> operator*(U d, const coord2<T>& p1)
-    {
-        coord2<T> p(p1); p *= d;  return p;
+        p1 /= d;
+        return p1;
     }
 
     template <class T>
-    inline coord2<T> operator*(const coord2<T>& p1, const coord2<T>& p2)
+    inline coord2<T> operator*(coord2<T> p1, const coord2<T>& p2)
     {
-        return coord2<T>(p1.x() * p2.x(),
-                         p1.y() * p2.y());
-    }
-
-    template <class T, class U>
-    inline coord2<T> operator/(const coord2<T>& p1, U d)
-    {
-        coord2<T> p(p1); p /= d;  return p;
+        p1 *= p2;
+        return p1;
     }
 
     /* Unary minus */
@@ -236,8 +178,6 @@ namespace amethyst
         return T(-1) * p1;
     }
 
-
-    /* exports from this header file */
     template <class T>
     inline T dotprod(const coord2<T>& c1, const coord2<T>& c2)
     {
@@ -257,30 +197,6 @@ namespace amethyst
     }
 
     template <class T>
-    inline coord2<T> invert(const coord2<T>& c)
-    {
-        return coord2<T>(1 / c.x(), 1 / c.y());
-    }
-
-    template <class T>
-    inline T average(const coord2<T>& c)
-    {
-        return (c.x() + c.y()) / 2;
-    }
-
-    template <class T>
-    inline T max(const coord2<T>& c)
-    {
-        return std::max(c.x(), c.y());
-    }
-
-    template <class T>
-    inline coord2<T> abs_vector(const coord2<T>& v)
-    {
-        return coord2<T>(my_abs(v.x()), my_abs(v.y()));
-    }
-
-    template <class T>
     std::ostream& operator<< (std::ostream& o, const coord2<T>& c)
     {
         o << "{" << c.x() << "," << c.y() << "}";
@@ -292,5 +208,4 @@ namespace amethyst
     {
         return "{" + inspect(c.x()) + "," + inspect(c.y()) + "}";
     }
-
 }

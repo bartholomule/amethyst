@@ -1,29 +1,8 @@
-/*
- * $Id: vector_utils.hpp,v 1.4 2008/06/16 10:17:49 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__VECTOR_UTILS_HPP)
-#define            AMETHYST__VECTOR_UTILS_HPP
+#pragma once
 
 #include <algorithm>
 #include "../general/template_functions.hpp"
+#include "../general/traits.hpp"
 
 /*
  * The functions in this file take any kind of 3d vector, providing that it supplies 3 things:
@@ -34,48 +13,127 @@
 
 namespace amethyst
 {
-
-    template <class vector_type>
-    inline vector_type invert(const vector_type& v)
+    namespace traits
     {
-        return vector_type(1 / v.x(), 1 / v.y(), 1 / v.z());
-    }
+        DEFINE_TRAITS_FOR_MEMBER(has_function_x, x, const&);
+        DEFINE_TRAITS_FOR_MEMBER(has_function_y, y, const&);
+        DEFINE_TRAITS_FOR_MEMBER(has_function_z, z, const&);
 
-    template <class vector_type>
-    inline typename vector_type::base average(const vector_type& v)
-    {
-        return (v.x() + v.y() + v.z()) / 3;
-    }
-
-    template <class vector_type>
-    inline typename vector_type::base max(const vector_type& v)
-    {
-        return std::max(v.x(), std::max(v.y(), v.z()));
-    }
-
-    template <class vector_type>
-    vector_type abs_vector(const vector_type& v)
-    {
-        return vector_type(my_abs(v.x()), my_abs(v.y()), my_abs(v.z()));
-    }
-
-    template <class vector_type>
-    inline unsigned min_abs_index(const vector_type& v)
-    {
-        unsigned min_index = 0;
-        typename vector_type::base min_abs = my_abs(v[min_index]);
-        for (unsigned i = 1; i < 3; ++i)
+        template <typename T>
+        struct vector_size
         {
-            if (my_abs(v[i]) < min_abs)
-            {
-                min_index = i;
-                min_abs = my_abs(v[min_index]);
-            }
-        }
-        return min_index;
+            static const size_t value =
+                size_t(has_function_x<T>::value) +
+                size_t(has_function_y<T>::value) +
+                size_t(has_function_z<T>::value);
+        };
     }
 
-    template <class vector_type>
+    template <size_t s>
+    struct vector_ops
+    {
+    };
+
+    template<>
+    struct vector_ops<3>
+    {
+        template <typename vector_type>
+        static inline vector_type invert(const vector_type& v)
+        {
+            return vector_type(1 / v.x(), 1 / v.y(), 1 / v.z());
+        }
+
+        template <typename vector_type>
+        static inline typename vector_type::base average(const vector_type& v)
+        {
+            return (v.x() + v.y() + v.z()) / 3;
+        }
+
+        template <typename vector_type>
+        static inline typename vector_type::base max(const vector_type& v)
+        {
+            return std::max(v.x(), std::max(v.y(), v.z()));
+        }
+
+        template <typename vector_type>
+        static inline vector_type abs_vector(const vector_type& v)
+        {
+            return vector_type(my_abs(v.x()), my_abs(v.y()), my_abs(v.z()));
+        }
+
+        template <typename vector_type>
+        static inline unsigned min_abs_index(const vector_type& v)
+        {
+            if (my_abs(v.x()) <= my_abs(v.y()))
+            {
+                if (my_abs(v.x()) <= my_abs(v.z()))
+                {
+                    return 0;
+                }
+                return 2;
+            }
+            if (my_abs(v.y()) <= my_abs(v.z()))
+            {
+                return 1;
+            }
+            return 2;
+        }
+    };
+
+    template<>
+    struct vector_ops<2>
+    {
+        template <typename vector_type>
+        static inline vector_type invert(const vector_type& v)
+        {
+            return vector_type(1 / v.x(), 1 / v.y());
+        }
+
+        template<typename vector_type>
+        static inline typename vector_type::base average(const vector_type& v)
+        {
+            return (v.x() + v.y()) / 2;
+        }
+
+        template <typename vector_type>
+        static inline typename vector_type::base max(const vector_type& v)
+        {
+            return std::max(v.x(), v.y());
+        }
+
+        template <typename vector_type>
+        static inline vector_type abs_vector(const vector_type& v)
+        {
+            return vector_type(my_abs(v.x()), my_abs(v.y()));
+        }
+
+        template <typename vector_type>
+        static inline unsigned min_abs_index(const vector_type& v)
+        {
+            if (my_abs(v.x()) <= my_abs(v.y()))
+            {
+                return 0;
+            }
+            return 1;
+        }
+    };
+
+#define FORWARD_VECTOR_FUNCTION(NAME) \
+    template <typename vector_type> \
+    inline auto NAME(const vector_type& v) -> decltype(vector_ops<traits::vector_size<vector_type>::value>::NAME(v)) \
+    { \
+        return vector_ops<traits::vector_size<vector_type>>::NAME(v); \
+    }
+
+    FORWARD_VECTOR_FUNCTION(invert);
+    FORWARD_VECTOR_FUNCTION(average);
+    FORWARD_VECTOR_FUNCTION(max);
+    FORWARD_VECTOR_FUNCTION(abs_vector);
+    FORWARD_VECTOR_FUNCTION(min_abs_index);
+
+    // Return a vector perpendicular to the one supplied.
+    // CHECKME! Is this correct at all?
+    template <typename vector_type>
     inline vector_type perp_vector(const vector_type& v)
     {
         vector_type temp = unit(v);
@@ -92,20 +150,20 @@ namespace amethyst
         {
             return unit(vector_type(v.y(), -v.x(), 0));
         }
-    } // perp_vector(const vector_type&)
+    }
 
-    template <class vector_type> inline bool magnitude_greater(const vector_type& v1, const vector_type& v2)
+    template <typename vector_type> inline bool magnitude_greater(const vector_type& v1, const vector_type& v2)
     {
         return dotprod(v1, v1) > dotprod(v2, v2);
     }
 
-    template <class vector_type> inline bool magnitude_less(const vector_type& v1, const vector_type& v2)
+    template <typename vector_type> inline bool magnitude_less(const vector_type& v1, const vector_type& v2)
     {
         return dotprod(v1, v1) < dotprod(v2, v2);
     }
 
     // Finds the best planar projection (axii), given the normal of the plane.
-    template <class vector_type>
+    template <typename vector_type>
     void best_planar_projection(const vector_type& normal, unsigned& axis1, unsigned& axis2)
     {
         if ((my_abs(normal.z()) > my_abs(normal.y())) &&
@@ -145,7 +203,4 @@ namespace amethyst
         v = unit(crossprod(normal, vn));
         u = unit(crossprod(v, normal));
     }
-
-} // namespace amethyst
-
-#endif /* !defined(AMETHYST__VECTOR_UTILS_HPP) */
+}

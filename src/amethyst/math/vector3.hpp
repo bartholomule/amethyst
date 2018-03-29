@@ -1,27 +1,4 @@
-/*
- * $Id: vector3.hpp,v 1.6 2007/07/07 18:13:09 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if    !defined(AMETHYST__VECTOR3_HPP)
-#define         AMETHYST__VECTOR3_HPP
-
+#pragma once
 /*
    vector3.hpp
 
@@ -45,146 +22,39 @@
  */
 
 #include "coord3.hpp"
+#include "vector_utils.hpp"
 
 namespace amethyst
 {
     template <class T>
     class vector3 : private coord3<T>
     {
+    private:
+        using parent = coord3<T>;
     public:
         typedef T base;
 
-        inline vector3() : coord3<T>()
-        {
-        }
-        inline vector3(T x, T y, T z) : coord3<T>(x, y, z)
-        {
-        }
-        inline explicit vector3(const coord3<T>& c) : coord3<T>(c)
-        {
-        }
-        inline vector3(const vector3<T>& c) : coord3<T>(c)
-        {
-        }
+        vector3() = default;
+        vector3(const vector3<T>&) = default;
+        inline vector3(T x, T y, T z) : parent(x, y, z) { }
+        inline explicit vector3(const parent& c) : parent(c) { }
+        vector3& operator=(const vector3&) = default;
 
-        inline void set(T x, T y, T z)
-        {
-            coord3<T>::set(x, y, z);
-        }
-
-        /* Accessors */
-        inline T& operator[](unsigned coord_index)
-        {
-            return coord3<T>::operator[](coord_index);
-        }
-
-        inline T operator[](unsigned coord_index) const
-        {
-            return coord3<T>::operator[](coord_index);
-        }
-
-        T& x()
-        {
-            return coord3<T>::x();
-        }
-        T  x() const
-        {
-            return coord3<T>::x();
-        }
-        T& y()
-        {
-            return coord3<T>::y();
-        }
-        T  y() const
-        {
-            return coord3<T>::y();
-        }
-        T& z()
-        {
-            return coord3<T>::z();
-        }
-        T  z() const
-        {
-            return coord3<T>::z();
-        }
+        using parent::set;
+        using parent::operator[];
+        using parent::x;
+        using parent::y;
+        using parent::z;
 
 
-        vector3<T>& operator=(const vector3<T>& p2);
-        inline vector3<T>& operator+=(const vector3<T>& p2);
-        inline vector3<T>& operator-=(const vector3<T>& p2);
-        inline vector3<T>& operator*=(T factor);
-        inline vector3<T>& operator/=(T factor);
-
+        inline vector3& operator+=(const vector3& p2) { parent::operator+=(p2); return *this; }
+        inline vector3& operator-=(const vector3& p2) { parent::operator-=(p2); return *this; }
         template <class U>
-        inline vector3<T>& operator*=(U factor);
+        inline vector3& operator*=(U factor) { parent::operator*=(factor); return *this; }
         template <class U>
-        inline vector3<T>& operator/=(U factor);
+        inline vector3& operator/=(U factor) { parent::operator*=(factor); return *this; }
 
-    }; // class vector3
-
-    template <class T>
-    inline vector3<T>& vector3<T>::operator=(const vector3<T>& p2)
-    {
-        set( p2.x(), p2.y(), p2.z());
-        return *this;
-    }
-
-    template <class T>
-    inline vector3<T>& vector3<T>::operator+=(const vector3<T>& p2)
-    {
-        x() += p2.x();
-        y() += p2.y();
-        z() += p2.z();
-        return *this;
-    }
-
-    template <class T>
-    inline vector3<T>& vector3<T>::operator-=(const vector3<T>& p2)
-    {
-        x() -= p2.x();
-        y() -= p2.y();
-        z() -= p2.z();
-        return *this;
-    }
-
-    template <class T>
-    inline vector3<T>& vector3<T>::operator*=(T d)
-    {
-        x() *= d;
-        y() *= d;
-        z() *= d;
-        return *this;
-    }
-
-    template <class T>
-    inline vector3<T>& vector3<T>::operator/=(T d)
-    {
-        x() /= d;
-        y() /= d;
-        z() /= d;
-        return *this;
-    }
-
-    template <class T>
-    template <class U>
-    inline vector3<T>& vector3<T>::operator*=(U factor)
-    {
-        set( T(x() * factor),
-             T(y() * factor),
-             T(z() * factor));
-        return *this;
-    }
-
-    template <class T>
-    template <class U>
-    inline vector3<T>& vector3<T>::operator/=(U factor)
-    {
-        set( T(x() / factor),
-             T(y() / factor),
-             T(z() / factor));
-        return *this;
-    }
-
+    };
 
     template <class T>
     inline vector3<T> operator-(const vector3<T>& v1)
@@ -192,79 +62,39 @@ namespace amethyst
         return T(-1) * v1;
     }
 
-    template <class T>
-    inline vector3<T> operator*(const vector3<T>& v, T d)
+    template <class T, class U>
+    inline vector3<T> operator*(vector3<T> v, U factor)
     {
-        vector3<T> temp(v);
-        temp *= d;
-        return temp;
-    }
-
-    template <class T>
-    inline vector3<T> operator*(T d, const vector3<T>& v)
-    {
-        vector3<T> temp(v);
-        temp *= d;
-        return temp;
+        v *= factor;
+        return v;
     }
 
     template <class T, class U>
-    inline vector3<T> operator*(const vector3<T>& v, U factor)
+    inline vector3<T> operator*(U factor, vector3<T> v)
     {
-        vector3<T> temp(v);
-        temp *= factor;
-        return temp;
+        v *= factor;
+        return v;
     }
 
     template <class T, class U>
-    inline vector3<T> operator*(U factor, const vector3<T>& v)
+    inline vector3<T> operator/(vector3<T> v, U factor)
     {
-        vector3<T> temp(v);
-        temp *= factor;
-        return temp;
+        v /= factor;
+        return v;
     }
 
     template <class T>
-    inline vector3<T> operator/(const vector3<T>& v, T factor)
+    inline vector3<T> operator-(vector3<T> v1, const vector3<T>& v2)
     {
-        vector3<T> temp(v);
-        temp /= factor;
-        return temp;
-    }
-
-    template <class T, class U>
-    inline vector3<T> operator/(const vector3<T>& v, U factor)
-    {
-        vector3<T> temp(v);
-        temp /= factor;
-        return temp;
+        v1 -= v2;
+        return v1;
     }
 
     template <class T>
-    inline vector3<T> operator-(const vector3<T>& v1, const vector3<T>& v2)
+    inline vector3<T> operator+(vector3<T> v1, const vector3<T>& v2)
     {
-        vector3<T> temp(v1);
-        temp -= v2;
-        return temp;
-        //  return vector3<T>(v1.x() - v2.x(), v1.y() - v2.y(), v1.z() - v2.z());
-    }
-
-    template <class T>
-    inline vector3<T> operator+(const vector3<T>& v1, const vector3<T>& v2)
-    {
-        vector3<T> temp(v1);
-        temp += v2;
-        return temp;
-        //  return vector3<T>(v1.x() + v2.x(), v1.y() + v2.y(), v1.z() + v2.z());
-    }
-
-
-    template <class T>
-    inline T dotprod(const vector3<T>& v1, const vector3<T>& v2)
-    {
-        return (v1.x() * v2.x()) +
-               (v1.y() * v2.y()) +
-               (v1.z() * v2.z());
+        v1 += v2;
+        return v1;
     }
 
     template <class T>
@@ -275,6 +105,12 @@ namespace amethyst
             (v2.x() * v1.z()) - (v1.x() * v2.z()),
             (v1.x() * v2.y()) - (v2.x() * v1.y())
             );
+    }
+
+    template <typename T>
+    inline T dotprod(const vector3<T>& v1, const vector3<T>& v2)
+    {
+        return (v1.x() * v2.x()) + (v1.y() * v2.y()) + (v1.z() * v2.z());
     }
 
     template <class T>
@@ -311,7 +147,4 @@ namespace amethyst
     {
         return "<" + inspect(v.x()) + "," + inspect(v.y()) + "," + inspect(v.z()) + ">";
     }
-
-} // namespace amethyst
-
-#endif /* !defined(AMETHYST__VECTOR3_HPP) */
+}
