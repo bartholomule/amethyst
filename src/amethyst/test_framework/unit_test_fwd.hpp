@@ -24,13 +24,13 @@
 
 namespace amethyst
 {
-	namespace test
-	{
-		class test_results;
-		extern test_results global_test_results;
+    namespace test
+    {
+        class test_results;
+        extern test_results global_test_results;
 
-		struct test_information;
-	}
+        struct test_information;
+    }
 }
 
 

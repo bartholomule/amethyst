@@ -29,31 +29,31 @@
 
 namespace amethyst
 {
-	namespace test
-	{
-		class test_results
-		{
-		public:
-			test_results(const std::string& name, test_results* outer_test_results = &global_test_results);
-			virtual ~test_results();
-			void print_results(std::ostream& o = std::cerr) const;
+    namespace test
+    {
+        class test_results
+        {
+        public:
+            test_results(const std::string& name, test_results* outer_test_results = & global_test_results);
+            virtual ~test_results();
+            void print_results(std::ostream& o = std::cerr) const;
 
-			void notify(const test_information& info, const std::string& text) const;
-			void test_started(const test_information& info, bool chained = false);
-			void test_passed(const test_information& info, bool chained = false);
-			void test_failed(const test_information& info, const std::string& reason, bool chained = false);
+            void notify(const test_information& info, const std::string& text) const;
+            void test_started(const test_information& info, bool chained = false);
+            void test_passed(const test_information& info, bool chained = false);
+            void test_failed(const test_information& info, const std::string& reason, bool chained = false);
 
-			bool something_failed() const;
+            bool something_failed() const;
 
-		private:
-			size_t count_failed;
-			size_t count_passed;
-			size_t count_tried;
-			std::string results_name;
-			test_results* chained_results;
-			mutable bool printed; // Not really causing the structure to change, just suppressing output in the destructor.
-		};
-	}
+        private:
+            size_t count_failed;
+            size_t count_passed;
+            size_t count_tried;
+            std::string results_name;
+            test_results* chained_results;
+            mutable bool printed; // Not really causing the structure to change, just suppressing output in the destructor.
+        };
+    }
 }
 
 #endif /* !defined(UNIT_TEST_AGGREGATOR_HPP_INCLUDED) */

@@ -25,12 +25,12 @@
 namespace amethyst
 {
 #if defined(WINDOWS)
-	output_stream_ref stream_stdout(new fd_ostream(GetStdHandle(STD_OUTPUT_HANDLE)));
-	output_stream_ref stream_stderr(new fd_ostream(GetStdHandle(STD_ERROR_HANDLE)));
-	
+    output_stream_ref stream_stdout(new fd_ostream(GetStdHandle(STD_OUTPUT_HANDLE)));
+    output_stream_ref stream_stderr(new fd_ostream(GetStdHandle(STD_ERROR_HANDLE)));
+
 #else
-	output_stream_ref stream_stdout(new fd_ostream(1));
-	output_stream_ref stream_stderr(new fd_ostream(2));
+    output_stream_ref stream_stdout(new fd_ostream(1));
+    output_stream_ref stream_stderr(new fd_ostream(2));
 #endif
 } // namespace amethyst
 

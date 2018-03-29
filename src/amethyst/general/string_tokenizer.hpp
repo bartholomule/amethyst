@@ -27,30 +27,30 @@
 
 namespace amethyst
 {
-	namespace tokenizer
-	{
-		enum delimiter_action_types
-		{
-			IGNORE_DELIMITERS,
-			RETURN_DELIMITERS
-		};
-		enum token_action_flags
-		{
-			IGNORE_EMPTY_TOKENS,
-			RETURN_EMPTY_TOKENS
-		};
-	} // namespace tokenizer
+    namespace tokenizer
+    {
+        enum delimiter_action_types
+        {
+            IGNORE_DELIMITERS,
+            RETURN_DELIMITERS
+        };
+        enum token_action_flags
+        {
+            IGNORE_EMPTY_TOKENS,
+            RETURN_EMPTY_TOKENS
+        };
+    } // namespace tokenizer
 
-	/**
-	 * Tokenize a string, returning the tokens (and possibly delimiters) in a
-	 * vector.  This is capable of returning the delimiters, or skipping them,
-	 * and returning empty tokens or skipping them.
-	 */
-	std::vector<std::string> tokenize(
-		const std::string& s,
-		const char* delims = "\n\r\t ",
-		tokenizer::delimiter_action_types keep_delims = tokenizer::IGNORE_DELIMITERS,
-		tokenizer::token_action_flags keep_tokens = tokenizer::IGNORE_EMPTY_TOKENS);
+    /**
+     * Tokenize a string, returning the tokens (and possibly delimiters) in a
+     * vector.  This is capable of returning the delimiters, or skipping them,
+     * and returning empty tokens or skipping them.
+     */
+    std::vector<std::string> tokenize(
+        const std::string& s,
+        const char* delims = "\n\r\t ",
+        tokenizer::delimiter_action_types keep_delims = tokenizer::IGNORE_DELIMITERS,
+        tokenizer::token_action_flags keep_tokens = tokenizer::IGNORE_EMPTY_TOKENS);
 } // namespace amethyst
 
 #endif /* !defined(AMETHYST_STRING_TOKENIZER_HPP) */

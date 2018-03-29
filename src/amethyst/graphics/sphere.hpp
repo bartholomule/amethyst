@@ -33,363 +33,363 @@
 namespace amethyst
 {
 
-	/**
-	 *
-	 * A sphere class.
-	 *
-	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.10 $
-	 *
-	 */
-	template<class T>
-	class sphere : public shape<T>
-	{
+    /**
+     *
+     * A sphere class.
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.10 $
+     *
+     */
+    template <class T>
+    class sphere : public shape<T>
+    {
 
-	private:
+    private:
 
-		point3<T> center;
-		T radius;
-		T radius_squared;
+        point3<T> center;
+        T radius;
+        T radius_squared;
 
-	protected:
+    protected:
 
-	public:
-		/** Default constructor */
-		sphere();
+    public:
+        /** Default constructor */
+        sphere();
 
-		/** Secondary (sized) constructor */
-		sphere(const point3<T>& c, T rad);
+        /** Secondary (sized) constructor */
+        sphere(const point3<T>& c, T rad);
 
-		/** Destructor */
-		virtual ~sphere();
+        /** Destructor */
+        virtual ~sphere();
 
-		/** Copy constructor */
-		sphere(const sphere& old);
+        /** Copy constructor */
+        sphere(const sphere& old);
 
-		/** Assignment operator */
-		sphere& operator= (const sphere& old);
-
-
-		point3<T> get_center() const
-		{
-			return center;
-		}
-		T get_radius() const
-		{
-			return radius;
-		}
-
-		/** Returns if the given point is inside the sphere. */
-		virtual bool inside(const point3<T>& p) const;
-
-		/** Returns if the given sphere intersects the sphere. */
-		virtual bool intersects(const sphere<T>& s) const;
-
-		/** Returns if the given plane intersects the shape. */
-		virtual bool intersects(const plane<T>& p) const;
-
-		/** Returns if the given line intersects the sphere. */
-		//    virtual bool intersects_line(const line3<T>& line, intersection_info<T>& intersection) const;
-
-		/** Returns if the given line intersects the sphere. */
-		virtual bool intersects_line(const unit_line3<T>& line,
-			intersection_info<T>& intersection,
-			const intersection_requirements& requirements) const;
-
-		/**
-		 * A quick intersection test.  This will calculate nothing but the
-		 * distance. This is most useful for shadow tests, and other tests where no
-		 * textures will be applied.
-		 */
-		virtual bool quick_intersection(const unit_line3<T>& line,
-			T time, T& distance) const;
-
-		virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-
-		virtual std::string name() const
-		{
-			return "sphere";
-		}
-
-		virtual intersection_capabilities get_intersection_capabilities() const;
-		virtual object_capabilities get_object_capabilities() const;
-	private:
-		 coord2<T> get_uv(const point3<T>& location) const;
-	}; // class sphere
+        /** Assignment operator */
+        sphere& operator= (const sphere& old);
 
 
+        point3<T> get_center() const
+        {
+            return center;
+        }
+        T get_radius() const
+        {
+            return radius;
+        }
 
-	//-------------------------------------
-	// Default constructor for class sphere
-	//-------------------------------------
-	template<class T>
-	sphere<T>::sphere():
-		shape<T>(),
-		center(0,0,0),
-		radius(0),
-		radius_squared(0)
-	{
+        /** Returns if the given point is inside the sphere. */
+        virtual bool inside(const point3<T>& p) const;
 
-	} // sphere()
+        /** Returns if the given sphere intersects the sphere. */
+        virtual bool intersects(const sphere<T>& s) const;
 
-	//----------------------------------------
-	// Secondary constructor for class sphere
-	//----------------------------------------
-	template<class T>
-	sphere<T>::sphere(const point3<T>& c, T rad):
-		shape<T>(),
-		center(c),
-		radius(rad),
-		radius_squared(rad * rad)
-	{
-		if( radius < T(0) )
-		{
-			radius = -radius;
-		}
-	} // sphere(point3,T)
+        /** Returns if the given plane intersects the shape. */
+        virtual bool intersects(const plane<T>& p) const;
 
-	//----------------------------
-	// Destructor for class sphere
-	//----------------------------
-	template<class T>
-	sphere<T>::~sphere()
-	{
+        /** Returns if the given line intersects the sphere. */
+        //    virtual bool intersects_line(const line3<T>& line, intersection_info<T>& intersection) const;
 
-	} // ~sphere()
+        /** Returns if the given line intersects the sphere. */
+        virtual bool intersects_line(const unit_line3<T>& line,
+                                     intersection_info<T>& intersection,
+                                     const intersection_requirements& requirements) const;
 
-	//----------------------------------
-	// Copy constructor for class sphere
-	//----------------------------------
-	template<class T>
-	sphere<T>::sphere(const sphere<T>& old):
-		shape<T>(old),
-		center(old.center),
-		radius(old.radius),
-		radius_squared(old.radius_squared)
-	{
+        /**
+         * A quick intersection test.  This will calculate nothing but the
+         * distance. This is most useful for shadow tests, and other tests where no
+         * textures will be applied.
+         */
+        virtual bool quick_intersection(const unit_line3<T>& line,
+                                        T time, T& distance) const;
 
-	} // sphere(sphere)
+        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-	//-------------------------------------
-	// Assignment operator for class sphere
-	//-------------------------------------
-	template<class T>
-	sphere<T>& sphere<T>::operator= (const sphere<T>& old)
-	{
-		// Generic check for self-assignment
-		if( &old != this )
-		{
-			center = old.center;
-			radius = old.radius;
-			radius_squared = old.radius_squared;
+        virtual std::string name() const
+        {
+            return "sphere";
+        }
 
-			shape<T>::operator=(old);
-		}
-		return(*this);
-	} // sphere::operator=(sphere)
+        virtual intersection_capabilities get_intersection_capabilities() const;
+        virtual object_capabilities get_object_capabilities() const;
+    private:
+        coord2<T> get_uv(const point3<T>& location) const;
+    }; // class sphere
 
 
-	// Returns if the given point is inside the sphere.
-	template<class T>
-	bool sphere<T>::inside(const point3<T>& p) const
-	{
-		// The epsilon adjusted radius is (r^2 + 2*r*E + E^2)
-		return( squared_length(p - center) <
-			(radius_squared +
-				2 * radius * AMETHYST_EPSILON +
-				AMETHYST_EPSILON * AMETHYST_EPSILON) );
-	}
 
-	// Returns if the given sphere intersects the sphere.
-	template<class T>
-	bool sphere<T>::intersects(const sphere<T>& s) const
-	{
-		T combined_radius = s.radius + radius + AMETHYST_EPSILON;
-		return( squared_length(s.center - center) <
-			(combined_radius * combined_radius) );
-	}
+    //-------------------------------------
+    // Default constructor for class sphere
+    //-------------------------------------
+    template <class T>
+    sphere<T>::sphere() :
+        shape<T>(),
+        center(0, 0, 0),
+        radius(0),
+        radius_squared(0)
+    {
 
-	// Returns if the given plane intersects the shape.
-	template<class T>
-	bool sphere<T>::intersects(const plane<T>& p) const
-	{
-		return amethyst::intersects(*this, p);
-	}
+    } // sphere()
 
-	// Returns if the given line intersects the sphere.
-	template <class T>
-	bool sphere<T>::intersects_line(const unit_line3<T>& line,
-		intersection_info<T>& intersection,
-		const intersection_requirements& requirements) const
-	{
-		// FIXME! We need to allow multiple hits.
-		// This is the fast hit test, it should be kept fairly fast while allowing
-		// multiple hits.
-		vector3<T> o_c = line.origin() - center;
-		register T A = dotprod(line.direction(), line.direction());
-		register T B = 2 * dotprod(line.direction(), o_c);
-		register T C = dotprod(o_c, o_c) - radius_squared;
-		T discriminant = B * B - 4 * A * C;
+    //----------------------------------------
+    // Secondary constructor for class sphere
+    //----------------------------------------
+    template <class T>
+    sphere<T>::sphere(const point3<T>& c, T rad) :
+        shape<T>(),
+        center(c),
+        radius(rad),
+        radius_squared(rad * rad)
+    {
+        if (radius < T(0))
+        {
+            radius = -radius;
+        }
+    } // sphere(point3,T)
 
-		if( discriminant >= AMETHYST_EPSILON )
-		{
-			T sqrtd = sqrt(discriminant);
+    //----------------------------
+    // Destructor for class sphere
+    //----------------------------
+    template <class T>
+    sphere<T>::~sphere()
+    {
 
-			// If t1 is inside, it MUST be the closest, as A will always be positive
-			// (squared length of the line), and the subtraction will be less than
-			// the addition (as the square root will always be positive).
-			T t1 = (-B - sqrtd) / (2 * A);
+    } // ~sphere()
 
-			if( line.inside(t1) )
-			{
-				intersection.set_shape(this);
-				intersection.set_first_distance(t1);
-				intersection.set_first_point( line.point_at(t1) );
-				intersection.set_ray(line);
+    //----------------------------------
+    // Copy constructor for class sphere
+    //----------------------------------
+    template <class T>
+    sphere<T>::sphere(const sphere<T>& old) :
+        shape<T>(old),
+        center(old.center),
+        radius(old.radius),
+        radius_squared(old.radius_squared)
+    {
 
-				if( requirements.needs_normal() )
-				{
-					intersection.set_normal(unit(intersection.get_first_point() - center));
-				}
+    } // sphere(sphere)
 
-				// FIXME! Follow the requirements
-				if( requirements.needs_uv() )
-				{
-					intersection.set_uv(get_uv(intersection.get_first_point()));
-				}
+    //-------------------------------------
+    // Assignment operator for class sphere
+    //-------------------------------------
+    template <class T>
+    sphere<T>& sphere<T>::operator= (const sphere<T>& old)
+    {
+        // Generic check for self-assignment
+        if (&old != this)
+        {
+            center = old.center;
+            radius = old.radius;
+            radius_squared = old.radius_squared;
 
-				return true;
-			}
-			else
-			{
-				// The first side (although a hit), wasn't inside the range.
-				T t2 = (-B + sqrtd) / (2 * A);
-				if( line.inside(t2) )
-				{
-					intersection.set_shape(this);
-					intersection.set_first_distance(t2);
-					intersection.set_first_point( line.point_at(t2) );
-					intersection.set_ray(line);
+            shape<T>::operator=(old);
+        }
+        return *this;
+    } // sphere::operator=(sphere)
 
-					if( requirements.needs_normal() )
-					{
-						intersection.set_normal(unit(intersection.get_first_point() - center));
-					}
 
-					if( requirements.needs_uv() )
-					{
-						intersection.set_uv(get_uv(intersection.get_first_point()));
-					}
-					// FIXME! Follow the requirements (uv, local coords, etc).
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    // Returns if the given point is inside the sphere.
+    template <class T>
+    bool sphere<T>::inside(const point3<T>& p) const
+    {
+        // The epsilon adjusted radius is (r^2 + 2*r*E + E^2)
+        return squared_length(p - center) <
+               (radius_squared +
+                2 * radius * AMETHYST_EPSILON +
+                AMETHYST_EPSILON * AMETHYST_EPSILON);
+    }
 
-	/**
-	 * A quick intersection test.  This will calculate nothing but the
-	 * distance. This is most useful for shadow tests, and other tests where no
-	 * textures will be applied.
-	 */
-	template <class T>
-	bool sphere<T>::quick_intersection(const unit_line3<T>& line,
-		T time, T& distance) const
-	{
-		(void) time; // not a moving or resizing sphere...
-		// This is the fast hit test.
-		vector3<T> o_c = line.origin() - center;
-		register T A = dotprod(line.direction(), line.direction());
-		register T B = 2 * dotprod(line.direction(), o_c);
-		register T C = dotprod(o_c, o_c) - radius_squared;
-		T discriminant = B * B - 4 * A * C;
+    // Returns if the given sphere intersects the sphere.
+    template <class T>
+    bool sphere<T>::intersects(const sphere<T>& s) const
+    {
+        T combined_radius = s.radius + radius + AMETHYST_EPSILON;
+        return squared_length(s.center - center) <
+               (combined_radius * combined_radius);
+    }
 
-		if( discriminant >= AMETHYST_EPSILON )
-		{
-			T sqrtd = sqrt(discriminant);
+    // Returns if the given plane intersects the shape.
+    template <class T>
+    bool sphere<T>::intersects(const plane<T>& p) const
+    {
+        return amethyst::intersects(*this, p);
+    }
 
-			// If t1 is inside, it MUST be the closest, as A will always be positive
-			// (squared length of the line), and the subtraction will be less than
-			// the addition (as the square root will always be positive).
-			T t1 = (-B - sqrtd) / (2 * A);
-			if( line.inside(t1) )
-			{
-				distance = t1;
-				return true;
-			}
-			else
-			{
-				// The first side (although a hit), wasn't inside the range.
-				T t2 = (-B + sqrtd) / (2 * A);
-				if( line.inside(t2) )
-				{
-					distance = t2;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    // Returns if the given line intersects the sphere.
+    template <class T>
+    bool sphere<T>::intersects_line(const unit_line3<T>& line,
+                                    intersection_info<T>& intersection,
+                                    const intersection_requirements& requirements) const
+    {
+        // FIXME! We need to allow multiple hits.
+        // This is the fast hit test, it should be kept fairly fast while allowing
+        // multiple hits.
+        vector3<T> o_c = line.origin() - center;
+        register T A = dotprod(line.direction(), line.direction());
+        register T B = 2 * dotprod(line.direction(), o_c);
+        register T C = dotprod(o_c, o_c) - radius_squared;
+        T discriminant = B * B - 4 * A * C;
 
-	template <class T>
-	std::string sphere<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
-	{
-		std::string retval;
-		std::string internal_tagging = indentation;
+        if (discriminant >= AMETHYST_EPSILON)
+        {
+            T sqrtd = sqrt(discriminant);
 
-		if( prefix_with_classname )
-		{
-			internal_tagging += sphere<T>::name() + "::";
-		}
+            // If t1 is inside, it MUST be the closest, as A will always be positive
+            // (squared length of the line), and the subtraction will be less than
+            // the addition (as the square root will always be positive).
+            T t1 = (-B - sqrtd) / (2 * A);
 
-		retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
-		retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());
-		retval += internal_tagging + string_format("center=%1\n", center);
-		retval += internal_tagging + string_format("radius=%1\n", radius);
+            if (line.inside(t1))
+            {
+                intersection.set_shape(this);
+                intersection.set_first_distance(t1);
+                intersection.set_first_point( line.point_at(t1));
+                intersection.set_ray(line);
 
-		return retval;
-	}
+                if (requirements.needs_normal())
+                {
+                    intersection.set_normal(unit(intersection.get_first_point() - center));
+                }
 
-	template <class T>
-	intersection_capabilities sphere<T>::get_intersection_capabilities() const
-	{
-		intersection_capabilities caps = shape<T>::get_intersection_capabilities();
+                // FIXME! Follow the requirements
+                if (requirements.needs_uv())
+                {
+                    intersection.set_uv(get_uv(intersection.get_first_point()));
+                }
 
-		caps |= intersection_capabilities::HIT_FIRST;
-		caps |= intersection_capabilities::HIT_ALL;
-		caps |= intersection_capabilities::NORMAL_CALCULATION;
-		caps |= intersection_capabilities::UV_CALCULATION;
-		//    caps |= intersection_capabilities::LOCAL_SYSTEM_CALCULATION
-		return caps;
-	}
+                return true;
+            }
+            else
+            {
+                // The first side (although a hit), wasn't inside the range.
+                T t2 = (-B + sqrtd) / (2 * A);
+                if (line.inside(t2))
+                {
+                    intersection.set_shape(this);
+                    intersection.set_first_distance(t2);
+                    intersection.set_first_point( line.point_at(t2));
+                    intersection.set_ray(line);
 
-	template <class T>
-	object_capabilities sphere<T>::get_object_capabilities() const
-	{
-		object_capabilities caps = shape<T>::get_object_capabilities();
+                    if (requirements.needs_normal())
+                    {
+                        intersection.set_normal(unit(intersection.get_first_point() - center));
+                    }
 
-		caps |= object_capabilities::BOUNDABLE;
-		caps |= object_capabilities::SIMPLE;
+                    if (requirements.needs_uv())
+                    {
+                        intersection.set_uv(get_uv(intersection.get_first_point()));
+                    }
+                    // FIXME! Follow the requirements (uv, local coords, etc).
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-		return caps;
-	}
+    /**
+     * A quick intersection test.  This will calculate nothing but the
+     * distance. This is most useful for shadow tests, and other tests where no
+     * textures will be applied.
+     */
+    template <class T>
+    bool sphere<T>::quick_intersection(const unit_line3<T>& line,
+                                       T time, T& distance) const
+    {
+        (void)time;  // not a moving or resizing sphere...
+        // This is the fast hit test.
+        vector3<T> o_c = line.origin() - center;
+        register T A = dotprod(line.direction(), line.direction());
+        register T B = 2 * dotprod(line.direction(), o_c);
+        register T C = dotprod(o_c, o_c) - radius_squared;
+        T discriminant = B * B - 4 * A * C;
 
-	template <class T>
-	coord2<T> sphere<T>::get_uv(const point3<T>& location) const
-	{
-		 vector3<T> point_vector = location - center;
+        if (discriminant >= AMETHYST_EPSILON)
+        {
+            T sqrtd = sqrt(discriminant);
 
-		 T cos_theta = point_vector.y() / radius;
-		 // phi = [-pi,pi]
-		 // theta = [0,pi]
-		 T theta = acos(cos_theta);
-		 T phi = atan2(point_vector.z(), point_vector.x());
-		 T u = (phi + M_PI) / (2 * M_PI);
-		 T v = theta / M_PI;
+            // If t1 is inside, it MUST be the closest, as A will always be positive
+            // (squared length of the line), and the subtraction will be less than
+            // the addition (as the square root will always be positive).
+            T t1 = (-B - sqrtd) / (2 * A);
+            if (line.inside(t1))
+            {
+                distance = t1;
+                return true;
+            }
+            else
+            {
+                // The first side (although a hit), wasn't inside the range.
+                T t2 = (-B + sqrtd) / (2 * A);
+                if (line.inside(t2))
+                {
+                    distance = t2;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-		 return coord2<T>(u, v);
-	}
+    template <class T>
+    std::string sphere<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    {
+        std::string retval;
+        std::string internal_tagging = indentation;
+
+        if (prefix_with_classname)
+        {
+            internal_tagging += sphere<T>::name() + "::";
+        }
+
+        retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
+        retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());
+        retval += internal_tagging + string_format("center=%1\n", center);
+        retval += internal_tagging + string_format("radius=%1\n", radius);
+
+        return retval;
+    }
+
+    template <class T>
+    intersection_capabilities sphere<T>::get_intersection_capabilities() const
+    {
+        intersection_capabilities caps = shape<T>::get_intersection_capabilities();
+
+        caps |= intersection_capabilities::HIT_FIRST;
+        caps |= intersection_capabilities::HIT_ALL;
+        caps |= intersection_capabilities::NORMAL_CALCULATION;
+        caps |= intersection_capabilities::UV_CALCULATION;
+        //    caps |= intersection_capabilities::LOCAL_SYSTEM_CALCULATION
+        return caps;
+    }
+
+    template <class T>
+    object_capabilities sphere<T>::get_object_capabilities() const
+    {
+        object_capabilities caps = shape<T>::get_object_capabilities();
+
+        caps |= object_capabilities::BOUNDABLE;
+        caps |= object_capabilities::SIMPLE;
+
+        return caps;
+    }
+
+    template <class T>
+    coord2<T> sphere<T>::get_uv(const point3<T>& location) const
+    {
+        vector3<T> point_vector = location - center;
+
+        T cos_theta = point_vector.y() / radius;
+        // phi = [-pi,pi]
+        // theta = [0,pi]
+        T theta = acos(cos_theta);
+        T phi = atan2(point_vector.z(), point_vector.x());
+        T u = (phi + M_PI) / (2 * M_PI);
+        T v = theta / M_PI;
+
+        return coord2<T>(u, v);
+    }
 
 } // namespace amethyst
 

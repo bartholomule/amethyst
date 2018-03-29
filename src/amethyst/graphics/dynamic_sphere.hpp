@@ -42,14 +42,14 @@ namespace amethyst
      * @version $Revision: 1.2 $
      *
      */
-    template<class T>
+    template <class T>
     class dynamic_sphere : public shape<T>
     {
 
     private:
 
-        std::shared_ptr<interpolated_value<T, coord3<T> > > center;
-        std::shared_ptr<interpolated_value<T, T> > radius;
+        std::shared_ptr<interpolated_value<T, coord3<T>>> center;
+        std::shared_ptr<interpolated_value<T, T>> radius;
 
     protected:
 
@@ -61,9 +61,9 @@ namespace amethyst
         dynamic_sphere(const point3<T>& c, T rad);
 
         dynamic_sphere(const point3<T>& c1, T t1,
-            const point3<T>& c2, T t2,
-            T rad1, T tr1,
-            T rad2, T tr2);
+                       const point3<T>& c2, T t2,
+                       T rad1, T tr1,
+                       T rad2, T tr2);
 
         /** Destructor */
         virtual ~dynamic_sphere();
@@ -98,8 +98,8 @@ namespace amethyst
 
         /** Returns if the given line intersects the dynamic_sphere. */
         virtual bool intersects_line(const unit_line3<T>& line,
-            intersection_info<T>& intersection,
-            const intersection_requirements& requirements) const;
+                                     intersection_info<T>& intersection,
+                                     const intersection_requirements& requirements) const;
 
         /**
          * A quick intersection test.  This will calculate nothing but the
@@ -107,19 +107,21 @@ namespace amethyst
          * textures will be applied.
          */
         virtual bool quick_intersection(const unit_line3<T>& line,
-            T time, T& distance) const;
+                                        T time, T& distance) const;
 
         /**
          * Returns if the given ray intersects the shape.
          *
          */
         virtual bool intersects_ray(const ray_parameters<T>& ray,
-            intersection_info<T>& intersection,
-            const intersection_requirements& requirements = intersection_requirements()) const;
+                                    intersection_info<T>& intersection,
+                                    const intersection_requirements& requirements = intersection_requirements()) const;
 
         virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
-        virtual std::string name() const { return "dynamic_sphere"; }
+        virtual std::string name() const {
+            return "dynamic_sphere";
+        }
 
         virtual intersection_capabilities get_intersection_capabilities() const;
         virtual object_capabilities get_object_capabilities() const;
@@ -133,10 +135,10 @@ namespace amethyst
     //-------------------------------------
     // Default constructor for class dynamic_sphere
     //-------------------------------------
-    template<class T>
+    template <class T>
     dynamic_sphere<T>::dynamic_sphere() :
         shape<T>(),
-        center(create_interpolation<T, point3<T> >(vector3<T>(0, 0, 0), point3<T>(0, 0, 0)).clone_new()),
+        center(create_interpolation<T, point3<T>>(vector3<T>(0, 0, 0), point3<T>(0, 0, 0)).clone_new()),
         radius(create_interpolation<T, T>(T(1), T(1)).clone_new())
     {
 
@@ -145,41 +147,41 @@ namespace amethyst
     //----------------------------------------
     // Secondary constructor for class dynamic_sphere
     //----------------------------------------
-    template<class T>
+    template <class T>
     dynamic_sphere<T>::dynamic_sphere(const point3<T>& c, T rad) :
         shape<T>(),
-        center(create_interpolation<T, point3<T> >(c, c).clone_new()),
+        center(create_interpolation<T, point3<T>>(c, c).clone_new()),
         radius(create_interpolation<T, T>(rad, rad).clone_new())
     {
 
     } // dynamic_sphere(point3,T)
 
-    template<class T>
+    template <class T>
     dynamic_sphere<T>::dynamic_sphere(const point3<T>& c1, T t1,
-        const point3<T>& c2, T t2,
-        T rad1, T tr1,
-        T rad2, T tr2) :
+                                      const point3<T>& c2, T t2,
+                                      T rad1, T tr1,
+                                      T rad2, T tr2) :
         shape<T>()
     {
-        typedef interpolation_point<T, coord3<T> > center_point_type;
+        typedef interpolation_point<T, coord3<T>> center_point_type;
 
         std::vector<center_point_type> points(2);
         points[0] = center_point_type(t1, coord3<T>(c1.x(), c1.y(), c1.z()));
         points[1] = center_point_type(t2, coord3<T>(c2.x(), c2.y(), c2.z()));
-        center = std::shared_ptr<interpolated_value<T, coord3<T> > >(create_interpolation<T, coord3<T> >(points).clone_new());
+        center = std::shared_ptr<interpolated_value<T, coord3<T>>>(create_interpolation<T, coord3<T>>(points).clone_new());
 
 
         typedef interpolation_point<T, T> radius_type;
         std::vector<radius_type> rads(2);
         rads[0] = radius_type(tr1, rad1);
         rads[1] = radius_type(tr2, rad2);
-        radius = std::shared_ptr<interpolated_value<T, T> >(create_interpolation<T, T>(rads).clone_new());
+        radius = std::shared_ptr<interpolated_value<T, T>>(create_interpolation<T, T>(rads).clone_new());
     } // dynamic_sphere(point3,T,point3,T,T,T,T,T)
 
     //----------------------------
     // Destructor for class dynamic_sphere
     //----------------------------
-    template<class T>
+    template <class T>
     dynamic_sphere<T>::~dynamic_sphere()
     {
 
@@ -188,7 +190,7 @@ namespace amethyst
     //----------------------------------
     // Copy constructor for class dynamic_sphere
     //----------------------------------
-    template<class T>
+    template <class T>
     dynamic_sphere<T>::dynamic_sphere(const dynamic_sphere<T>& old) :
         shape<T>(old),
         center(old.center),
@@ -200,7 +202,7 @@ namespace amethyst
     //-------------------------------------
     // Assignment operator for class dynamic_sphere
     //-------------------------------------
-    template<class T>
+    template <class T>
     dynamic_sphere<T>& dynamic_sphere<T>::operator= (const dynamic_sphere<T>& old)
     {
         // Generic check for self-assignment
@@ -211,43 +213,43 @@ namespace amethyst
 
             shape<T>::operator=(old);
         }
-        return(*this);
+        return *this;
     } // dynamic_sphere::operator=(dynamic_sphere)
 
 
     // Returns if the given point is inside the dynamic_sphere.
-    template<class T>
+    template <class T>
     bool dynamic_sphere<T>::inside(const point3<T>& p) const
     {
         // FIXME! Check the entire range
 
         // The epsilon adjusted radius is (r^2 + 2*r*E + E^2)
         T my_radius = get_radius(T(0));
-        return(squared_length(p - get_center(T(0))) <
-            (my_radius * my_radius +
+        return squared_length(p - get_center(T(0))) <
+               (my_radius * my_radius +
                 2 * my_radius * AMETHYST_EPSILON +
-                AMETHYST_EPSILON * AMETHYST_EPSILON));
+                AMETHYST_EPSILON * AMETHYST_EPSILON);
     }
 
     // Returns if the given dynamic_sphere intersects the dynamic_sphere.
-    template<class T>
+    template <class T>
     bool dynamic_sphere<T>::intersects(const sphere<T>& s) const
     {
         T my_radius = get_radius(T(0));
         point3<T> my_center = get_center(T(0));
 
         T combined_radius = s.get_radius() + my_radius + AMETHYST_EPSILON;
-        return(squared_length(s.get_center() - my_center) <
-            (combined_radius * combined_radius));
+        return squared_length(s.get_center() - my_center) <
+               (combined_radius * combined_radius);
     }
 
     // Returns if the given plane intersects the shape.
-    template<class T>
+    template <class T>
     bool dynamic_sphere<T>::intersects(const plane<T>& p) const
     {
         // FIXME! Check the entire range, do something better.
         sphere<T> s(get_center(T(0)),
-            get_radius(T(0)));
+                    get_radius(T(0)));
 
         return amethyst::intersects(s, p);
     }
@@ -255,8 +257,8 @@ namespace amethyst
     // Returns if the given line intersects the dynamic_sphere.
     template <class T>
     bool dynamic_sphere<T>::intersects_line(const unit_line3<T>& line,
-        intersection_info<T>& intersection,
-        const intersection_requirements& requirements) const
+                                            intersection_info<T>& intersection,
+                                            const intersection_requirements& requirements) const
     {
         // FIXME! Check the entire time range, not just 0....
         T hit_distance;
@@ -279,7 +281,7 @@ namespace amethyst
             }
 
             // FIXME! Follow the rest of the requirements
-              // FIXME! multiple intersections if needed.
+            // FIXME! multiple intersections if needed.
             return true;
         }
         return false;
@@ -292,7 +294,7 @@ namespace amethyst
      */
     template <class T>
     bool dynamic_sphere<T>::quick_intersection(const unit_line3<T>& line,
-        T time, T& distance) const
+                                               T time, T& distance) const
     {
         // FIXME! Check the entire range
         T my_radius = get_radius(time);
@@ -334,8 +336,8 @@ namespace amethyst
 
     template <class T>
     bool dynamic_sphere<T>::intersects_ray(const ray_parameters<T>& ray,
-        intersection_info<T>& intersection,
-        const intersection_requirements& requirements) const
+                                           intersection_info<T>& intersection,
+                                           const intersection_requirements& requirements) const
     {
         T hit_distance;
         if (quick_intersection(ray.get_line(), ray.get_time(), hit_distance))

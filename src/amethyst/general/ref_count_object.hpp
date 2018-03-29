@@ -26,13 +26,13 @@
 #include <cstddef>
 
 /*
-  Revision History:
-  02Jan2000 Created this file, wrote the reference_counting_object class
-  14Feb2000 Changed the class to be templated on the counting type (ie. int,
-  long, short, char, etc.), changed all of the printf statements to
-  only occur when KH_DEBUG_RCO is defined.
-  01Mar2003 Changed/added comments to work with both doc++ and ccdoc.
-*/
+   Revision History:
+   02Jan2000 Created this file, wrote the reference_counting_object class
+   14Feb2000 Changed the class to be templated on the counting type (ie. int,
+   long, short, char, etc.), changed all of the printf statements to
+   only occur when KH_DEBUG_RCO is defined.
+   01Mar2003 Changed/added comments to work with both doc++ and ccdoc.
+ */
 /**
  * A simple class that I can place inside of any other class to keep a count of
  * the number of times an object has been copied.  This is meant to be used for
@@ -48,65 +48,67 @@ template <class counter_type>
 class reference_counting_object
 {
 public:
-  /** Create a new count starting at one */
-  reference_counting_object();
-  /** Copy the counts from another counting object, incrementing the count. */
-  reference_counting_object(const reference_counting_object& rco);
+    /** Create a new count starting at one */
+    reference_counting_object();
+    /** Copy the counts from another counting object, incrementing the count. */
+    reference_counting_object(const reference_counting_object& rco);
 
-  /** Decrement the value in the shared pointer, and free it when it reaches
-      zero. */
-  virtual ~reference_counting_object();
-  /** Copy the counts from another counting object, incrementing the count. */
-  virtual reference_counting_object& operator=(const reference_counting_object& rco);
-  /** Return the count of objects accessing the reference */
-  operator counter_type() const;
-  /** Return the count of objects accessing the reference */
-  counter_type reference_count() const { return(counter_type(*this)); }
-  /**
-   * This one will decrement the count for all other objects, and create a new
-   * count starting at 1.  This is something that should be used when functions
-   * like 'resize' are called.
-   *
-   * DO NOT CALL THIS UPON ASSIGN UNLESS THE REFERENCE ISN'T TRULY COPIED
-   * (ie. only if reinterpreted, resized, manipulated, etc.).
-   */
-  void make_new_reference_count();
+    /** Decrement the value in the shared pointer, and free it when it reaches
+        zero. */
+    virtual ~reference_counting_object();
+    /** Copy the counts from another counting object, incrementing the count. */
+    virtual reference_counting_object& operator=(const reference_counting_object& rco);
+    /** Return the count of objects accessing the reference */
+    operator counter_type() const;
+    /** Return the count of objects accessing the reference */
+    counter_type reference_count() const {
+        return counter_type(*this);
+    }
+    /**
+     * This one will decrement the count for all other objects, and create a new
+     * count starting at 1.  This is something that should be used when functions
+     * like 'resize' are called.
+     *
+     * DO NOT CALL THIS UPON ASSIGN UNLESS THE REFERENCE ISN'T TRULY COPIED
+     * (ie. only if reinterpreted, resized, manipulated, etc.).
+     */
+    void make_new_reference_count();
 private:
-  /** The shared pointer to the actual counting variable. Note that it is
-      mutable, and can be modified even when the class is const. */
-  mutable counter_type* count_pointer;
+    /** The shared pointer to the actual counting variable. Note that it is
+        mutable, and can be modified even when the class is const. */
+    mutable counter_type* count_pointer;
 };
 
 template <class counter_type>
 reference_counting_object<counter_type>::reference_counting_object()
 {
 #if defined(KH_DEBUG_RCO)
-  printf("%s\n", __PRETTY_FUNCTION__);
+    printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 
-  count_pointer = new counter_type;
-  *count_pointer = 1;
+    count_pointer = new counter_type;
+    *count_pointer = 1;
 }
 
 template <class counter_type>
 reference_counting_object<counter_type>::~reference_counting_object()
 {
-#if defined(KH_DEBUG_RCO)  
-  printf("%s", __PRETTY_FUNCTION__);
+#if defined(KH_DEBUG_RCO)
+    printf("%s", __PRETTY_FUNCTION__);
 #endif
-  if(count_pointer != NULL)
-  {
-#if defined(KH_DEBUG_RCO)      
-    printf(" -- count=%d", (int)*count_pointer);
-#endif      
-    if(--*count_pointer == 0)
+    if (count_pointer != NULL)
     {
-      delete count_pointer;
-      count_pointer = NULL;
+#if defined(KH_DEBUG_RCO)
+        printf(" -- count=%d", (int)*count_pointer);
+#endif
+        if (--*count_pointer == 0)
+        {
+            delete count_pointer;
+            count_pointer = NULL;
+        }
     }
-  }
-#if defined(KH_DEBUG_RCO)  
-  printf("\n");
+#if defined(KH_DEBUG_RCO)
+    printf("\n");
 #endif
 }
 
@@ -114,66 +116,71 @@ template <class counter_type>
 reference_counting_object<counter_type>::reference_counting_object(const reference_counting_object& rco)
 {
 #if defined(KH_DEBUG_RCO)
-  printf("%s", __PRETTY_FUNCTION__);
+    printf("%s", __PRETTY_FUNCTION__);
 #endif
-  count_pointer = rco.count_pointer;
-  if(count_pointer != NULL)
-  {
-    ++*count_pointer;
+    count_pointer = rco.count_pointer;
+    if (count_pointer != NULL)
+    {
+        ++*count_pointer;
 #if defined(KH_DEBUG_RCO)
-    printf(" -- new count=%d", *count_pointer);
+        printf(" -- new count=%d", *count_pointer);
 #endif
-  }
-#if defined(KH_DEBUG_RCO)  
-  printf("\n");
+    }
+#if defined(KH_DEBUG_RCO)
+    printf("\n");
 #endif
 }
 
 template <class counter_type>
 reference_counting_object<counter_type>& reference_counting_object<counter_type>::operator=(const reference_counting_object& rco)
 {
-#if defined(KH_DEBUG_RCO)  
-  printf("%s\n", __PRETTY_FUNCTION__);
+#if defined(KH_DEBUG_RCO)
+    printf("%s\n", __PRETTY_FUNCTION__);
 #endif
-  // Avoid self assignment and the dec/inc step of assigning something with the
-  // same count_pointer.
-  if((&rco != this) && (rco.count_pointer != count_pointer))
-  {
-    // Decrement the current count
-    if(count_pointer != NULL)
-      if(--*count_pointer == 0)
-        delete count_pointer;
-    
-    // Increment the count for the new object
-    count_pointer = rco.count_pointer;
-    if(count_pointer != NULL)
-      ++*count_pointer;
-  }
-  return(*this);
-}    
+    // Avoid self assignment and the dec/inc step of assigning something with the
+    // same count_pointer.
+    if ((&rco != this) && (rco.count_pointer != count_pointer))
+    {
+        // Decrement the current count
+        if (count_pointer != NULL) {
+            if (--*count_pointer == 0) {
+                delete count_pointer;
+            }
+        }
+
+        // Increment the count for the new object
+        count_pointer = rco.count_pointer;
+        if (count_pointer != NULL) {
+            ++*count_pointer;
+        }
+    }
+    return *this;
+}
 
 template <class counter_type>
 reference_counting_object<counter_type>::operator counter_type() const
 {
-  counter_type my_count = 0;
-  if(count_pointer != NULL)
-    my_count = *count_pointer;
-#if defined(KH_DEBUG_RCO)  
-  printf("%s -- count = %d\n", __PRETTY_FUNCTION__, my_count);
+    counter_type my_count = 0;
+    if (count_pointer != NULL) {
+        my_count = *count_pointer;
+    }
+#if defined(KH_DEBUG_RCO)
+    printf("%s -- count = %d\n", __PRETTY_FUNCTION__, my_count);
 #endif
-  return(my_count);
+    return my_count;
 }
 
 template <class counter_type>
 void reference_counting_object<counter_type>::make_new_reference_count()
 {
-  if(count_pointer != NULL)
-  {
-    if(--*count_pointer == 0)
-      delete count_pointer;
-  }
-  count_pointer = new counter_type;
-  *count_pointer = 1;
+    if (count_pointer != NULL)
+    {
+        if (--*count_pointer == 0) {
+            delete count_pointer;
+        }
+    }
+    count_pointer = new counter_type;
+    *count_pointer = 1;
 }
 
 #endif // !defined(KH_REF_COUNT_OBJECT_HPP)

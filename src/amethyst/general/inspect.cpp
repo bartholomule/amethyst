@@ -2,26 +2,26 @@
 
 namespace amethyst
 {
-	namespace pod_inspector
-	{
-		std::string inspect(bool b)
-		{
-			if (b) 
-			{
-				return "true";
-			}
-			return "false";
-		}
+    namespace pod_inspector
+    {
+        std::string inspect(bool b)
+        {
+            if (b)
+            {
+                return "true";
+            }
+            return "false";
+        }
 
-		std::string inspect(const char* text)
-		{
-			if (text) 
-			{
-				return "\"" + std::string(text) + "\"";
-			}
-			return "<nullptr>";
-		}
-	}
+        std::string inspect(const char* text)
+        {
+            if (text)
+            {
+                return "\"" + std::string(text) + "\"";
+            }
+            return "<nullptr>";
+        }
+    }
 }
 
 namespace std
@@ -33,8 +33,8 @@ namespace std
 
     std::string inspectEmptiness(const std::string& s)
     {
-        if( s.empty() ) 
-		{
+        if (s.empty())
+        {
             return "<empty>";
         }
         return "<value present>";

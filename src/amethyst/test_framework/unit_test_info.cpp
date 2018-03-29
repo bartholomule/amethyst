@@ -23,19 +23,19 @@
 
 namespace amethyst
 {
-	namespace test
-	{
-		test_information::test_information()
-			: test_name("unknown test")
-			, filename("unkown file")
-			, line_number(-1)
-		{
-		}
-		test_information::test_information(const std::string& name, const std::string& file, int line)
-			: test_name(name)
-			, filename(file)
-			, line_number(line)
-		{
-		}
-	}
+    namespace test
+    {
+        test_information::test_information()
+            : test_name("unknown test")
+            , filename("unkown file")
+            , line_number(-1)
+        {
+        }
+        test_information::test_information(const std::string& name, const std::string& file, int line)
+            : test_name(name)
+            , filename(file)
+            , line_number(line)
+        {
+        }
+    }
 }

@@ -27,49 +27,49 @@
 namespace amethyst
 {
 
-  /**
-   *
-   * A class for a solid texture.  These textures generate colors based on 3d
-   * positioning.
-   *
-   * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
-   *
-   */
-  template<class T, class color_type>
-  class solid_texture : public texture<T,color_type>
-  {
-
-  public:
-    solid_texture();
-    virtual ~solid_texture();
-
-    color_type get_color(const point3<T>& location, const coord2<T>& coord) const;
-    virtual color_type get_color_at_point(const point3<T>& location) const = 0;
-
-    virtual std::string name() const
+    /**
+     *
+     * A class for a solid texture.  These textures generate colors based on 3d
+     * positioning.
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.2 $
+     *
+     */
+    template <class T, class color_type>
+    class solid_texture : public texture<T, color_type>
     {
-      return "texture";
+
+    public:
+        solid_texture();
+        virtual ~solid_texture();
+
+        color_type get_color(const point3<T>& location, const coord2<T>& coord) const;
+        virtual color_type get_color_at_point(const point3<T>& location) const = 0;
+
+        virtual std::string name() const
+        {
+            return "texture";
+        }
+
+    }; // class solid_texture
+
+    template <class T, class color_type>
+    solid_texture<T, color_type>::solid_texture() :
+        texture<T, color_type>()
+    {
+    } // solid_texture()
+
+    template <class T, class color_type>
+    solid_texture<T, color_type>::~solid_texture()
+    {
+    } // ~solid_texture()
+
+    template <class T, class color_type>
+    color_type solid_texture<T, color_type>::get_color(const point3<T>& location, const coord2<T>& coord) const
+    {
+        return get_color_at_point(location);
     }
-
-  }; // class solid_texture
-
-  template<class T, class color_type>
-  solid_texture<T,color_type>::solid_texture():
-   texture<T,color_type>()
-  {
-  } // solid_texture()
-
-  template<class T, class color_type>
-  solid_texture<T,color_type>::~solid_texture()
-  {
-  } // ~solid_texture()
-
-  template<class T, class color_type>
-  color_type solid_texture<T,color_type>::get_color(const point3<T>& location, const coord2<T>& coord) const
-  {
-    return get_color_at_point(location);
-  }
 
 } // namespace amethyst
 

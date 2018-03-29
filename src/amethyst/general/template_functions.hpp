@@ -22,17 +22,17 @@
 /**
  * template_functions.hpp -- Functions which do not exist in all compilers,
  * and I have found to be important.
- */ 
+ */
 
 /*
-  Revision History:
-  02Nov1999 Created this file.
-  ??Jun2001 Added the clamp, and sort functions.
-  08Jan2002 Changed all references to objects in namespace std to be fully
-  qualified without polluting the global namespace. Also added
-  comments where they did not exist.
-  01Mar2003 Changed comments to work with both doc++ and ccdoc.
-*/
+   Revision History:
+   02Nov1999 Created this file.
+   ??Jun2001 Added the clamp, and sort functions.
+   08Jan2002 Changed all references to objects in namespace std to be fully
+   qualified without polluting the global namespace. Also added
+   comments where they did not exist.
+   01Mar2003 Changed comments to work with both doc++ and ccdoc.
+ */
 
 #include <ostream>
 #include <vector>
@@ -44,10 +44,10 @@
  * @author Kevin Harris
  */
 template <class T1, class T2>
-std::ostream& operator <<(std::ostream& o, const std::pair<T1,T2>& p)
+std::ostream& operator<<(std::ostream& o, const std::pair<T1, T2>& p)
 {
-  o << "< " << p.first << "," << p.second << " >";
-  return o;
+    o << "< " << p.first << "," << p.second << " >";
+    return o;
 }
 
 /**
@@ -56,23 +56,23 @@ std::ostream& operator <<(std::ostream& o, const std::pair<T1,T2>& p)
  * @author Kevin Harris
  */
 template <class T>
-std::ostream& operator <<(std::ostream& o, const std::vector<T>& vt)
+std::ostream& operator<<(std::ostream& o, const std::vector<T>& vt)
 {
-  int i;
-  o << "{ ";
-  // output all of the elements that need a trailing comma (if any)
-  for(i = 0; i < int(vt.size())-1; ++i)
-  {
-    o << vt[i];
-    o << ", ";
-  }
-  // print out the remaining elements (if any)
-  if(i < int(vt.size()))
-  {
-    o << vt[i];
-  }
-  o << " }";
-  return(o);
+    int i;
+    o << "{ ";
+    // output all of the elements that need a trailing comma (if any)
+    for (i = 0; i < int(vt.size()) - 1; ++i)
+    {
+        o << vt[i];
+        o << ", ";
+    }
+    // print out the remaining elements (if any)
+    if (i < int(vt.size()))
+    {
+        o << vt[i];
+    }
+    o << " }";
+    return o;
 }
 
 /**
@@ -86,10 +86,12 @@ std::ostream& operator <<(std::ostream& o, const std::vector<T>& vt)
 template <class T>
 T my_max(const T& t1, const T& t2)
 {
-  if(t1 > t2)
-    return(t1);
-  else
-    return(t2);
+    if (t1 > t2) {
+        return t1;
+    }
+    else{
+        return t2;
+    }
 }
 
 /**
@@ -103,10 +105,12 @@ T my_max(const T& t1, const T& t2)
 template <class T>
 T my_min(const T& t1, const T& t2)
 {
-  if(t1 < t2)
-    return(t1);
-  else
-    return(t2);
+    if (t1 < t2) {
+        return t1;
+    }
+    else{
+        return t2;
+    }
 }
 
 
@@ -118,12 +122,12 @@ T my_min(const T& t1, const T& t2)
 template <class T>
 T my_abs(const T& t1)
 {
-  T ret_val = t1;
-  if(t1 < T(0))
-  {
-    ret_val *= T(-1);
-  }
-  return(ret_val);
+    T ret_val = t1;
+    if (t1 < T(0))
+    {
+        ret_val *= T(-1);
+    }
+    return ret_val;
 }
 
 /**
@@ -134,10 +138,12 @@ T my_abs(const T& t1)
 template <class T>
 int my_sign(const T& t)
 {
-  if(t < T(0))
-    return -1;
-  else
-    return 1;
+    if (t < T(0)) {
+        return -1;
+    }
+    else{
+        return 1;
+    }
 }
 
 /**
@@ -147,7 +153,7 @@ int my_sign(const T& t)
 template <class T>
 inline T my_sqr(const T& t)
 {
-  return t * t;
+    return t * t;
 }
 
 /**
@@ -157,9 +163,9 @@ inline T my_sqr(const T& t)
 template <class T>
 void my_swap(T& t1, T& t2)
 {
-  T temp = t1;
-  t1 = t2;
-  t2 = temp;
+    T temp = t1;
+    t1 = t2;
+    t2 = temp;
 }
 
 /**
@@ -170,9 +176,10 @@ void my_swap(T& t1, T& t2)
 template <class T>
 void fill_vector(std::vector<T>& vec, const T& val)
 {
-  typename std::vector<T>::iterator i;
-  for(i = vec.begin(); i != vec.end(); ++i)
-    *i = val;
+    typename std::vector<T>::iterator i;
+    for (i = vec.begin(); i != vec.end(); ++i) {
+        *i = val;
+    }
 }
 
 /**
@@ -182,10 +189,12 @@ void fill_vector(std::vector<T>& vec, const T& val)
 template <class T>
 void clamp(T& t, T tmin, T tmax)
 {
-  if(t < tmin)
-    t = tmin;
-  else if(t > tmax)
-    t = tmax;
+    if (t < tmin) {
+        t = tmin;
+    }
+    else if (t > tmax) {
+        t = tmax;
+    }
 }
 
 
@@ -194,23 +203,23 @@ void clamp(T& t, T tmin, T tmax)
 #include <list>
 /**
  * Functions to allow sorting of containers even when the stl algorithm does
- * not provide this equally for all types (namely lists). 
+ * not provide this equally for all types (namely lists).
  * @author Kevin Harris
  */
 /** Sort any random container. */
 template <class container>
 void sort(container& c)
 {
-  /// An external sort function exists in namespace std (through algorithm)
-  std::sort(c.begin(), c.end());
+    /// An external sort function exists in namespace std (through algorithm)
+    std::sort(c.begin(), c.end());
 }
 
 /** Sort the specific container list. */
 template <class T>
 void sort(std::list<T>& l)
 {
-  /// An external sort function does not exist.  Call the member sort function.
-  l.sort();
+    /// An external sort function does not exist.  Call the member sort function.
+    l.sort();
 }
 
 

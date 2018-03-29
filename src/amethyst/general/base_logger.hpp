@@ -33,84 +33,84 @@
 
 namespace amethyst
 {
-	class logger;
-	typedef std::shared_ptr<logger> logger_ref;
+    class logger;
+    typedef std::shared_ptr<logger> logger_ref;
 
-	/**
-	 *
-	 * The base logger.
-	 *
-	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.1 $
-	 *
-	 */
-	class logger
-	{
-	public:
-		enum log_levels
-		{
-			LOG_LEVEL_NONE,
-			LOG_LEVEL_FATAL_ERROR,
-			LOG_LEVEL_ERROR,
-			LOG_LEVEL_WARNING,
-			LOG_LEVEL_INFO,
-			LOG_LEVEL_DEBUG,
-			LOG_LEVEL_EXCESSIVE_DEBUG,
-			LOG_LEVEL_EVERYTHING
-		};
+    /**
+     *
+     * The base logger.
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.1 $
+     *
+     */
+    class logger
+    {
+    public:
+        enum log_levels
+        {
+            LOG_LEVEL_NONE,
+            LOG_LEVEL_FATAL_ERROR,
+            LOG_LEVEL_ERROR,
+            LOG_LEVEL_WARNING,
+            LOG_LEVEL_INFO,
+            LOG_LEVEL_DEBUG,
+            LOG_LEVEL_EXCESSIVE_DEBUG,
+            LOG_LEVEL_EVERYTHING
+        };
 
-	private:
-		log_levels my_level;
-	protected:
-		std::shared_ptr<log_formatter> formatter;
-		output_stream_ref output_stream;
+    private:
+        log_levels my_level;
+    protected:
+        std::shared_ptr<log_formatter> formatter;
+        output_stream_ref output_stream;
 
 #if defined(HAVE_CCPP_THREADS)
-		Mutex output_lock;
+        Mutex output_lock;
 #endif // HAVE_CCPP_THREADS
 
-	public:
-		/** Default constructor */
-		logger();
+    public:
+        /** Default constructor */
+        logger();
 
-		logger(const std::shared_ptr<log_formatter>& lf, const output_stream_ref& sr);
+        logger(const std::shared_ptr<log_formatter>& lf, const output_stream_ref& sr);
 
-		/** Destructor */
-		virtual ~logger();
+        /** Destructor */
+        virtual ~logger();
 
-		/** Copy constructor */
-		logger(const logger& old);
+        /** Copy constructor */
+        logger(const logger& old);
 
-		/** Assignment operator */
-		logger& operator= (const logger& old);
+        /** Assignment operator */
+        logger& operator= (const logger& old);
 
-		/** Get the current log level of this logger */
-		log_levels get_log_level() const;
+        /** Get the current log level of this logger */
+        log_levels get_log_level() const;
 
-		/** Set the current log level of this logger */
-		void set_log_level(log_levels level);
+        /** Set the current log level of this logger */
+        void set_log_level(log_levels level);
 
-		/**
-		 * Return if the given level would be considered "enabled".  That is, if
-		 * a message would be logged when supplied with the given level.
-		 */
-		bool level_enabled(log_levels level);
+        /**
+         * Return if the given level would be considered "enabled".  That is, if
+         * a message would be logged when supplied with the given level.
+         */
+        bool level_enabled(log_levels level);
 
-		/** Log a simple message at the current log level. */
-		void log(const std::string& message);
+        /** Log a simple message at the current log level. */
+        void log(const std::string& message);
 
-		/** Log a simple message */
-		void log(log_levels level, const std::string& message);
+        /** Log a simple message */
+        void log(log_levels level, const std::string& message);
 
 
-		void log(log_levels level, const std::string& message,
-			const char* filename,
-			int line_number,
-			const char* function_name);
+        void log(log_levels level, const std::string& message,
+                 const char* filename,
+                 int line_number,
+                 const char* function_name);
 
-		void log(log_levels level, const UnformattedMessage& message);
+        void log(log_levels level, const UnformattedMessage& message);
 
-	}; // class logger
+    }; // class logger
 } // namespace amethyst
 
 

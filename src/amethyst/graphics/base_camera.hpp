@@ -28,131 +28,141 @@
 
 namespace amethyst
 {
-  /**
-   *
-   * A base class for a camera.
-   *
-   * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.4 $
-   *
-   */
-  template<class T>
-  class base_camera : public string_dumpable
-  {
-
-  private:
-    size_t nx;
-    size_t ny;
-
-  protected:
-
-  public:
-    /** Default constructor */
-    base_camera();
-
-    /** Secondary constructor */
-    base_camera(size_t w, size_t h);
-
-    /** Destructor */
-    virtual ~base_camera();
-
-    /** Copy constructor */
-    base_camera(const base_camera& old);
-
-    /** Assignment operator */
-    base_camera& operator= (const base_camera& old);
-
-    /* Width and height of the image in pixels. */
-    size_t width() const { return nx; }
-    size_t height() const { return ny; }
-
-    void set_width(size_t w) { nx = w; }
-    void set_height(size_t h) { ny = h; }
-
-    /* FIXME! At some point in the future, these will need to have a more
-       complete ray, which includes time, etc. */
-    /* This sample point is in [0,1]^2 */
-    virtual ray_parameters<T> get_ray(const coord2<T>& sample_point, T time = 0) const = 0;
-    /* px, py are the pixel positions. */
-    virtual ray_parameters<T> get_ray(const T& px, const T& py, T time = 0) const = 0;
-
-    virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-
-    virtual std::string name() const { return "base_camera"; }
-  }; // class base_camera
-
-
-
-  //------------------------------------------
-  // Default constructor for class base_camera
-  //------------------------------------------
-  template<class T>
-  base_camera<T>::base_camera():
-    nx(0), ny(0)
-  {
-
-  } // base_camera()
-
-  //------------------------------------------
-  // Secondary constructor for class base_camera
-  //------------------------------------------
-  template<class T>
-  base_camera<T>::base_camera(size_t w, size_t h):
-    nx(w), ny(h)
-  {
-
-  } // base_camera(w,h)
-
-  //---------------------------------
-  // Destructor for class base_camera
-  //---------------------------------
-  template<class T>
-  base_camera<T>::~base_camera()
-  {
-
-  } // ~base_camera()
-
-  //---------------------------------------
-  // Copy constructor for class base_camera
-  //---------------------------------------
-  template<class T>
-  base_camera<T>::base_camera(const base_camera<T>& old):
-    nx(old.nx),
-    ny(old.ny)
-  {
-
-  } // base_camera(base_camera)
-
-  //------------------------------------------
-  // Assignment operator for class base_camera
-  //------------------------------------------
-  template<class T>
-  base_camera<T>& base_camera<T>::operator= (const base_camera<T>& old)
-  {
-    // Generic check for self-assignment
-    if( &old != this)
+    /**
+     *
+     * A base class for a camera.
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.4 $
+     *
+     */
+    template <class T>
+    class base_camera : public string_dumpable
     {
-      nx = old.nx;
-      ny = old.ny;
-    }
-    return (*this);
-  } // base_camera::operator=(base_camera)
 
-  template <class T>
-  std::string base_camera<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
-  {
-    std::string retval;
+    private:
+        size_t nx;
+        size_t ny;
 
-    std::string internal_tagging = indentation;
+    protected:
 
-    if( prefix_with_classname )
+    public:
+        /** Default constructor */
+        base_camera();
+
+        /** Secondary constructor */
+        base_camera(size_t w, size_t h);
+
+        /** Destructor */
+        virtual ~base_camera();
+
+        /** Copy constructor */
+        base_camera(const base_camera& old);
+
+        /** Assignment operator */
+        base_camera& operator= (const base_camera& old);
+
+        /* Width and height of the image in pixels. */
+        size_t width() const {
+            return nx;
+        }
+        size_t height() const {
+            return ny;
+        }
+
+        void set_width(size_t w) {
+            nx = w;
+        }
+        void set_height(size_t h) {
+            ny = h;
+        }
+
+        /* FIXME! At some point in the future, these will need to have a more
+           complete ray, which includes time, etc. */
+        /* This sample point is in [0,1]^2 */
+        virtual ray_parameters<T> get_ray(const coord2<T>& sample_point, T time = 0) const = 0;
+        /* px, py are the pixel positions. */
+        virtual ray_parameters<T> get_ray(const T& px, const T& py, T time = 0) const = 0;
+
+        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
+
+        virtual std::string name() const {
+            return "base_camera";
+        }
+    }; // class base_camera
+
+
+
+    //------------------------------------------
+    // Default constructor for class base_camera
+    //------------------------------------------
+    template <class T>
+    base_camera<T>::base_camera() :
+        nx(0), ny(0)
     {
-      internal_tagging += base_camera<T>::name() + "::";
+
+    } // base_camera()
+
+    //------------------------------------------
+    // Secondary constructor for class base_camera
+    //------------------------------------------
+    template <class T>
+    base_camera<T>::base_camera(size_t w, size_t h) :
+        nx(w), ny(h)
+    {
+
+    } // base_camera(w,h)
+
+    //---------------------------------
+    // Destructor for class base_camera
+    //---------------------------------
+    template <class T>
+    base_camera<T>::~base_camera()
+    {
+
+    } // ~base_camera()
+
+    //---------------------------------------
+    // Copy constructor for class base_camera
+    //---------------------------------------
+    template <class T>
+    base_camera<T>::base_camera(const base_camera<T>& old) :
+        nx(old.nx),
+        ny(old.ny)
+    {
+
+    } // base_camera(base_camera)
+
+    //------------------------------------------
+    // Assignment operator for class base_camera
+    //------------------------------------------
+    template <class T>
+    base_camera<T>& base_camera<T>::operator= (const base_camera<T>& old)
+    {
+        // Generic check for self-assignment
+        if (&old != this)
+        {
+            nx = old.nx;
+            ny = old.ny;
+        }
+        return *this;
+    } // base_camera::operator=(base_camera)
+
+    template <class T>
+    std::string base_camera<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    {
+        std::string retval;
+
+        std::string internal_tagging = indentation;
+
+        if (prefix_with_classname)
+        {
+            internal_tagging += base_camera<T>::name() + "::";
+        }
+        retval += internal_tagging + string_format("width=%1\n", nx);
+        retval += internal_tagging + string_format("height=%1\n", ny);
+        return retval;
     }
-    retval += internal_tagging + string_format("width=%1\n", nx);
-    retval += internal_tagging + string_format("height=%1\n", ny);
-    return retval;
-  }
 
 } // namespace amethyst
 

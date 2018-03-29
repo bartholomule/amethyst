@@ -24,15 +24,15 @@
 
 namespace amethyst
 {
-	template <typename T>
-	T tfabs(const T& t)
-	{
-		if( t < 0 )
-		{
-			return -t;
-		}
-		return t;
-	}
+    template <typename T>
+    T tfabs(const T& t)
+    {
+        if (t < 0)
+        {
+            return -t;
+        }
+        return t;
+    }
 } // namespace amethyst
 
 #endif /* !defined(AMETHYST__TEMPLATE_MATH_HPP) */

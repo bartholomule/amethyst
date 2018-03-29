@@ -28,33 +28,33 @@
 
 namespace amethyst
 {
-	namespace test
-	{
-		void add_auto_test(unit_test* test, const test_information& info);
+    namespace test
+    {
+        void add_auto_test(unit_test* test, const test_information& info);
 
 #define AUTO_UNIT_TEST(name) \
-		class auto_test_##name : public ::amethyst::test::unit_test \
-		{ \
-		public: \
-			auto_test_##name() : unit_test(#name, &::amethyst::test::global_test_results) \
-			{ \
-				::amethyst::test::add_auto_test(this, TEST_INFORMATION(#name)); \
-			} \
-			~auto_test_##name() { } \
-		private: \
-			virtual void do_run_test(const ::amethyst::test::test_information& test_info_data) const; \
-		}; \
-		auto_test_##name auto_test_creation_##name; \
-		void auto_test_##name::do_run_test(const ::amethyst::test::test_information& test_info_data) const
+    class auto_test_ ## name : public ::amethyst::test::unit_test \
+    { \
+    public: \
+        auto_test_ ## name() : unit_test(#name, &::amethyst::test::global_test_results) \
+        { \
+            ::amethyst::test::add_auto_test(this, TEST_INFORMATION(#name)); \
+        } \
+        ~auto_test_ ## name() {} \
+    private: \
+        virtual void do_run_test(const ::amethyst::test::test_information& test_info_data) const; \
+    }; \
+    auto_test_ ## name auto_test_creation_ ## name; \
+    void auto_test_ ## name::do_run_test(const ::amethyst::test::test_information& test_info_data) const
 
 
-		int unit_test_auto_main_impl(int argc, const char** argv);
-	}
+        int unit_test_auto_main_impl(int argc, const char** argv);
+    }
 }
 
 //  Define this to main if you want it to be called as main...
 int auto_unit_test_main(int argc, const char** argv)
 {
-	return amethyst::test::unit_test_auto_main_impl(argc, argv);
+    return amethyst::test::unit_test_auto_main_impl(argc, argv);
 }
 #endif /* !defined(UNIT_TEST_AUTO_HPP_INCLUDED) */

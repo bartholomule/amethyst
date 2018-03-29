@@ -33,175 +33,175 @@
 
 namespace amethyst
 {
-	template <class T> class sphere;
-	template <class T> class plane;
-	template <class T> bool intersects(const sphere<T>& s, const plane<T>& p);
+    template <class T> class sphere;
+    template <class T> class plane;
+    template <class T> bool intersects(const sphere<T>& s, const plane<T>& p);
 
-	/**
-	 *
-	 * The base class for a shape.
-	 *
-	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.12 $
-	 *
-	 */
-	template<class T>
-	class shape : public string_dumpable
-	{
+    /**
+     *
+     * The base class for a shape.
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.12 $
+     *
+     */
+    template <class T>
+    class shape : public string_dumpable
+    {
 
-	private:
+    private:
 
-	protected:
+    protected:
 
-	public:
-		/** Default constructor */
-		shape();
+    public:
+        /** Default constructor */
+        shape();
 
-		/** Destructor */
-		virtual ~shape();
+        /** Destructor */
+        virtual ~shape();
 
-		/** Copy constructor */
-		shape(const shape& old);
+        /** Copy constructor */
+        shape(const shape& old);
 
-		/** Assignment operator */
-		shape& operator= (const shape& old);
+        /** Assignment operator */
+        shape& operator= (const shape& old);
 
-		/** Returns if the given point is inside the shape. */
-		virtual bool inside(const point3<T>& p) const = 0;
+        /** Returns if the given point is inside the shape. */
+        virtual bool inside(const point3<T>& p) const = 0;
 
-		/** Returns if the given sphere intersects the shape. */
-		virtual bool intersects(const sphere<T>& s) const = 0;
+        /** Returns if the given sphere intersects the shape. */
+        virtual bool intersects(const sphere<T>& s) const = 0;
 
-		/** Returns if the given plane intersects the shape. */
-		virtual bool intersects(const plane<T>& p) const = 0;
+        /** Returns if the given plane intersects the shape. */
+        virtual bool intersects(const plane<T>& p) const = 0;
 
-		/**
-		 * Returns if the given line intersects the shape.  For performance
-		 * reasons, this may be overridden, as the default just converts the line
-		 * to a unit line, calls the unit version, and adjusts the distance for the
-		 * scaling.
-		 */
-		virtual bool intersects_line(const line3<T>& line,
-			intersection_info<T>& intersection,
-			const intersection_requirements& requirements = intersection_requirements()) const;
+        /**
+         * Returns if the given line intersects the shape.  For performance
+         * reasons, this may be overridden, as the default just converts the line
+         * to a unit line, calls the unit version, and adjusts the distance for the
+         * scaling.
+         */
+        virtual bool intersects_line(const line3<T>& line,
+                                     intersection_info<T>& intersection,
+                                     const intersection_requirements& requirements = intersection_requirements()) const;
 
-		/** Returns if the given line intersects the shape. */
-		virtual bool intersects_line(const unit_line3<T>& line,
-			intersection_info<T>& intersection,
-			const intersection_requirements& requirements = intersection_requirements()) const = 0;
+        /** Returns if the given line intersects the shape. */
+        virtual bool intersects_line(const unit_line3<T>& line,
+                                     intersection_info<T>& intersection,
+                                     const intersection_requirements& requirements = intersection_requirements()) const = 0;
 
-		/**
-		 * Returns if the given ray intersects the shape.
-		 *
-		 * The default behavior of this function is to ignore all ray parameters
-		 * except for the line.  Anything that needs those must override this
-		 * function.
-		 *
-		 * NOTE: This is the function that you will want to use most of the time,
-		 * since subclasses may act on other properties from the ray (eg. movable
-		 * objects).
-		 *
-		 */
-		virtual bool intersects_ray(const ray_parameters<T>& ray,
-			intersection_info<T>& intersection,
-			const intersection_requirements& requirements = intersection_requirements()) const;
+        /**
+         * Returns if the given ray intersects the shape.
+         *
+         * The default behavior of this function is to ignore all ray parameters
+         * except for the line.  Anything that needs those must override this
+         * function.
+         *
+         * NOTE: This is the function that you will want to use most of the time,
+         * since subclasses may act on other properties from the ray (eg. movable
+         * objects).
+         *
+         */
+        virtual bool intersects_ray(const ray_parameters<T>& ray,
+                                    intersection_info<T>& intersection,
+                                    const intersection_requirements& requirements = intersection_requirements()) const;
 
-		/**
-		 * A quick intersection test.  This will calculate nothing but the
-		 * distance. This is most useful for shadow tests, and other tests where no
-		 * textures will be applied.
-		 */
-		virtual bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const = 0;
+        /**
+         * A quick intersection test.  This will calculate nothing but the
+         * distance. This is most useful for shadow tests, and other tests where no
+         * textures will be applied.
+         */
+        virtual bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const = 0;
 
-		virtual std::string name() const
-		{
-			return "shape";
-		}
+        virtual std::string name() const
+        {
+            return "shape";
+        }
 
-		virtual intersection_capabilities get_intersection_capabilities() const
-		{
-			return intersection_capabilities::NONE;
-		}
+        virtual intersection_capabilities get_intersection_capabilities() const
+        {
+            return intersection_capabilities::NONE;
+        }
 
-		virtual object_capabilities get_object_capabilities() const
-		{
-			return object_capabilities::NONE;
-		}
+        virtual object_capabilities get_object_capabilities() const
+        {
+            return object_capabilities::NONE;
+        }
 
-	}; // class shape
-
-
-
-	//------------------------------------
-	// Default constructor for class shape
-	//------------------------------------
-	template<class T>
-	shape<T>::shape()
-	{
-
-	} // shape()
-
-	//---------------------------
-	// Destructor for class shape
-	//---------------------------
-	template<class T>
-	shape<T>::~shape()
-	{
-
-	} // ~shape()
-
-	//---------------------------------
-	// Copy constructor for class shape
-	//---------------------------------
-	template<class T>
-	shape<T>::shape(const shape<T>& old)
-	{
-
-	} // shape(shape)
-
-	//------------------------------------
-	// Assignment operator for class shape
-	//------------------------------------
-	template<class T>
-	shape<T>& shape<T>::operator= (const shape<T>& old)
-	{
-		// Generic check for self-assignment
-		if( &old != this )
-		{
-			// Insert assignment here. DELETEME
-
-		}
-		return(*this);
-	} // shape::operator=(shape)
-
-	template <class T>
-	bool shape<T>::intersects_line(const line3<T>& line,
-		intersection_info<T>& intersection,
-		const intersection_requirements& requirements) const
-	{
-		unit_line3<T> ul(line);
-
-		if( intersects_line(ul, intersection, requirements) )
-		{
-			intersection.set_first_distance(intersection.get_first_distance() /
-				ul.normal_length());
-			return true;
-		}
-		return false;
-	} // shape::intersects_line(line3<T>,T)
+    }; // class shape
 
 
-	template <class T>
-	bool shape<T>::intersects_ray(const ray_parameters<T>& ray,
-		intersection_info<T>& intersection,
-		const intersection_requirements& requirements) const
-	{
-		if( intersects_line(ray.get_line(), intersection, requirements) )
-		{
-			return true;
-		}
-		return false;
-	} // shape::intersects_ray(line3<T>,T)
+
+    //------------------------------------
+    // Default constructor for class shape
+    //------------------------------------
+    template <class T>
+    shape<T>::shape()
+    {
+
+    } // shape()
+
+    //---------------------------
+    // Destructor for class shape
+    //---------------------------
+    template <class T>
+    shape<T>::~shape()
+    {
+
+    } // ~shape()
+
+    //---------------------------------
+    // Copy constructor for class shape
+    //---------------------------------
+    template <class T>
+    shape<T>::shape(const shape<T>& old)
+    {
+
+    } // shape(shape)
+
+    //------------------------------------
+    // Assignment operator for class shape
+    //------------------------------------
+    template <class T>
+    shape<T>& shape<T>::operator= (const shape<T>& old)
+    {
+        // Generic check for self-assignment
+        if (&old != this)
+        {
+            // Insert assignment here. DELETEME
+
+        }
+        return *this;
+    } // shape::operator=(shape)
+
+    template <class T>
+    bool shape<T>::intersects_line(const line3<T>& line,
+                                   intersection_info<T>& intersection,
+                                   const intersection_requirements& requirements) const
+    {
+        unit_line3<T> ul(line);
+
+        if (intersects_line(ul, intersection, requirements))
+        {
+            intersection.set_first_distance(intersection.get_first_distance() /
+                                            ul.normal_length());
+            return true;
+        }
+        return false;
+    } // shape::intersects_line(line3<T>,T)
+
+
+    template <class T>
+    bool shape<T>::intersects_ray(const ray_parameters<T>& ray,
+                                  intersection_info<T>& intersection,
+                                  const intersection_requirements& requirements) const
+    {
+        if (intersects_line(ray.get_line(), intersection, requirements))
+        {
+            return true;
+        }
+        return false;
+    } // shape::intersects_ray(line3<T>,T)
 
 } // namespace amethyst
 

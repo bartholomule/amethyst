@@ -29,58 +29,58 @@
 namespace amethyst
 {
 
-	struct UnformattedMessage
-	{
-		UnformattedMessage(const std::string& message,
-			const char* filename,
-			int line_number,
-			const char* function_name,
-			const std::string& backtrace);
+    struct UnformattedMessage
+    {
+        UnformattedMessage(const std::string& message,
+                           const char* filename,
+                           int line_number,
+                           const char* function_name,
+                           const std::string& backtrace);
 
-		std::string message;
-		const char* filename;
-		int line_number;
-		const char* function_name;
-		std::string backtrace;
-	};
+        std::string message;
+        const char* filename;
+        int line_number;
+        const char* function_name;
+        std::string backtrace;
+    };
 
-	// Forward decl for a class that will act as a formatting list.
-	class formatter_conversion_list;
+    // Forward decl for a class that will act as a formatting list.
+    class formatter_conversion_list;
 
-	/**
-	 *
-	 * The base class for objects that will do log formatting.
-	 *
-	 * @author Kevin Harris <kpharris@users.sourceforge.net>
-	 * @version $Revision: 1.2 $
-	 *
-	 */
-	class log_formatter
-	{
+    /**
+     *
+     * The base class for objects that will do log formatting.
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.2 $
+     *
+     */
+    class log_formatter
+    {
 
-	private:
-		formatter_conversion_list* conversion_list;
+    private:
+        formatter_conversion_list* conversion_list;
 
-	protected:
-		virtual std::vector<char> do_format_message(const UnformattedMessage& m);
-	public:
-		/** Default constructor */
-		log_formatter();
+    protected:
+        virtual std::vector<char> do_format_message(const UnformattedMessage& m);
+    public:
+        /** Default constructor */
+        log_formatter();
 
-		/** Destructor */
-		virtual ~log_formatter();
+        /** Destructor */
+        virtual ~log_formatter();
 
-		/** Copy constructor */
-		log_formatter(const log_formatter& old);
+        /** Copy constructor */
+        log_formatter(const log_formatter& old);
 
-		/** Assignment operator */
-		log_formatter& operator= (const log_formatter& old);
+        /** Assignment operator */
+        log_formatter& operator= (const log_formatter& old);
 
-		std::vector<char> format_message(const UnformattedMessage& m);
+        std::vector<char> format_message(const UnformattedMessage& m);
 
-		static std::shared_ptr<log_formatter> create_log_formatter(const std::string& format_string);
+        static std::shared_ptr<log_formatter> create_log_formatter(const std::string& format_string);
 
-	}; // class log_formatter
+    }; // class log_formatter
 
 } // namespace amethyst
 

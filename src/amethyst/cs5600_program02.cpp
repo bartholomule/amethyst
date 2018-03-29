@@ -78,81 +78,81 @@ typedef sample_generator_2d<number_type> generator;
 
 number_type f(number_type x, number_type y, number_type kx, number_type ky, int nx, int ny)
 {
-	return (	0.25 *
-		(x / nx) *
-		(1 + cos(kx * x * x)) *
-		(y / ny) *
-		(1 + cos(ky * y * y))
-	);
+    return 0.25 *
+           (x / nx) *
+           (1 + cos(kx * x * x)) *
+           (y / ny) *
+           (1 + cos(ky * y * y))
+    ;
 }
 
 void generate_image(const std::string& filename,
-	int width, int height, int samples_per_pixel,
-	number_type kx, number_type ky, number_type gamma,
-	std::shared_ptr<generator> sampler)
+                    int width, int height, int samples_per_pixel,
+                    number_type kx, number_type ky, number_type gamma,
+                    std::shared_ptr<generator> sampler)
 {
-	image<number_type> image(width, height);
-	for( int y = 0; y < height; ++y )
-	{
-		for( int x = 0; x < width; ++x )
-		{
-			std::vector<coord2<number_type> > samples =
-				sampler->get_samples(samples_per_pixel);
+    image<number_type> image(width, height);
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            std::vector<coord2<number_type>> samples =
+                sampler->get_samples(samples_per_pixel);
 
-			number_type total = 0;
-			for( size_t i = 0; i < samples.size(); ++i )
-			{
-				total += f(x + samples[i].x(),
-					y + samples[i].y(),
-					kx, ky, width, height);
-			}
-			// The image needs to be inverted so that (0,0) is the lower left
-			// corner of the image.
-			image(x, height - 1 - y) = color(total / samples.size());
-		}
-	}
-	std::cerr << "Saving image " << filename << std::endl;
-	save_image(filename, image, gamma);
+            number_type total = 0;
+            for (size_t i = 0; i < samples.size(); ++i)
+            {
+                total += f(x + samples[i].x(),
+                           y + samples[i].y(),
+                           kx, ky, width, height);
+            }
+            // The image needs to be inverted so that (0,0) is the lower left
+            // corner of the image.
+            image(x, height - 1 - y) = color(total / samples.size());
+        }
+    }
+    std::cerr << "Saving image " << filename << std::endl;
+    save_image(filename, image, gamma);
 }
 
 int main(int argc, const char** argv)
 {
-	number_type kx = 0.004;
-	number_type ky = 0.006;
-	int width = 512;
-	int height = 384;
+    number_type kx = 0.004;
+    number_type ky = 0.006;
+    int width = 512;
+    int height = 384;
 
-	typedef std::pair<const char*const, std::shared_ptr<generator> > gen_pair;
-	std::vector<gen_pair> generators;
+    typedef std::pair<const char*const, std::shared_ptr<generator>> gen_pair;
+    std::vector<gen_pair> generators;
 
-	generators.push_back(gen_pair("regular", std::shared_ptr<generator>(new regular_sample_2d<number_type>())));
-	generators.push_back(gen_pair("random", std::shared_ptr<generator>(new random_sample_2d<number_type>())));
-	generators.push_back(gen_pair("jitter", std::shared_ptr<generator>(new jitter_sample_2d<number_type>())));
-	generators.push_back(gen_pair("multi_jitter", std::shared_ptr<generator>(new multi_jitter_sample_2d<number_type>())));
-	generators.push_back(gen_pair("poisson", std::shared_ptr<generator>(new poisson_sample_2d<number_type>(default_random<number_type>(), 1.0/64))));
-	generators.push_back(gen_pair("nrooks", std::shared_ptr<generator>(new nrooks_sample_2d<number_type>())));
+    generators.push_back(gen_pair("regular", std::shared_ptr<generator>(new regular_sample_2d<number_type>())));
+    generators.push_back(gen_pair("random", std::shared_ptr<generator>(new random_sample_2d<number_type>())));
+    generators.push_back(gen_pair("jitter", std::shared_ptr<generator>(new jitter_sample_2d<number_type>())));
+    generators.push_back(gen_pair("multi_jitter", std::shared_ptr<generator>(new multi_jitter_sample_2d<number_type>())));
+    generators.push_back(gen_pair("poisson", std::shared_ptr<generator>(new poisson_sample_2d<number_type>(default_random<number_type>(), 1.0 / 64))));
+    generators.push_back(gen_pair("nrooks", std::shared_ptr<generator>(new nrooks_sample_2d<number_type>())));
 
-	number_type gamma_values[] = { 1.7, 2.2 };
-	int sample_counts[] = { 4, 16, 64, 256 };
-	for( size_t k = 0; k < sizeof(gamma_values) / sizeof(*gamma_values); ++k )
-	{
-		number_type gamma = gamma_values[k];
-		for( size_t j = 0; j < generators.size(); ++j )
-		{
-			// Reset the random seed so the various gamma outputs will differ
-			// only in gamma, and not in randomness.
-			generators[j].second->set_rand_gen(default_random<number_type>(0));
+    number_type gamma_values[] = { 1.7, 2.2 };
+    int sample_counts[] = { 4, 16, 64, 256 };
+    for (size_t k = 0; k < sizeof(gamma_values) / sizeof(*gamma_values); ++k)
+    {
+        number_type gamma = gamma_values[k];
+        for (size_t j = 0; j < generators.size(); ++j)
+        {
+            // Reset the random seed so the various gamma outputs will differ
+            // only in gamma, and not in randomness.
+            generators[j].second->set_rand_gen(default_random<number_type>(0));
 
-			for( size_t i = 0; i < sizeof(sample_counts) / sizeof(*sample_counts); ++i )
-			{
-				generate_image(
-					string_format("cs5600_program02-%1-%2-%3.ppm",
-						generators[j].first,
-						sample_counts[i],
-						gamma),
-					width, height, sample_counts[i],
-					kx, ky, gamma, generators[j].second);
-			}
-		}
-	}
+            for (size_t i = 0; i < sizeof(sample_counts) / sizeof(*sample_counts); ++i)
+            {
+                generate_image(
+                    string_format("cs5600_program02-%1-%2-%3.ppm",
+                                  generators[j].first,
+                                  sample_counts[i],
+                                  gamma),
+                    width, height, sample_counts[i],
+                    kx, ky, gamma, generators[j].second);
+            }
+        }
+    }
 }

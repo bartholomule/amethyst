@@ -29,54 +29,54 @@
 namespace amethyst
 {
 
-  /**
-   *
-   * The base class for a texture.  A texture in itself is not useful for
-   * shading an object.  A material is used to assign textures for objects.
-   *
-   * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.1 $
-   *
-   */
-  template<class T, class color_type>
-  class texture : public string_dumpable
-  {
-
-  private:
-
-  protected:
-
-  public:
-    /** Default constructor */
-    texture();
-
-    /** Destructor */
-    virtual ~texture();
-
-    virtual color_type get_color(const point3<T>& location, const coord2<T>& coord) const = 0;
-
-    virtual std::string name() const
+    /**
+     *
+     * The base class for a texture.  A texture in itself is not useful for
+     * shading an object.  A material is used to assign textures for objects.
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.1 $
+     *
+     */
+    template <class T, class color_type>
+    class texture : public string_dumpable
     {
-      return "texture";
-    }
 
-  }; // class texture
+    private:
 
-  //--------------------------------------
-  // Default constructor for class texture
-  //--------------------------------------
-  template<class T, class color_type>
-  texture<T,color_type>::texture()
-  {
-  } // texture()
+    protected:
 
-  //-----------------------------
-  // Destructor for class texture
-  //-----------------------------
-  template<class T, class color_type>
-  texture<T,color_type>::~texture()
-  {
-  } // ~texture()
+    public:
+        /** Default constructor */
+        texture();
+
+        /** Destructor */
+        virtual ~texture();
+
+        virtual color_type get_color(const point3<T>& location, const coord2<T>& coord) const = 0;
+
+        virtual std::string name() const
+        {
+            return "texture";
+        }
+
+    }; // class texture
+
+    //--------------------------------------
+    // Default constructor for class texture
+    //--------------------------------------
+    template <class T, class color_type>
+    texture<T, color_type>::texture()
+    {
+    } // texture()
+
+    //-----------------------------
+    // Destructor for class texture
+    //-----------------------------
+    template <class T, class color_type>
+    texture<T, color_type>::~texture()
+    {
+    } // ~texture()
 
 } // namespace amethyst
 

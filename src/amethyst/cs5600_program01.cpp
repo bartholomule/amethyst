@@ -47,34 +47,34 @@ typedef rgbcolor<number_type> color;
 
 void program1()
 {
-	unsigned char values[3] = { 0, 127, 255 };
-	// I'll spit these 27 squares out in 3 rows of 9.
-	image<uint8_t> image(SQUARE_SIZE * 9, SQUARE_SIZE * 3);
-	for( int r = 0; r < 3; ++r )
-	{
-		for( int pix_y = 0; pix_y < SQUARE_SIZE; ++pix_y )
-		{
-			int y_offset = pix_y + r * SQUARE_SIZE;
+    unsigned char values[3] = { 0, 127, 255 };
+    // I'll spit these 27 squares out in 3 rows of 9.
+    image<uint8_t> image(SQUARE_SIZE * 9, SQUARE_SIZE * 3);
+    for (int r = 0; r < 3; ++r)
+    {
+        for (int pix_y = 0; pix_y < SQUARE_SIZE; ++pix_y)
+        {
+            int y_offset = pix_y + r * SQUARE_SIZE;
 
-			for( int g = 0; g < 3; ++g )
-			{
-				int x_offset1 = g * 3 * SQUARE_SIZE;
+            for (int g = 0; g < 3; ++g)
+            {
+                int x_offset1 = g * 3 * SQUARE_SIZE;
 
-				for( int b = 0; b < 3; ++b )
-				{
-					int x_offset2 = b * SQUARE_SIZE;
+                for (int b = 0; b < 3; ++b)
+                {
+                    int x_offset2 = b * SQUARE_SIZE;
 
-					for( int pix_x = 0; pix_x < SQUARE_SIZE; ++pix_x )
-					{
-						int x_offset = pix_x + x_offset1 + x_offset2;
-						image(x_offset, y_offset).set( values[r], values[g], values[b] );
-					}
-				}
-			}
-		}
-	}
-	ppm_io<unsigned char> output;
-	output.output("cs5600_program01.ppm", image);
+                    for (int pix_x = 0; pix_x < SQUARE_SIZE; ++pix_x)
+                    {
+                        int x_offset = pix_x + x_offset1 + x_offset2;
+                        image(x_offset, y_offset).set( values[r], values[g], values[b] );
+                    }
+                }
+            }
+        }
+    }
+    ppm_io<unsigned char> output;
+    output.output("cs5600_program01.ppm", image);
 }
 
 
@@ -87,89 +87,89 @@ typedef interpolated_value<number_type, color> color_interp;
 
 bool bailout_circle(complex c, number_type bail_value)
 {
-	return dotprod(c,c) > bail_value;
+    return dotprod(c, c) > bail_value;
 }
 
 bool bailout_rectangle(complex c, number_type bail_value)
 {
-	return (c.getReal() > bail_value) || (length(c.getImag()) > bail_value);
+    return (c.getReal() > bail_value) || (length(c.getImag()) > bail_value);
 }
 
 template <class bailout>
 number_type mandelbrot_escape(const complex& z, const complex& c, bailout bail, int max_iterations = 1000)
 {
-	complex current = z;
-	int iteration;
-	for( iteration = 0; iteration < max_iterations; ++iteration )
-	{
-		if( bail(current) )
-		{
-			break;
-		}
-		current = current * current + c;
-	}
-	return iteration / number_type(max_iterations);
+    complex current = z;
+    int iteration;
+    for (iteration = 0; iteration < max_iterations; ++iteration)
+    {
+        if (bail(current))
+        {
+            break;
+        }
+        current = current * current + c;
+    }
+    return iteration / number_type(max_iterations);
 }
 
 std::shared_ptr<color_interp> get_colors()
 {
-	typedef interpolation_point<number_type, color> interp_type;
-	std::vector<interp_type> interp;
+    typedef interpolation_point<number_type, color> interp_type;
+    std::vector<interp_type> interp;
 
-	interp.push_back(interp_type(0.00, color(0,0,0))); // (values inside the set)
-	interp.push_back(interp_type(0.01, color(1,1,1))); // white
-	interp.push_back(interp_type(0.95, color(1,1,0))); // orange
-	interp.push_back(interp_type(0.97, color(1,0,0))); // red
-	interp.push_back(interp_type(1.00, color(1,0,0))); // red
+    interp.push_back(interp_type(0.00, color(0, 0, 0))); // (values inside the set)
+    interp.push_back(interp_type(0.01, color(1, 1, 1))); // white
+    interp.push_back(interp_type(0.95, color(1, 1, 0))); // orange
+    interp.push_back(interp_type(0.97, color(1, 0, 0))); // red
+    interp.push_back(interp_type(1.00, color(1, 0, 0))); // red
 
-	return std::shared_ptr<color_interp>(create_interpolation<number_type,color>(interp).clone_new());
+    return std::shared_ptr<color_interp>(create_interpolation<number_type, color>(interp).clone_new());
 }
 
 void program1_extra()
 {
-  	int width = 720;
-	int height = 480;
-	std::shared_ptr<color_interp> colors = get_colors();
+    int width = 720;
+    int height = 480;
+    std::shared_ptr<color_interp> colors = get_colors();
 
-	number_type x_min = -2;
-	number_type x_max = 1;
-	number_type y_min = -1;
-	number_type y_max = 1;
-	int escape_max_iterations = 256;
-	number_type escape_max_value = 3;
+    number_type x_min = -2;
+    number_type x_max = 1;
+    number_type y_min = -1;
+    number_type y_max = 1;
+    int escape_max_iterations = 256;
+    number_type escape_max_value = 3;
 
-	image<number_type> image(width, height);
+    image<number_type> image(width, height);
 
-	for( int y = 0; y < height; ++y )
-	{
-		number_type y_pos = y_min + (y * (y_max - y_min)) / height;
+    for (int y = 0; y < height; ++y)
+    {
+        number_type y_pos = y_min + (y * (y_max - y_min)) / height;
 
-		std::cerr << "calculating line " << y << std::endl;
+        std::cerr << "calculating line " << y << std::endl;
 
-		for( int x = 0; x < width; ++x )
-		{
-			number_type x_pos = x_min + (x * (x_max - x_min)) / width;
+        for (int x = 0; x < width; ++x)
+        {
+            number_type x_pos = x_min + (x * (x_max - x_min)) / width;
 
-			complex q(x_pos, complex::coord_type(y_pos, 0, 0));
+            complex q(x_pos, complex::coord_type(y_pos, 0, 0));
 
-			//			std::cerr << "pix(" << x_pos << ", " << y_pos << ") -->(" << x << ", " << y << ")" << std::endl;
-			number_type escape = mandelbrot_escape(q, q,
-				std::bind2nd(std::ptr_fun(&bailout_circle), escape_max_value),
-				escape_max_iterations);
+            //			std::cerr << "pix(" << x_pos << ", " << y_pos << ") -->(" << x << ", " << y << ")" << std::endl;
+            number_type escape = mandelbrot_escape(q, q,
+                                                   std::bind2nd(std::ptr_fun(&bailout_circle), escape_max_value),
+                                                   escape_max_iterations);
 
-			color c = colors->interpolate(1 - escape);
+            color c = colors->interpolate(1 - escape);
 
-			image(x,y) = c;
-		}
-	}
+            image(x, y) = c;
+        }
+    }
 
-	save_image("cs5600_program01_extra.ppm", image);
+    save_image("cs5600_program01_extra.ppm", image);
 }
 
 int main(int argc, const char** argv)
 {
-	program1();
-	program1_extra();
-	return 0;
+    program1();
+    program1_extra();
+    return 0;
 }
 

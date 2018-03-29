@@ -25,23 +25,27 @@
 
 namespace amethyst
 {
-	namespace test
-	{
-		test_exception::test_exception(const std::string& why, const std::string& test_name, const std::string& file, int line)
-			: reason(why)
-			, info(test_name, file, line)
-		{
-		}
-		test_exception:: test_exception(const std::string& why, const test_information& test_info)
-			: reason(why)
-			, info(test_info)
-		{
-		}
+    namespace test
+    {
+        test_exception::test_exception(const std::string& why, const std::string& test_name, const std::string& file, int line)
+            : reason(why)
+            , info(test_name, file, line)
+        {
+        }
+        test_exception:: test_exception(const std::string& why, const test_information& test_info)
+            : reason(why)
+            , info(test_info)
+        {
+        }
 
-        std::string what(const test_exception& e) { return e.reason; }
-        std::string what(const std::exception& e) { return e.what(); }
+        std::string what(const test_exception& e) {
+            return e.reason;
+        }
+        std::string what(const std::exception& e) {
+            return e.what();
+        }
 
-		AMETHYST_DEFINE_EXCEPTION(test_aborted);
-		AMETHYST_DEFINE_EXCEPTION(never_thrown); // Never thrown, used as a dummy exception
-	}
+        AMETHYST_DEFINE_EXCEPTION(test_aborted);
+        AMETHYST_DEFINE_EXCEPTION(never_thrown); // Never thrown, used as a dummy exception
+    }
 }

@@ -10,9 +10,9 @@
     enum_name operator|(enum_name v1, enum_name v2); \
     enum_name operator&(enum_name v1, enum_name v2); \
     enum_name operator^(enum_name v1, enum_name v2); \
-    enum_name& operator|=(enum_name& v1, enum_name v2); \
-    enum_name& operator&=(enum_name& v1, enum_name v2); \
-    enum_name& operator^=(enum_name& v1, enum_name v2);
+    enum_name& operator|=(enum_name & v1, enum_name v2); \
+    enum_name& operator&=(enum_name & v1, enum_name v2); \
+    enum_name& operator^=(enum_name & v1, enum_name v2);
 
 #define BITWISE_ENUM_DEF_HELPER_UNARY(enum_name, op) \
     enum_name operator op(enum_name v1) \
@@ -25,7 +25,7 @@
         return enum_name(std::underlying_type_t<enum_name>(v1) op std::underlying_type_t<enum_name>(v2)); \
     }
 #define BITWISE_ENUM_DEF_HELPER_ASSIGN(enum_name, op) \
-    enum_name& operator op=(enum_name& v1, enum_name v2) \
+    enum_name & operator op = (enum_name & v1, enum_name v2) \
     { \
         v1 = enum_name(std::underlying_type_t<enum_name>(v1) op std::underlying_type_t<enum_name>(v2)); \
         return v1; \
@@ -52,17 +52,19 @@ namespace amethyst
             std::string compact_name;
 
             enum_flag_mapping() = delete;
-            enum_flag_mapping(enum_type v, std::string n) : value(v), name(std::move(n)) { }
-            enum_flag_mapping(enum_type v, std::string n, std::string c) : value(v), name(std::move(n)), compact_name(std::move(c)) { }
+            enum_flag_mapping(enum_type v, std::string n) : value(v), name(std::move(n)) {
+            }
+            enum_flag_mapping(enum_type v, std::string n, std::string c) : value(v), name(std::move(n)), compact_name(std::move(c)) {
+            }
         };
 
         std::vector<enum_flag_mapping> m_mappings;
         std::string m_unmatched_format;
 
-        enum_mapping(std::string unmatched, std::initializer_list<enum_flag_mapping> init) 
-            : m_mappings(init) 
+        enum_mapping(std::string unmatched, std::initializer_list<enum_flag_mapping> init)
+            : m_mappings(init)
             , m_unmatched_format(unmatched)
-        { 
+        {
         }
 
         enum_mapping(std::initializer_list<enum_flag_mapping> init)
@@ -159,7 +161,7 @@ namespace amethyst
                 }
             }
 
-            if(nothing_matched)
+            if (nothing_matched)
             {
                 return unmatched_text(e);
             }
@@ -178,7 +180,7 @@ namespace amethyst
 
 #define MAKE_ENUM_CONVERTABLE_DECLARATIONS(enum_type) \
     template <typename T> T enum_from_string(const std::string& text); \
-    template<> enum_type enum_from_string<enum_type>(const std::string& text); \
+    template <> enum_type enum_from_string<enum_type>(const std::string& text); \
     std::string to_string(enum_type); \
     std::string to_compact_string(enum_type); \
     std::string inspect(enum_type);
@@ -190,7 +192,7 @@ namespace amethyst
     MAKE_ENUM_CONVERTABLE_DECLARATIONS(enum_type) \
     /* forward decl for a class that will only be specialized */ \
     template <typename T> struct enum_flag_mapping_impl; \
-    template<> struct enum_flag_mapping_impl<enum_type> \
+    template <> struct enum_flag_mapping_impl<enum_type> \
     { \
         static amethyst::enum_mapping<enum_type>& get_mapping() \
         { \
@@ -198,7 +200,7 @@ namespace amethyst
             return mapping; \
         } \
     }; \
-    template<> enum_type enum_from_string<enum_type>(const std::string& text) \
+    template <> enum_type enum_from_string<enum_type>(const std::string& text) \
     { \
         return enum_flag_mapping_impl<enum_type>::get_mapping().enum_from_string(text); \
     } \

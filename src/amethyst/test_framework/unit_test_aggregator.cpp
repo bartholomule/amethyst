@@ -26,103 +26,103 @@
 
 namespace amethyst
 {
-	namespace test
-	{
-		// This is used outside this file...
-		test_results global_test_results("global test results", NULL);
+    namespace test
+    {
+        // This is used outside this file...
+        test_results global_test_results("global test results", NULL);
 
-		test_results::test_results(const std::string& name, test_results* outer_test_results)
-			: count_failed(0)
-			, count_passed(0)
-			, count_tried(0)
-			, results_name(name)
-			, chained_results(outer_test_results)
-			, printed(false)
-		{
-		}
+        test_results::test_results(const std::string& name, test_results* outer_test_results)
+            : count_failed(0)
+            , count_passed(0)
+            , count_tried(0)
+            , results_name(name)
+            , chained_results(outer_test_results)
+            , printed(false)
+        {
+        }
 
-		test_results::~test_results()
-		{
-			if( !printed )
-			{
-				print_results();
-			}
-		}
+        test_results::~test_results()
+        {
+            if (!printed)
+            {
+                print_results();
+            }
+        }
 
-		void test_results::print_results(std::ostream& o) const
-		{
-			printed = true;
+        void test_results::print_results(std::ostream& o) const
+        {
+            printed = true;
 
-			size_t count_unfinished = count_tried - (count_passed + count_failed);
-			size_t percent_passed = 100;
-			size_t percent_failed = 0;
-			size_t percent_unfinished = 0;
-			if( count_tried > 0 )
-			{
-				percent_passed = (100 * count_passed) / count_tried;
-				percent_failed = (100 * count_failed) / count_tried;
-				percent_unfinished = (100 * count_unfinished) / count_tried;
-			}
-			o << "\n";
-			o << string_format("Test results for \"%1\":\n", results_name);
-			o << "---------------------------\n";
-			o << string_format("  Tests passed: %1 of %2 (%3%%)\n", count_passed, count_tried, percent_passed);
-			o << string_format("  Tests failed: %1 of %2 (%3%%)\n", count_failed, count_tried, percent_failed);
-			o << string_format("  Tests unfinished: %1 of %2 (%3%%)\n", count_unfinished, count_tried, percent_unfinished);
-			o << "---------------------------\n";
-			o << std::flush;
-		}
+            size_t count_unfinished = count_tried - (count_passed + count_failed);
+            size_t percent_passed = 100;
+            size_t percent_failed = 0;
+            size_t percent_unfinished = 0;
+            if (count_tried > 0)
+            {
+                percent_passed = (100 * count_passed) / count_tried;
+                percent_failed = (100 * count_failed) / count_tried;
+                percent_unfinished = (100 * count_unfinished) / count_tried;
+            }
+            o << "\n";
+            o << string_format("Test results for \"%1\":\n", results_name);
+            o << "---------------------------\n";
+            o << string_format("  Tests passed: %1 of %2 (%3%%)\n", count_passed, count_tried, percent_passed);
+            o << string_format("  Tests failed: %1 of %2 (%3%%)\n", count_failed, count_tried, percent_failed);
+            o << string_format("  Tests unfinished: %1 of %2 (%3%%)\n", count_unfinished, count_tried, percent_unfinished);
+            o << "---------------------------\n";
+            o << std::flush;
+        }
 
-		void test_results::notify(const test_information& info, const std::string& text) const
-		{
-			std::cerr << string_format("%1:%2:%3", info.filename, info.line_number, text) << std::endl;
-		}
-		void test_results::test_started(const test_information& info, bool chained)
-		{
-			if( !chained )
-			{
-				if( getenv("UNIT_TEST_VERBOSE") )
-				{
-					notify(info, string_format("info: Started test %1", info.test_name));
-				}
-			}
-			++count_tried;
-			if( chained_results )
-			{
-				chained_results->test_started(info, true);
-			}
-		}
-		void test_results::test_passed(const test_information& info, bool chained)
-		{
-			if( !chained )
-			{
-				if( getenv("UNIT_TEST_VERBOSE") )
-				{
-					notify(info, "info: Test passed\n"); // added vertical whitespace to assist emacs in finding error lines
-				}
-			}
-			++count_passed;
-			if( chained_results )
-			{
-				chained_results->test_passed(info, true);
-			}
-		}
-		void test_results::test_failed(const test_information& info, const std::string& reason, bool chained)
-		{
-			if( !chained )
-			{
-				notify(info, string_format("error: %1\n", reason));  // added vertical whitespace to assist emacs in finding error lines
-			}
-			++count_failed;
-			if( chained_results )
-			{
-				chained_results->test_failed(info, reason, true);
-			}
-		}
+        void test_results::notify(const test_information& info, const std::string& text) const
+        {
+            std::cerr << string_format("%1:%2:%3", info.filename, info.line_number, text) << std::endl;
+        }
+        void test_results::test_started(const test_information& info, bool chained)
+        {
+            if (!chained)
+            {
+                if (getenv("UNIT_TEST_VERBOSE"))
+                {
+                    notify(info, string_format("info: Started test %1", info.test_name));
+                }
+            }
+            ++count_tried;
+            if (chained_results)
+            {
+                chained_results->test_started(info, true);
+            }
+        }
+        void test_results::test_passed(const test_information& info, bool chained)
+        {
+            if (!chained)
+            {
+                if (getenv("UNIT_TEST_VERBOSE"))
+                {
+                    notify(info, "info: Test passed\n"); // added vertical whitespace to assist emacs in finding error lines
+                }
+            }
+            ++count_passed;
+            if (chained_results)
+            {
+                chained_results->test_passed(info, true);
+            }
+        }
+        void test_results::test_failed(const test_information& info, const std::string& reason, bool chained)
+        {
+            if (!chained)
+            {
+                notify(info, string_format("error: %1\n", reason));  // added vertical whitespace to assist emacs in finding error lines
+            }
+            ++count_failed;
+            if (chained_results)
+            {
+                chained_results->test_failed(info, reason, true);
+            }
+        }
 
-		bool test_results::something_failed() const
-		{
-			return count_failed > 0;
-		}
-	}
+        bool test_results::something_failed() const
+        {
+            return count_failed > 0;
+        }
+    }
 }

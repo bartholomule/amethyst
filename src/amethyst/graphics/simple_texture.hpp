@@ -26,63 +26,65 @@
 
 namespace amethyst
 {
-  /**
-   *
-   * A simple texture (constant color).
-   *
-   * @author Kevin Harris <kpharris@users.sourceforge.net>
-   * @version $Revision: 1.2 $
-   *
-   */
-  template<class T, class color_type>
-  class simple_texture : public texture<T,color_type>
-  {
-  public:
-    simple_texture(const color_type& color);
-    virtual ~simple_texture();
-
-    virtual color_type get_color(const point3<T>& location, const coord2<T>& coord) const;
-
-    virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-    virtual std::string name() const { return "simple_texture"; }
-
-  private:
-    color_type m_color;
-  }; // class simple_texture
-
-  template<class T, class color_type>
-  simple_texture<T,color_type>::simple_texture(const color_type& color)
-    : texture<T,color_type>()
-    , m_color(color)
-  {
-  } // simple_texture()
-
-  template<class T, class color_type>
-  simple_texture<T,color_type>::~simple_texture()
-  {
-  } // ~simple_texture()
-
-  template<class T, class color_type>
-  color_type simple_texture<T,color_type>::get_color(const point3<T>& location, const coord2<T>& coord) const
-  {
-    return m_color;
-  } // get_color
-
-  template <class T, class color_type>
-  std::string simple_texture<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
-  {
-    std::string retval;
-    std::string internal_tagging = indentation;
-
-    if( prefix_with_classname )
+    /**
+     *
+     * A simple texture (constant color).
+     *
+     * @author Kevin Harris <kpharris@users.sourceforge.net>
+     * @version $Revision: 1.2 $
+     *
+     */
+    template <class T, class color_type>
+    class simple_texture : public texture<T, color_type>
     {
-      internal_tagging += simple_texture<T,color_type>::name() + "::";
+    public:
+        simple_texture(const color_type& color);
+        virtual ~simple_texture();
+
+        virtual color_type get_color(const point3<T>& location, const coord2<T>& coord) const;
+
+        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
+        virtual std::string name() const {
+            return "simple_texture";
+        }
+
+    private:
+        color_type m_color;
+    }; // class simple_texture
+
+    template <class T, class color_type>
+    simple_texture<T, color_type>::simple_texture(const color_type& color)
+        : texture<T, color_type>()
+        , m_color(color)
+    {
+    } // simple_texture()
+
+    template <class T, class color_type>
+    simple_texture<T, color_type>::~simple_texture()
+    {
+    } // ~simple_texture()
+
+    template <class T, class color_type>
+    color_type simple_texture<T, color_type>::get_color(const point3<T>& location, const coord2<T>& coord) const
+    {
+        return m_color;
+    } // get_color
+
+    template <class T, class color_type>
+    std::string simple_texture<T, color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    {
+        std::string retval;
+        std::string internal_tagging = indentation;
+
+        if (prefix_with_classname)
+        {
+            internal_tagging += simple_texture<T, color_type>::name() + "::";
+        }
+
+        retval += internal_tagging + string_format("color=%1\n", m_color);
+
+        return retval;
     }
-
-    retval += internal_tagging + string_format("color=%1\n", m_color);
-
-    return retval;
-  }
 
 } // namespace amethyst
 

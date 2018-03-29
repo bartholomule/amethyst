@@ -30,62 +30,62 @@
  */
 
 #define TEST_EXCEPTION_TEST(try_block, catch_block) \
-   do                                               \
-   {                                                \
-      try                                           \
-      {                                             \
-         try_block;                                 \
-      }                                             \
-      catch(...)                                    \
-      {                                             \
-         catch_block;                               \
-      }                                             \
-   }                                                \
-   while(0)
+    do \
+    { \
+        try \
+        { \
+            try_block; \
+        } \
+        catch (...) \
+        { \
+            catch_block; \
+        } \
+    } \
+    while (0)
 
 #define TEST_EXCEPTION_CATCH(try_block, catch_def, catch_block) \
-   do                                                           \
-   {                                                            \
-      try                                                       \
-      {                                                         \
-         try_block;                                             \
-      }                                                         \
-      catch(catch_def)                                          \
-      {                                                         \
-         catch_block;                                           \
-      }                                                         \
-   }                                                            \
-   while(0)
+    do \
+    { \
+        try \
+        { \
+            try_block; \
+        } \
+        catch (catch_def) \
+        { \
+            catch_block; \
+        } \
+    } \
+    while (0)
 
 #define TEST_EXCEPTION_NAMED(name, try_block, not_thrown, thrown) \
-   do                                                             \
-   {                                                              \
-      std::cout << "Trying " << name << "... ";                   \
-      try                                                         \
-      {                                                           \
-         try_block;                                               \
-         std::cout << not_thrown << std::endl;                    \
-      }                                                           \
-      catch(...)                                                  \
-      {                                                           \
-         std::cout << thrown << std::endl;                        \
-      }                                                           \
-   }                                                              \
-   while(0)
+    do \
+    { \
+        std::cout << "Trying " << name << "... "; \
+        try \
+        { \
+            try_block; \
+            std::cout << not_thrown << std::endl; \
+        } \
+        catch (...) \
+        { \
+            std::cout << thrown << std::endl; \
+        } \
+    } \
+    while (0)
 
 #define TEST_RESULT_NAMED(name, statement, if_true, if_false) \
-   do                                                         \
-   {                                                          \
-      std::cout << "Checking " << name << "... ";             \
-      if( statement )                                         \
-      {                                                       \
-         std::cout << if_true << std::endl;                   \
-      }                                                       \
-      else                                                    \
-      {                                                       \
-         std::cout << if_false << std::endl;                  \
-      }                                                       \
-   }                                                          \
-   while(0)
+    do \
+    { \
+        std::cout << "Checking " << name << "... "; \
+        if (statement) \
+        { \
+            std::cout << if_true << std::endl; \
+        } \
+        else \
+        { \
+            std::cout << if_false << std::endl; \
+        } \
+    } \
+    while (0)
 
 #endif /* !defined(__TESTINCLUDE_HPP__) */

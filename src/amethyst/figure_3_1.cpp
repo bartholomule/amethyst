@@ -2,7 +2,7 @@
 
 /*
  * This is figure 3.1 from Peter Shirley's "Realistic Raytracing" book, second
- * edition. 
+ * edition.
  */
 
 #include "graphics/sphere.hpp"
@@ -31,59 +31,59 @@ using std::endl;
 
 int main(int argc, char** argv)
 {
-  (void) argc;
-  (void) argv;
-  aggregate<float_type> sl;
+    (void)argc;
+    (void)argv;
+    aggregate<float_type> sl;
 
-  std::shared_ptr<shape<float_type> > sph_ptr(new sphere<float_type>(point(250,250,-1000),
-                                                                150));
-  sl.add(sph_ptr);
-  point p1(300,600,-800);
-  point p2(0,100,-1000);
-  point p3(450,20,-1000);
-  std::shared_ptr<shape<float_type> > tri_ptr(new triangle<float_type>(p1,p2,p3));
+    std::shared_ptr<shape<float_type>> sph_ptr(new sphere<float_type>(point(250, 250, -1000),
+                                                                      150));
+    sl.add(sph_ptr);
+    point p1(300, 600, -800);
+    point p2(0, 100, -1000);
+    point p3(450, 20, -1000);
+    std::shared_ptr<shape<float_type>> tri_ptr(new triangle<float_type>(p1, p2, p3));
 
-  sl.add(tri_ptr);
+    sl.add(tri_ptr);
 
-  color light(0.7,0.7,0.7), dark(0.5,0.5,0.5), black(0,0,0);
-  color red(0.7,0.0,0.0), blue(0.0,0.0,0.7);
+    color light(0.7, 0.7, 0.7), dark(0.5, 0.5, 0.5), black(0, 0, 0);
+    color red(0.7, 0.0, 0.0), blue(0.0, 0.0, 0.7);
 
-  amethyst::image<float_type> image(WIDTH, HEIGHT);
+    amethyst::image<float_type> image(WIDTH, HEIGHT);
 
-  intersection_info<float_type> stuff;
+    intersection_info<float_type> stuff;
 
-  cout << "objects=" << sl << endl;
+    cout << "objects=" << sl << endl;
 
-  std::cerr << "Generating image..." << std::endl;
-  for( int y = 0; y < HEIGHT; ++y )
-  {
-    for( int x = 0; x < WIDTH; ++x )
+    std::cerr << "Generating image..." << std::endl;
+    for (int y = 0; y < HEIGHT; ++y)
     {
-      unit_line3<float_type> r(point3<float_type>(500.0 * x / float_type(WIDTH),
-                                                  500.0 * (HEIGHT-y)/float_type(HEIGHT),
-                                                  0),
-                               vector3<float_type>(0,0,-1));
-
-      if( !sl.intersects_line(r, stuff) )
-      {
-        image(x,y) = dark;
-      }
-      else
-      {
-        const shape<float_type>* hit_shape = stuff.get_shape();
-
-        if( dynamic_cast<const sphere<float_type>*>(hit_shape) != NULL )
+        for (int x = 0; x < WIDTH; ++x)
         {
-          image(x,y) = blue;
+            unit_line3<float_type> r(point3<float_type>(500.0 * x / float_type(WIDTH),
+                                                        500.0 * (HEIGHT - y) / float_type(HEIGHT),
+                                                        0),
+                                     vector3<float_type>(0, 0, -1));
+
+            if (!sl.intersects_line(r, stuff))
+            {
+                image(x, y) = dark;
+            }
+            else
+            {
+                const shape<float_type>* hit_shape = stuff.get_shape();
+
+                if (dynamic_cast<const sphere<float_type>*>(hit_shape) != NULL)
+                {
+                    image(x, y) = blue;
+                }
+                else if (dynamic_cast<const triangle<float_type>*>(hit_shape) != NULL)
+                {
+                    image(x, y) = red;
+                }
+            }
         }
-        else if( dynamic_cast<const triangle<float_type>*>(hit_shape) != NULL )
-        {
-          image(x,y) = red;
-        }
-      }
     }
-  }
-  std::cerr << "Saving image..." << std::endl;
-  save_image("figure_3_1.ppm", image);
-  return 0; 
+    std::cerr << "Saving image..." << std::endl;
+    save_image("figure_3_1.ppm", image);
+    return 0;
 }

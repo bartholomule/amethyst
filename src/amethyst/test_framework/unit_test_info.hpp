@@ -26,18 +26,18 @@
 
 namespace amethyst
 {
-	namespace test
-	{
+    namespace test
+    {
 
-		struct test_information
-		{
-			test_information();
-			test_information(const std::string& name, const std::string& file, int line);
-			std::string test_name;
-			std::string filename;
-			int line_number;
-		};
-	}
+        struct test_information
+        {
+            test_information();
+            test_information(const std::string& name, const std::string& file, int line);
+            std::string test_name;
+            std::string filename;
+            int line_number;
+        };
+    }
 }
 
 #define TEST_INFORMATION(name) ::amethyst::test::test_information(name, __FILE__, __LINE__)
