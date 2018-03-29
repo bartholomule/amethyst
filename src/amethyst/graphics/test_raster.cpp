@@ -40,15 +40,6 @@ std::string inspect(const amethyst::raster<T>& r)
     return oss.str();
 }
 
-// Implement the constructor for the size_mismatch constructor... To prevent
-// the need to have another file linked against this one.
-namespace amethyst {
-    size_mismatch::size_mismatch(const std::string& __arg) :
-        std::runtime_error(__arg)
-    {
-    } // size_mismatch()
-}
-
 #define ERROR_TEXT(text) ((++error_count), text)
 
 int main(int argc, char** argv)

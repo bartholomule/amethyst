@@ -1,24 +1,3 @@
-/*
- * $Id: log_formatter.cpp,v 1.3 2008/12/29 17:26:46 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2006 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
 #include "platform.hpp"
 #include "log_formatter.hpp"
 #include <vector>
@@ -35,16 +14,13 @@
 namespace amethyst
 {
 
-    UnformattedMessage::UnformattedMessage(const std::string& _message,
-                                           const char* _filename,
-                                           int _line_number,
-                                           const char* _function_name,
-                                           const std::string& _backtrace) :
-        message(_message),
-        filename(_filename),
-        line_number(_line_number),
-        function_name(_function_name),
-        backtrace(_backtrace)
+    UnformattedMessage::UnformattedMessage(const std::string& _message, const char* _filename,
+        int _line_number, const char* _function_name, const std::string& _backtrace)
+        : message(_message)
+        , filename(_filename)
+        , line_number(_line_number)
+        , function_name(_function_name)
+        , backtrace(_backtrace)
     {
     }
 
@@ -87,18 +63,13 @@ namespace amethyst
         };
         struct formatter_conversion_entry
         {
-            format_entry_type type;
+            format_entry_type type = FORMATTER_STRING;
             std::vector<char> data; // Only used if the type is FORMATTER_STRING
-            int field_width_minimum;
-            int field_width_maximum;
-            format_justification justification;
+            int field_width_minimum = 0;
+            int field_width_maximum = 0;
+            format_justification justification = FORMAT_JUSTIFY_LEFT;
 
-            formatter_conversion_entry() :
-                field_width_minimum(0)
-                , field_width_maximum(0)
-                , justification(FORMAT_JUSTIFY_RIGHT)
-            {
-            }
+            formatter_conversion_entry() = default;
         };
     }
 
@@ -108,53 +79,25 @@ namespace amethyst
         typedef std::vector<conversion::formatter_conversion_entry> data_type;
         typedef data_type::const_iterator const_iterator;
         data_type data;
-        const_iterator begin() const {
-            return data.begin();
-        }
-        const_iterator end() const {
-            return data.end();
-        }
+        const_iterator begin() const { return data.begin(); }
+        const_iterator end() const { return data.end(); }
     };
 
-    //--------------------------------------------
-    // Default constructor for class log_formatter
-    //--------------------------------------------
-    log_formatter::log_formatter() :
-        conversion_list(new formatter_conversion_list)
+    log_formatter::log_formatter()
+        : conversion_list(std::make_unique<formatter_conversion_list>())
     {
+    }
 
-    } // log_formatter()
-
-    //-----------------------------------
-    // Destructor for class log_formatter
-    //-----------------------------------
-    log_formatter::~log_formatter()
+    log_formatter::log_formatter(const log_formatter& old)
+        : conversion_list(new formatter_conversion_list(*old.conversion_list))
     {
-        delete conversion_list;
-    } // ~log_formatter()
+    }
 
-    //-----------------------------------------
-    // Copy constructor for class log_formatter
-    //-----------------------------------------
-    log_formatter::log_formatter(const log_formatter& old) :
-        conversion_list(new formatter_conversion_list(*old.conversion_list))
+    log_formatter& log_formatter::operator=(const log_formatter& old)
     {
-
-    } // log_formatter(log_formatter)
-
-    //--------------------------------------------
-    // Assignment operator for class log_formatter
-    //--------------------------------------------
-    log_formatter& log_formatter::operator= (const log_formatter& old)
-    {
-        // Generic check for self-assignment
-        if (&old != this)
-        {
-            delete conversion_list;
-            conversion_list = new formatter_conversion_list(*old.conversion_list);
-        }
+        conversion_list = std::make_unique<formatter_conversion_list>(*old.conversion_list);
         return *this;
-    } // log_formatter::operator=(log_formatter)
+    }
 
     std::vector<char> log_formatter::format_message(const UnformattedMessage& m)
     {
@@ -179,7 +122,7 @@ namespace amethyst
         {
             append_text(vec, str.c_str(), str.length());
         }
-    } // end anonymous namespace
+    }
 
     std::vector<char> log_formatter::do_format_message(const UnformattedMessage& m)
     {
@@ -320,10 +263,9 @@ namespace amethyst
 
     namespace // anonymous
     {
-
         /*
          # Available conversion specifiers:
-         # %c - The component (e.g. owcimomd)
+         # %c - The component (e.g. MySuperMagicalProgram)
          # %d - The date. May be followed by a date format specifier enclosed between
          #      braces. For example, %d{%H:%M:%S} or %d{%d %b %Y %H:%M:%S}. If no date
          #      format specifier is given then ISO8601 format is assumed.
@@ -611,7 +553,7 @@ namespace amethyst
 
             return retval;
         }
-    } // end anonymous namespace
+    }
 
     std::shared_ptr<log_formatter> log_formatter::create_log_formatter(const std::string& format_string)
     {
@@ -621,5 +563,5 @@ namespace amethyst
         return formatter;
     }
 
-} // namespace amethyst
+}
 
