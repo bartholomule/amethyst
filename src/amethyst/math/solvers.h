@@ -1,14 +1,13 @@
-#if       !defined(KH_SOLVERS_H)
-#define            KH_SOLVERS_H
+#pragma once
 /*
   Revision History:
   04Apr2000 Moved the decls for the jacobi, chebyshev, and conjugate_gradient
-            solvers into here from the old utils.h file. 
+            solvers into here from the old utils.h file.
   10Apr2000 Added some include so that I can put this in my graph_math library.
   24May2001 Changed these to be templated...
 */
-#include <graph_math/coord3.h>
-#include <graph_math/mat_4x4.h>
+#include "coord3.hpp"
+#include "mat_4x4.hpp"
 
 /* functions to solve a system of equations (3x3 placed in a 4x4 matrix) */
 template <class T>
@@ -20,7 +19,7 @@ coord3<T> jacobi(const matrix_4x4<T>& non_diagonal,
   matrix_4x4<T> iteration_matrix = -1 * inverted_diagonal * non_diagonal;
   coord3<T> adjustment_vector = inverted_diagonal * right_hand_sides;
   coord3<T> previous_solution(1,1,1);
-  coord3<T> solution(right_hand_sides); 
+  coord3<T> solution(right_hand_sides);
   coord3<T> temp_coord;
   T squared_distance = epsilon * 1000;
   T epsilon_squared = epsilon * epsilon;
@@ -88,7 +87,7 @@ coord3<T> chebyshev_acceleration(const matrix_4x4<T>& working_iteration_matrix,
   T p;
   int iteration;
   //  T epsilon_squared = epsilon*epsilon;
-  
+
   extrapolation(gamma, working_iteration_matrix, correction_vector, working_guess, previous_guess);
   p = 1/(1 - 2*alpha);
   cheb(p, gamma, working_iteration_matrix, correction_vector, working_guess, previous_guess);
@@ -96,10 +95,10 @@ coord3<T> chebyshev_acceleration(const matrix_4x4<T>& working_iteration_matrix,
   {
     p = (1 - p * alpha);
     cheb(p, gamma, working_iteration_matrix, correction_vector, previous_guess, working_guess);
-    
+
     p = 1/(1 - p * alpha);
     cheb(p, gamma, working_iteration_matrix, correction_vector, working_guess, previous_guess);
-    
+
     temp_coord = working_guess - previous_guess;
     //    if(dotprod(temp_coord,temp_coord) < epsilon_squared)
     if((fabs(temp_coord.x()) +
@@ -107,11 +106,11 @@ coord3<T> chebyshev_acceleration(const matrix_4x4<T>& working_iteration_matrix,
 	fabs(temp_coord.z())) < epsilon)
       break;
   }
-#if    defined(KH_DEBUG_IT)  
+#if    defined(KH_DEBUG_IT)
   T squared_distance = dotprod(temp_coord, temp_coord);
   printf("chebyshev finished after %d iterations (error %1.27f)\n", iteration, sqrt(squared_distance));
 #endif /* defined(KH_DEBUG_IT) */
-  
+
   return(working_guess);
 }
 
@@ -131,14 +130,14 @@ coord3<T> chebyshev(const matrix_4x4<T>& non_diagonal,
 				max_iterations,
 				epsilon));
 }
-/* End of chebyshev stuff */  
+/* End of chebyshev stuff */
 
 /* This next one is incredibly fast.  It does only one matrix multiply per
    iteration, and doesn't take very many iterations to converge.
 
    NOTE:  This method assumes the matrix it is given is symmetric positive
    definite (SPD {A = transpose(A), transpose(x)*A*x > 0 for all x vectors}).
-*/ 
+*/
 template <class T>
 coord3<T> conjugate_gradient(const coord3<T>& initial_guess,
 			     const matrix_4x4<T>& m,
@@ -166,15 +165,12 @@ coord3<T> conjugate_gradient(const coord3<T>& initial_guess,
     if(d < epsilon_squared)
     {
       break;
-    }      
+    }
     v = r + (d/c) * v;
     c = d;
   }
-#if    defined(KH_DEBUG_IT)    
+#if    defined(KH_DEBUG_IT)
   printf("finished in %d iterations\n", iteration);
 #endif /* defined(KH_DEBUG_IT) */
   return(x);
 }
-
-
-#endif /* !defined(KH_SOLVERS_H) */

@@ -1,28 +1,9 @@
-/*
- *  Copyright (C) 2000 Kevin Harris
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST_ROOT_SOLVERS_HPP)
-#define            AMETHYST_ROOT_SOLVERS_HPP
-
-/*
+ /*
    root_solvers.h -- Generic (templated) functions for use in solving equations
-               either with polynomials, or with unknown functions/functors
-           producing data.
+   either with polynomials, or with unknown functions/functors
+   producing data.
  */
 /*
    NOTES: All polynomials used in any functions within this file are assumed to
@@ -34,8 +15,8 @@
    for example:
    c[0] = 1; c[1] = 2; c[2] = -1;
    would be: -1 * x^2 + 2 * x^1 + 1 * x^0
-         == -1*x^2 + 2*x + 1
-     == -x*x   + 2*x + 1
+          == -1*x^2 + 2*x + 1
+          == -x*x   + 2*x + 1
  */
 
 /*
@@ -123,7 +104,7 @@
            of the input function (no derivitive estimate required).
  */
 
-#include "math/template_math.hpp"
+#include "template_math.hpp"
 
 #include <vector>
 #if       defined(USELESS_DEBUG)
@@ -142,7 +123,7 @@ namespace amethyst
         //         ---------------
         //               2*h
         return (dat(x + epsilon) - dat(x - epsilon)) / (2 * epsilon);
-    } /* est_deriv() */
+    }
 
     // A method of estimating the second derivitive of a function.
     template <class base_type, class data_fn>
@@ -154,7 +135,7 @@ namespace amethyst
         //          ------------------------------
         //                       h^2
         return (dat(x + epsilon) - 2 * dat(x) + dat(x - epsilon)) / (epsilon * epsilon);
-    } /* est_second_deriv() */
+    }
 
 
     // A direct implementation of newton's method
@@ -167,7 +148,7 @@ namespace amethyst
         // Newton's method:
         // x = x - F(x) / F'(x)
         return x - val_x / est_deriv(dat, x, epsilon);
-    } /* newton_next_guess */
+    }
 
 
     // A method based on newton's method which is slightly faster due to having
@@ -182,7 +163,7 @@ namespace amethyst
         // Secant method:
         // Xn+1 = Xn - F(Xn) * [ (Xn - Xn-1) / (F(Xn) - F(Xn-1)) ]
         return x - val_x * (x - prev_x) / (val_x - val_prev_x);
-    } /* secant_next_guess() */
+    }
 
 
     template <class base_type, class data_fn, class guess_fn>
@@ -305,7 +286,7 @@ namespace amethyst
         } // if the roots need sorting
 
         return found_roots;
-    } /* simple_roots() */
+    }
 
     //
     // At least egcs-2.91.66 cannot correctly support taking the address of certain
@@ -335,7 +316,7 @@ namespace amethyst
 #endif /* defined(AMETHYST_SECANT_SOLVER) */
 
                                                 epsilon, guesses, num_roots);
-    } /* solve() */
+    }
 #else
     //
     // Given the desired interval, attempt to find roots (x) within that interval
@@ -354,7 +335,7 @@ namespace amethyst
                             int num_roots = 5)
     {
         return method(min, max, dat, value, get_next_guess, epsilon, guesses, num_roots);
-    } /* solve() */
+    }
 #endif /* !defined(FUNCTIONAL_FUNCTION_TEMPLATE_ADDRESS) */
 
 
@@ -378,7 +359,7 @@ namespace amethyst
             }
         }
         return retval;
-    } /* horner_polynomial_evaluate() */
+    }
 
     //
     // Factor out a term of zero from a polynomial.
@@ -418,7 +399,7 @@ namespace amethyst
             }
         }
         return r;
-    } /* horner_factor_out_zero() */
+    }
 
     //
     // Evaluate the polynomial and it's derivative at the given point (this is for
@@ -443,7 +424,7 @@ namespace amethyst
             deriv_value = deriv;
         }
         return retval;
-    } /* horner_deriv_evaluate() */
+    }
 
     //
     // Remove useless (leading) zeros on a polynomial.  These are all zeros of
@@ -460,7 +441,7 @@ namespace amethyst
             --i;
         }
         return vector<base_type>(hp.begin(), hp.begin() + i);
-    } /* remove_useless_poly_zeros() */
+    }
 
 
     //
@@ -500,7 +481,7 @@ namespace amethyst
             radius = 1 + largest_low_order / high_order_term;
         }
         return radius;
-    } /* zero_disk_radius() */
+    }
 
     //
     // Find all (possibly not all if things go bad) of the zeros for the given
@@ -584,7 +565,6 @@ namespace amethyst
 
 
         return zero_vec;
-    } /* poly_solve() */
-
+    }
 }
-#endif /* !defined(AMETHYST_ROOT_SOLVERS_HPP) */
+
