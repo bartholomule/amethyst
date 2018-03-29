@@ -5,7 +5,7 @@
 
 #include "amethyst/graphics/alpha_triangle_2d.hpp"
 #include "amethyst/graphics/image.hpp"
-#include "amethyst/graphics/tga_io.h"
+#include "amethyst/graphics/tga_io.hpp"
 
 template <class T>
 void clear_image(amethyst::image<T>& img, const amethyst::rgbcolor<T>& color)
@@ -255,59 +255,59 @@ AUTO_UNIT_TEST(test_opaque1)
 
 AUTO_UNIT_TEST(test_opaque2)
 {
-	typedef amethyst::image<double> image;
-	typedef amethyst::alpha_triangle_2d<double> triangle;
-	typedef amethyst::rgbcolor<double> color;
-	using namespace amethyst;
+    typedef amethyst::image<double> image;
+    typedef amethyst::alpha_triangle_2d<double> triangle;
+    typedef amethyst::rgbcolor<double> color;
+    using namespace amethyst;
 
-	image output(100, 100);
-
-
-	tga_io<double> io;
-
-	color black(0,0,0);
-	color white(1,1,1);
-	color red(1,0,0);
-	color green(0,1,0);
-	color blue(0,0,1);
-	double transparent = 1;
-	double opaque = 0;
-
-	{
-		clear_image(output, black);
-		triangle t;
-		t.v1.xy.set(50,0);
-		t.v2.xy.set(50 + 43.3, 50 + 25);
-		t.v3.xy.set(50 - 43.3, 50 + 25);
-		t.v1.rgb = red;
-		t.v2.rgb = green;
-		t.v3.rgb = blue;
-		t.v1.a = t.v2.a = t.v3.a = opaque;
-
-		dda_rasterize_triangle(output, t);
-
-		io.output("test_triangle_opaque2-1.tga", output);
+    image output(100, 100);
 
 
-		TEST_BOOLEAN(colors_equal(output(
-					(t.v1.xy + t.v2.xy + t.v3.xy).x() / 3 + 0.5,
-					(t.v1.xy + t.v2.xy + t.v3.xy).y() / 3 + 0.5),
-				(t.v1.rgb + t.v2.rgb + t.v3.rgb) * (1 / 3.0)));
+    tga_io<double> io;
 
-		TEST_BOOLEAN(colors_equal(output(
-					(t.v1.xy + t.v2.xy).x() / 2 + 0.5,
-					(t.v1.xy + t.v2.xy).y() / 2 + 0.5),
-				(t.v1.rgb + t.v2.rgb) * (1 / 2.0)));
+    color black(0, 0, 0);
+    color white(1, 1, 1);
+    color red(1, 0, 0);
+    color green(0, 1, 0);
+    color blue(0, 0, 1);
+    double transparent = 1;
+    double opaque = 0;
 
-		TEST_BOOLEAN(colors_equal(output(
-					(t.v1.xy + t.v3.xy).x() / 2 + 0.5,
-					(t.v1.xy + t.v3.xy).y() / 2 + 0.5),
-				(t.v1.rgb + t.v3.rgb) * (1 / 2.0)));
+    {
+        clear_image(output, black);
+        triangle t;
+        t.v1.xy.set(50, 0);
+        t.v2.xy.set(50 + 43.3, 50 + 25);
+        t.v3.xy.set(50 - 43.3, 50 + 25);
+        t.v1.rgb = red;
+        t.v2.rgb = green;
+        t.v3.rgb = blue;
+        t.v1.a = t.v2.a = t.v3.a = opaque;
 
-		TEST_BOOLEAN(colors_equal(output(
-					(t.v2.xy + t.v3.xy).x() / 2 + 0.5,
-					(t.v2.xy + t.v3.xy).y() / 2 + 0.5),
-				(t.v2.rgb + t.v3.rgb) * (1 / 2.0)));
-	}
+        dda_rasterize_triangle(output, t);
+
+        io.output("test_triangle_opaque2-1.tga", output);
+
+
+        TEST_BOOLEAN(colors_equal(output(
+            size_t((t.v1.xy + t.v2.xy + t.v3.xy).x() / 3 + 0.5),
+            size_t((t.v1.xy + t.v2.xy + t.v3.xy).y() / 3 + 0.5)),
+            (t.v1.rgb + t.v2.rgb + t.v3.rgb) * (1 / 3.0)));
+
+        TEST_BOOLEAN(colors_equal(output(
+            size_t((t.v1.xy + t.v2.xy).x() / 2 + 0.5),
+            size_t((t.v1.xy + t.v2.xy).y() / 2 + 0.5)),
+            (t.v1.rgb + t.v2.rgb) * (1 / 2.0)));
+
+        TEST_BOOLEAN(colors_equal(output(
+            size_t((t.v1.xy + t.v3.xy).x() / 2 + 0.5),
+            size_t((t.v1.xy + t.v3.xy).y() / 2 + 0.5)),
+            (t.v1.rgb + t.v3.rgb) * (1 / 2.0)));
+
+        TEST_BOOLEAN(colors_equal(output(
+            size_t((t.v2.xy + t.v3.xy).x() / 2 + 0.5),
+            size_t((t.v2.xy + t.v3.xy).y() / 2 + 0.5)),
+            (t.v2.rgb + t.v3.rgb) * (1 / 2.0)));
+    }
 }
 
