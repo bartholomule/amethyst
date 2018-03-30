@@ -188,6 +188,8 @@ namespace amethyst
         T begin() const { return a; }
         T end() const { return b; }
 
+        T size() const { return b - a; }
+
         void set(T begin, T end)
         {
             a = begin; b = end;
@@ -378,7 +380,7 @@ namespace amethyst
     template <typename T>
     std::string inspect(const interval<T>& i)
     {
-        if (i..empty())
+        if (i.empty())
         {
             return "[empty]";
         }
