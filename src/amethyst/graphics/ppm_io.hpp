@@ -29,6 +29,7 @@ namespace amethyst
 
         template <class S> bool basic_output(S& o, const raster<ColorType>& source) const;
 
+        void eat_whitespace_and_comments(std::istream& input) const;
         raster<ColorType> input(std::istream& i) const override;
     };
 
@@ -137,6 +138,39 @@ namespace amethyst
 
 
     template <typename T, typename ColorType>
+    void ppm_io<T, ColorType>::eat_whitespace_and_comments(std::istream& input) const
+    {
+        bool in_comment = false;
+
+        for (;;)
+        {
+            char c;
+            if (!input.get(c))
+            {
+                break;
+            }
+
+            if (c == '#')
+            {
+                in_comment = true;
+            }
+
+            if (in_comment)
+            {
+                if (c == '\n')
+                {
+                    in_comment = false;
+                }
+            }
+            else if (!isspace(c))
+            {
+                input.unget();
+                break;
+            }
+        }
+    }
+
+    template <typename T, typename ColorType>
     raster<ColorType> ppm_io<T, ColorType>::input(std::istream& input) const
     {
         std::string format;
@@ -144,7 +178,15 @@ namespace amethyst
         size_t height;
         size_t max_pixel_value;
 
-        input >> format >> width >> height >> max_pixel_value;
+        eat_whitespace_and_comments(input);
+        input >> format;
+        eat_whitespace_and_comments(input);
+        input >> width;
+        eat_whitespace_and_comments(input);
+        input >> height;
+        eat_whitespace_and_comments(input);
+        input >> max_pixel_value;
+        eat_whitespace_and_comments(input);
 
         std::cout << "Format is " << format << "  Width=" << width << " Height=" << height << " max pixel value=" << max_pixel_value << std::endl;
 
