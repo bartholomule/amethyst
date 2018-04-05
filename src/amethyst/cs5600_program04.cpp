@@ -312,14 +312,8 @@ void rasterize_triangles(const file_data& data, image<number_type>& image,
     raster<number_type> zbuffer(image.get_width(), image.get_height());
 
     // Blank the image and set the zbuffer to the max.
-    for (int y = 0; y < image.get_height(); ++y)
-    {
-        for (int x = 0; x < image.get_width(); ++x)
-        {
-            image(x, y).set(0, 0, 0);
-            zbuffer(x, y) = std::numeric_limits<number_type>::max();
-        }
-    }
+    image.fill({ 0,0,0 });
+    zbuffer.fill(std::numeric_limits<number_type>::max());
 
     size_t percent_done = ~0;
 

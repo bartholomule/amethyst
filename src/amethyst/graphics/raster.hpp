@@ -161,6 +161,22 @@ namespace amethyst
         {
             return raster_data == NULL;
         }
+
+        void fill(const T& t)
+        {
+            std::fill(raster_data, raster_data + get_numpixels(), t);
+        }
+
+        void fill(std::function<T(size_t x, size_t y)> generator)
+        {
+            for (size_t y = 0; y < height; ++y)
+            {
+                for (size_t x = 0; x < width; ++x)
+                {
+                    raster_data[y * width + x] = generator(x, y);
+                }
+            }
+        }
     private:
         /** The width and height of the raster */
         size_t width = 0;

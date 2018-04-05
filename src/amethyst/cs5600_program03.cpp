@@ -302,13 +302,7 @@ void rasterize_triangles(const file_data& data, image<number_type>& image,
                          const raster<std::vector<coord2<number_type>>>& samples)
 {
     // Blank the image...
-    for (int y = 0; y < image.get_height(); ++y)
-    {
-        for (int x = 0; x < image.get_width(); ++x)
-        {
-            image(x, y).set(0, 0, 0);
-        }
-    }
+    image.fill({ 0,0,0 });
 
     size_t percent_done = ~0;
 
