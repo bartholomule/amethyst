@@ -499,9 +499,9 @@ namespace amethyst
     {
         std::vector<coord2<T>> samples(num_samples);
         int samples_gathered = 0;
-        register int current_sample;
-        register int bad_attempts = 0;
-        register int restarts = 0;
+        int current_sample;
+        int bad_attempts = 0;
+        int restarts = 0;
         coord2<T> next_point;
 
 
