@@ -1,26 +1,4 @@
-/*
- * $Id: raster.hpp,v 1.9 2008/12/27 18:46:18 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__RASTER_HPP)
-#define            AMETHYST__RASTER_HPP
+#pragma once
 
 #include "amethyst/general/textized.hpp"
 #include "amethyst/general/extra_exceptions.hpp"
@@ -183,7 +161,7 @@ namespace amethyst
         size_t height = 0;
         /** The actual raster data. */
         T* raster_data = nullptr;
-    }; // class raster
+    };
 
 
 
@@ -308,7 +286,7 @@ namespace amethyst
 
             if (old.raster_data)
             {
-                std::copy(old.raster_data, old.raster_data + linear_size, raster_data);
+                std::copy_n(old.raster_data, linear_size, raster_data);
             }
             else
             {
@@ -350,7 +328,7 @@ namespace amethyst
         if ((linear_size > 0) && old.raster_data)
         {
             raster_data = new T[linear_size];
-            std::copy(old.raster_data, old.raster_data + linear_size, raster_data);
+            std::copy_n(old.raster_data, linear_size, raster_data);
         }
         else
         {
@@ -659,7 +637,7 @@ namespace amethyst
         {
             // Only address the first of each raster line so the bounds checking isn't repeatedly done.
             auto start = &line.my_raster(0, line.my_row);
-            std::copy(start, start + my_raster.get_width(), &my_raster(0, my_row));
+            std::copy_n(start, my_raster.get_width(), &my_raster(0, my_row));
         }
         else
         {
@@ -668,8 +646,4 @@ namespace amethyst
         }
         return *this;
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__RASTER_HPP) */
+}
