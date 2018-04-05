@@ -10,6 +10,7 @@ function(unit_test name)
 endfunction()
 
 add_subdirectory(general)
+add_subdirectory(math)
 add_subdirectory(graphics)
 
 function(compile_example name)
