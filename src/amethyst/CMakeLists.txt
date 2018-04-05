@@ -40,3 +40,6 @@ compile_example(cs5600_program04)
 compile_example(genetic_triangles)
 compile_example(load_and_save)
 
+compile_example(rtiow_01_gradient)
+compile_example(rtiow_02_sphere)
+compile_example(rtiow_03_sphere_normal)
