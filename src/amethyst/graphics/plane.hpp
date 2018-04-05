@@ -1,30 +1,5 @@
-/*
- * $Id: plane.hpp,v 1.16 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__PLANE_HPP)
-#define            AMETHYST__PLANE_HPP
-
-// --------------------------------------
-// Default include of parent class header
-// --------------------------------------
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/graphics/shape.hpp"
 #include "amethyst/graphics/sphere.hpp"
@@ -44,77 +19,33 @@ namespace amethyst
     template <class T>
     class plane : public shape<T>
     {
-
-    private:
-
-        point3<T> defining_point;
-        vector3<T> normal;
-        vector3<T> u_vector;
-        vector3<T> v_vector;
-        int non_zero_u_index;
-        int non_zero_v_index;
-
-    protected:
-
     public:
-        /** Default constructor */
-        plane();
+        plane() = default;
 
-        /** Secondary (pos/orientation) constructor */
+        // position/normal
         plane(const point3<T>& p, const vector3<T>& n);
-
-        /** Tertiary (pos/orientation/rotation) constructor */
+        // position/normal/rotation
         plane(const point3<T>& p, const vector3<T>& n, const vector3<T>& vec_u);
-
-        /** Quaternary (pos1, pos2, pos3) constructor */
+        // plane from 3 points.  Must not be colinear.
         plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v);
-        /** Quinary (pos, vec, vec, vec) constructor */
+        // Fully-specified
         plane(const point3<T>& p, const vector3<T>& normal, const vector3<T>& vec_u, const vector3<T>& vec_v);
 
-        /** Destructor */
-        virtual ~plane();
+        virtual ~plane() = default;
+        plane(const plane&) = default;
+        plane& operator=(const plane&) = default;
 
-        /** Copy constructor */
-        plane(const plane& old);
+        const point3<T>& get_origin() const { return defining_point; }
+        const vector3<T>& get_normal() const { return normal; }
+        const vector3<T>& get_u_vector() const { return u_vector; }
+        const vector3<T>& get_v_vector() const { return v_vector; }
 
-        /** Assignment operator */
-        plane& operator= (const plane& old);
+        bool inside(const point3<T>& p) const override;
+        bool intersects(const sphere<T>& s) const override;
+        bool intersects(const plane<T>& p) const override;
 
-        const point3<T>& get_origin() const
-        {
-            return defining_point;
-        }
-        const vector3<T>& get_normal() const
-        {
-            return normal;
-        }
-        const vector3<T>& get_u_vector() const
-        {
-            return u_vector;
-        }
-        const vector3<T>& get_v_vector() const
-        {
-            return v_vector;
-        }
-
-        /** Returns if the given point is inside the shape. */
-        virtual bool inside(const point3<T>& p) const;
-
-        /** Returns if the given sphere intersects the shape. */
-        virtual bool intersects(const sphere<T>& s) const;
-
-        /** Returns if the given plane intersects the shape. */
-        virtual bool intersects(const plane<T>& p) const;
-
-        /** Returns if the given line intersects the sphere. */
-        virtual bool intersects_line(const line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements) const;
-
-        /** Returns if the given line intersects the plane. */
-        virtual bool intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements) const;
+        bool intersects_line(const unit_line3<T>& line, intersection_info<T>& intersection,
+            const intersection_requirements& requirements) const override;
 
         /**
          * A quick intersection test.  This will calculate nothing but the
@@ -144,134 +75,53 @@ namespace amethyst
     private:
         void setup_non_zero_indices();
 
-    }; // class plane
+        point3<T> defining_point = { 0, 0, 0 };
+        vector3<T> normal = { 0, 0, 1 };
+        vector3<T> v_vector = { 0, 1, 0 };
+        vector3<T> u_vector = { 1, 0, 0 };
+        int non_zero_u_index = 0;
+        int non_zero_v_index = 0;
+    };
 
-
-
-    //------------------------------------
-    // Default constructor for class plane
-    //------------------------------------
     template <class T>
-    plane<T>::plane() :
-        shape<T>(),
-        defining_point(0, 0, 0),
-        normal(0, 0, 0),
-        u_vector(0, 0, 0),
-        v_vector(0, 0, 0),
-        non_zero_u_index(0),
-        non_zero_v_index(0)
-    {
-
-    } // plane()
-
-    //---------------------------------------------------------
-    // Secondary (pos/orientation) constructor for class plane.
-    //---------------------------------------------------------
-    template <class T>
-    plane<T>::plane(const point3<T>& p, const vector3<T>& n) :
-        shape<T>(),
-        defining_point(p),
-        normal(unit(n))
+    plane<T>::plane(const point3<T>& p, const vector3<T>& n)
+        : defining_point(p)
+        , normal(unit(n))
     {
         calculate_perpendicular_vectors(normal, u_vector, v_vector);
 
         setup_non_zero_indices();
-    } // plane(point3,vector3)
+    }
 
-    //---------------------------------------------------------
-    // Tertiary (pos/orientation/rotation) constructor for class plane.
-    //---------------------------------------------------------
     template <class T>
-    plane<T>::plane(const point3<T>& p, const vector3<T>& n, const vector3<T>& vec_u) :
-        shape<T>(),
-        defining_point(p),
-        normal(unit(n)),
-        v_vector(crossprod(normal, vec_u))
+    plane<T>::plane(const point3<T>& p, const vector3<T>& n, const vector3<T>& vec_u)
+        : defining_point(p)
+        , normal(unit(n))
+        , v_vector(crossprod(normal, vec_u))
+        , u_vector(crossprod(v_vector, normal))
     {
-        u_vector = crossprod(v_vector, normal);
-
         setup_non_zero_indices();
+    }
 
-    } // plane(point3,vector3,vector3)
-
-    //---------------------------------------------------------
-    // Quaternary (pos1, pos2, pos3) constructor for class plane.
-    //---------------------------------------------------------
     template <class T>
-    plane<T>::plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v) :
-        shape<T>(),
-        defining_point(p)
+    plane<T>::plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v)
+        : defining_point(p)
+        , v_vector(plus_v - p)
+        , u_vector(plus_u - p)
     {
-        u_vector = plus_u - p;
-        v_vector = plus_v - p;
         normal = unit(crossprod(u_vector, v_vector));
-
         setup_non_zero_indices();
+    }
 
-    } // plane(point3,point3,point3)
-
-    //---------------------------------------------------------
-    // Quinary (pos, vec, vec, vec) constructor for class plane.
-    //---------------------------------------------------------
     template <class T>
-    plane<T>::plane(const point3<T>& p, const vector3<T>& normal,
-                    const vector3<T>& vec_u, const vector3<T>& vec_v) :
-        shape<T>(),
-        defining_point(p),
-        normal(unit(crossprod(vec_u, vec_v))),
-        u_vector(vec_u),
-        v_vector(vec_v)
+    plane<T>::plane(const point3<T>& p, const vector3<T>& normal, const vector3<T>& vec_u, const vector3<T>& vec_v)
+        : defining_point(p)
+        , normal(unit(crossprod(vec_u, vec_v)))
+        , v_vector(vec_v)
+        , u_vector(vec_u)
     {
-
         setup_non_zero_indices();
-
-    } // plane(point3,vector3,vector3,vector3)
-
-    //---------------------------
-    // Destructor for class plane
-    //---------------------------
-    template <class T>
-    plane<T>::~plane()
-    {
-
-    } // ~plane()
-
-    //---------------------------------
-    // Copy constructor for class plane
-    //---------------------------------
-    template <class T>
-    plane<T>::plane(const plane<T>& old) :
-        shape<T>(old),
-        defining_point(old.defining_point),
-        normal(old.normal),
-        u_vector(old.u_vector),
-        v_vector(old.v_vector),
-        non_zero_u_index(old.non_zero_u_index),
-        non_zero_v_index(old.non_zero_v_index)
-    {
-
-    } // plane(plane)
-
-    //------------------------------------
-    // Assignment operator for class plane
-    //------------------------------------
-    template <class T>
-    plane<T>& plane<T>::operator= (const plane<T>& old)
-    {
-        // Generic check for self-assignment
-        if (&old != this)
-        {
-            defining_point = old.defining_point;
-            normal = old.normal;
-            u_vector = old.u_vector;
-            v_vector = old.v_vector;
-
-            non_zero_u_index = old.non_zero_u_index;
-            non_zero_v_index = old.non_zero_v_index;
-            shape<T>::operator=(old);
-        }
-        return *this;
-    } // plane::operator=(plane)
+    }
 
     // Returns if the given point is inside the shape.
     template <class T>
@@ -309,78 +159,8 @@ namespace amethyst
         }
         // If they are parallel, but have the same defining point, then they
         // overlap EVERYWHERE (the same plane).
-        else if (squared_length(defining_point - p.defining_point) <
-                 AMETHYST_EPSILON)
+        else if (squared_length(defining_point - p.defining_point) < AMETHYST_EPSILON)
         {
-            return true;
-        }
-        // Anything else
-        else
-        {
-            return false;
-        }
-    }
-
-
-    // Returns if the given line intersects the plane.
-    template <class T>
-    inline bool plane<T>::intersects_line(const unit_line3<T>& line,
-                                          intersection_info<T>& intersection,
-                                          const intersection_requirements& requirements) const
-    {
-        T ctheta = dotprod(line.direction(), normal);
-        T t;
-
-        // I will need to explain why this is safe to do.  If the angle is > 0 or
-        // the angle is < 0, then we know there is a hit somewhere, and it can be
-        // found.  If the angle is zero, then it will cause a divide by zero,
-        // setting t to be +/-INF, which when compared to anything (even itself)
-        // returns false, thus, the inside test below can be called with the INF,
-        // and not get bad numbers out.
-        //
-        // DON'T DELETE THESE COMMENTS, AS THEY APPLY TO OTHER PLANE-BASED
-        // FUNCTIONS AS WELL!
-        if (ctheta > 0)
-        {
-            t = (dotprod(defining_point - line.origin(), normal) /
-                 ctheta);
-        }
-        else
-        {
-            t = (dotprod(defining_point - line.origin(), -normal) /
-                 -ctheta);
-        }
-
-        if (line.inside(t))
-        {
-            intersection.set_shape(this);
-            point3<T> p = line.point_at( t );
-            intersection.set_ray( line );
-            intersection.set_first_distance( t );
-            intersection.set_first_point( p );
-
-            if (requirements.needs_normal())
-            {
-                intersection.set_normal(normal);
-            }
-
-            if (requirements.needs_uv())
-            {
-                coord2<T> uv;
-                // Note that a non-checked version is being called, because the point
-                // *SHOULD* be on the plane (it hit it, why check it?).  This improves
-                // speed, and reduces artifacts with expanded error (a point that is on
-                // the plane would sometimes not show as being on the plane -- this is
-                // the case when a small epsilon and single-precision floats are used.
-                extract_uv_for_point_nonchecked(p, uv);
-                intersection.set_uv(uv);
-            }
-
-            if (requirements.needs_local_coord_system())
-            {
-                intersection.set_onb(onb<T>(u_vector, v_vector, normal));
-            }
-
             return true;
         }
 
@@ -390,8 +170,50 @@ namespace amethyst
 
     // Returns if the given line intersects the plane.
     template <class T>
-    inline bool plane<T>::quick_intersection(const unit_line3<T>& line,
-                                             T time, T& distance) const
+    inline bool plane<T>::intersects_line(const unit_line3<T>& line,
+        intersection_info<T>& intersection, const intersection_requirements& requirements) const
+    {
+        T t;
+        T time = 0; // not used
+        if (!plane::quick_intersection(line, time, t))
+        {
+            return false;
+        }
+
+        intersection.set_shape(this);
+        point3<T> p = line.point_at(t);
+        intersection.set_ray(line);
+        intersection.set_first_distance(t);
+        intersection.set_first_point(p);
+
+        if (requirements.needs_normal())
+        {
+            intersection.set_normal(normal);
+        }
+
+        if (requirements.needs_uv())
+        {
+            coord2<T> uv;
+            // Note that a non-checked version is being called, because the point
+            // *SHOULD* be on the plane (it hit it, why check it?).  This improves
+            // speed, and reduces artifacts with expanded error (a point that is on
+            // the plane would sometimes not show as being on the plane -- this is
+            // the case when a small epsilon and single-precision floats are used.
+            extract_uv_for_point_nonchecked(p, uv);
+            intersection.set_uv(uv);
+        }
+
+        if (requirements.needs_local_coord_system())
+        {
+            intersection.set_onb(onb<T>(u_vector, v_vector, normal));
+        }
+
+        return true;
+    }
+
+    // Returns if the given line intersects the plane.
+    template <class T>
+    inline bool plane<T>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
     {
         (void)time;  // This plane doesn't move.
         T ctheta = dotprod(line.direction(), normal);
@@ -408,79 +230,16 @@ namespace amethyst
         // FUNCTIONS AS WELL!
         if (ctheta > 0)
         {
-            t = (dotprod(defining_point - line.origin(), normal) /
-                 ctheta);
+            t = (dotprod(defining_point - line.origin(), normal) / ctheta);
         }
         else
         {
-            t = (dotprod(defining_point - line.origin(), -normal) /
-                 -ctheta);
+            t = (dotprod(defining_point - line.origin(), -normal) / -ctheta);
         }
 
         if (line.inside(t))
         {
             distance = t;
-            return true;
-        }
-
-        return false;
-    }
-
-    // Returns if the given line intersects the plane.
-    template <class T>
-    inline bool plane<T>::intersects_line(const line3<T>& line,
-                                          intersection_info<T>& intersection,
-                                          const intersection_requirements& requirements) const
-    {
-        T ctheta = (dotprod(line.direction(), normal) /
-                    length(line.direction()));
-        T t;
-
-        // Check the unit line version of this function for proper comments on why
-        // this works!
-        if (ctheta > 0)
-        {
-            t = (dotprod(defining_point - line.origin(), normal) /
-                 ctheta);
-        }
-        else
-        {
-            t = (dotprod(defining_point - line.origin(), -normal) /
-                 -ctheta);
-        }
-
-        if (line.inside(t))
-        {
-            intersection.set_shape(this);
-            unit_line3<T> unit_ray(line);
-            T scaled_distance = t / unit_ray.normal_length();
-            point3<T> p = unit_ray.point_at( scaled_distance );
-            intersection.set_ray( unit_ray );
-            intersection.set_first_distance( scaled_distance );
-            intersection.set_first_point( p );
-
-            if (requirements.needs_normal())
-            {
-                intersection.set_normal(normal);
-            }
-
-            if (requirements.needs_uv())
-            {
-                coord2<T> uv;
-                // Note that a non-checked version is being called, because the point
-                // *SHOULD* be on the plane (it hit it, why check it?).  This improves
-                // speed, and reduces artifacts with expanded error (a point that is on
-                // the plane would sometimes not show as being on the plane -- this is
-                // the case when a small epsilon and single-precision floats are used.
-                extract_uv_for_point_nonchecked(p, uv);
-                intersection.set_uv(uv);
-            }
-
-            if (requirements.needs_local_coord_system())
-            {
-                intersection.set_onb(onb<T>(u_vector, v_vector, normal));
-            }
-
             return true;
         }
 
@@ -603,8 +362,4 @@ namespace amethyst
 
         return caps;
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__PLANE_HPP) */
+}

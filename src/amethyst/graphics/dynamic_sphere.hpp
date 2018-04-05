@@ -1,30 +1,5 @@
-/*
- * $Id: dynamic_sphere.hpp,v 1.2 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__DYNAMIC_SPHERE_HPP)
-#define            AMETHYST__DYNAMIC_SPHERE_HPP
-
-// --------------------------------------
-// Default include of parent class header
-// --------------------------------------
 #include "amethyst/graphics/shape.hpp"
 #include "amethyst/graphics/interpolated_value.hpp"
 #include "amethyst/general/defines.hpp"
@@ -33,7 +8,6 @@
 
 namespace amethyst
 {
-
     /**
      *
      * A dynamic_sphere class.
@@ -46,6 +20,8 @@ namespace amethyst
     class dynamic_sphere : public shape<T>
     {
     public:
+        using parent = shape<T>;
+
         dynamic_sphere() : dynamic_sphere(point3<T>(0, 0, 0), 1) { }
         dynamic_sphere(const point3<T>& c, T rad);
 
@@ -82,46 +58,42 @@ namespace amethyst
         }
 
         /** Returns if the given point is inside the dynamic_sphere. */
-        virtual bool inside(const point3<T>& p) const;
+        bool inside(const point3<T>& p) const override;
 
         /** Returns if the given dynamic_sphere intersects the dynamic_sphere. */
-        virtual bool intersects(const sphere<T>& s) const;
+        bool intersects(const sphere<T>& s) const override;
 
         /** Returns if the given plane intersects the shape. */
-        virtual bool intersects(const plane<T>& p) const;
+        bool intersects(const plane<T>& p) const override;
+
 
         /** Returns if the given line intersects the dynamic_sphere. */
-        //    virtual bool intersects_line(const line3<T>& line, intersection_info<T>& intersection) const;
-
-        /** Returns if the given line intersects the dynamic_sphere. */
-        virtual bool intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements) const;
+        using parent::intersects_line;
+        bool intersects_line(const unit_line3<T>& line,
+            intersection_info<T>& intersection,
+            const intersection_requirements& requirements) const override;
 
         /**
          * A quick intersection test.  This will calculate nothing but the
          * distance. This is most useful for shadow tests, and other tests where no
          * textures will be applied.
          */
-        virtual bool quick_intersection(const unit_line3<T>& line,
-                                        T time, T& distance) const;
+        bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const override;
 
         /**
          * Returns if the given ray intersects the shape.
          *
          */
-        virtual bool intersects_ray(const ray_parameters<T>& ray,
-                                    intersection_info<T>& intersection,
-                                    const intersection_requirements& requirements = intersection_requirements()) const;
+        bool intersects_ray(const ray_parameters<T>& ray,
+            intersection_info<T>& intersection,
+            const intersection_requirements& requirements = intersection_requirements()) const override;
 
-        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
+        std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
 
-        virtual std::string name() const {
-            return "dynamic_sphere";
-        }
+        std::string name() const override { return "dynamic_sphere"; }
 
-        virtual intersection_capabilities get_intersection_capabilities() const;
-        virtual object_capabilities get_object_capabilities() const;
+        intersection_capabilities get_intersection_capabilities() const override;
+        object_capabilities get_object_capabilities() const override;
 
     private:
         coord2<T> get_uv(const point3<T>& location, T time) const;
@@ -235,38 +207,7 @@ namespace amethyst
         T my_radius = get_radius(time);
         point3<T> my_center = get_center(time);
 
-        // This is the fast hit test.
-        vector3<T> o_c = line.origin() - my_center;
-        register T A = dotprod(line.direction(), line.direction());
-        register T B = 2 * dotprod(line.direction(), o_c);
-        register T C = dotprod(o_c, o_c) - my_radius * my_radius;
-        T discriminant = B * B - 4 * A * C;
-
-        if (discriminant >= AMETHYST_EPSILON)
-        {
-            T sqrtd = sqrt(discriminant);
-
-            // If t1 is inside, it MUST be the closest, as A will always be positive
-            // (squared length of the line), and the subtraction will be less than
-            // the addition (as the square root will always be positive).
-            T t1 = (-B - sqrtd) / (2 * A);
-            if (line.inside(t1))
-            {
-                distance = t1;
-                return true;
-            }
-            else
-            {
-                // The first side (although a hit), wasn't inside the range.
-                T t2 = (-B + sqrtd) / (2 * A);
-                if (line.inside(t2))
-                {
-                    distance = t2;
-                    return true;
-                }
-            }
-        }
-        return false;
+        return quick_sphere_intersection_test(my_center, my_radius, my_radius * my_radius, line, distance);
     }
 
     template <class T>
@@ -358,8 +299,4 @@ namespace amethyst
 
         return coord2<T>(u, v);
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__DYNAMIC_SPHERE_HPP) */
+}
