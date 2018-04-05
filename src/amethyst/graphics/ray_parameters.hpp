@@ -1,26 +1,4 @@
-/*
- * $Id: ray_parameters.hpp,v 1.2 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__RAY_PARAMETERS_HPP)
-#define            AMETHYST__RAY_PARAMETERS_HPP
+#pragma once
 
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/general/defines.hpp"
@@ -43,96 +21,40 @@ namespace amethyst
     template <class T>
     class ray_parameters
     {
-
-    private:
-        //
-        // Items that shapes may care about.
-        //
-
-        // The line of the ray (includes origin, direction, and range)
-        unit_line3<T> line;
-        // The time value of the ray.
-        T time_ray_was_fired;
-
-        //
-        // Items that are ignored by shapes (will be used by materials).
-        //
-
-        // The IOR of the current medium.
-        T current_ior;
-        // used in determining how far a ray should go (starts out as T(1),
-        // decreases with each transmission/reflection)
-        T effective_contribution;
-        // Specifies hwo deep a ray is allowed to go.
-        long depth_max;
-        // The current depth of the ray.
-        long depth;
-
-        // Future additions:
-        // vector3<T> polarization_direction; // full vector
-        // or
-        // T polarization_angle; // angle [0-2PI)
-        //
-        // Lighting method enums, etc.
-
-    protected:
-
     public:
-        /** Default constructor */
-        ray_parameters();
+        ray_parameters() = default;
 
-        ray_parameters(unit_line3<T>& l, T time = 0, T ior = 1, T contribution = 1, long depth_max = AMETHYST_DEPTH_MAX, long depth = 0);
+        ray_parameters(unit_line3<T>& l, T time = 0, T ior = 1, T contribution = 1, long max_depth = AMETHYST_DEPTH_MAX, long current_depth = 0)
+            : line(l)
+            , time_ray_was_fired(time)
+            , current_ior(ior)
+            , effective_contribution(1)
+            , depth_max(max_depth)
+            , depth(current_depth)
+        {
+        }
 
-        /** Destructor */
-        virtual ~ray_parameters();
-
-        /** Copy constructor: compiler defaults    */ // ray_parameters(const ray_parameters& old);
-
-        /** Assignment operator: compiler defaults */ // ray_parameters& operator= (const ray_parameters& old);
+        virtual ~ray_parameters() = default;
 
         // Line operations.
-        const unit_line3<T>& get_line() const {
-            return line;
-        }
-        void set_line(const unit_line3<T>& l) {
-            line = l;
-        }
+        const unit_line3<T>& get_line() const { return line; }
+        void set_line(const unit_line3<T>& l) { line = l; }
 
         // Time operations.
-        T get_time() const {
-            return time_ray_was_fired;
-        }
-        void set_time(T t) {
-            time_ray_was_fired = t;
-        }
+        T get_time() const { return time_ray_was_fired; }
+        void set_time(T t) { time_ray_was_fired = t; }
 
-        T get_ior() const {
-            return current_ior;
-        }
-        void set_ior(T ior) {
-            current_ior = ior;
-        }
+        T get_ior() const { return current_ior; }
+        void set_ior(T ior) { current_ior = ior; }
 
-        T get_contribution() const {
-            return effective_contribution;
-        }
-        void set_contribution(T value) {
-            effective_contribution = value;
-        }
+        T get_contribution() const { return effective_contribution; }
+        void set_contribution(T value) { effective_contribution = value; }
 
-        long get_max_depth() const {
-            return depth_max;
-        }
-        void set_max_depth(long val) {
-            depth_max = val;
-        }
+        long get_max_depth() const { return depth_max; }
+        void set_max_depth(long val) { depth_max = val; }
 
-        long get_current_depth() const {
-            return depth;
-        }
-        void set_current_depth(long val) {
-            depth = val;
-        }
+        long get_current_depth() const { return depth; }
+        void set_current_depth(long val) { depth = val; }
 
         // Perform a perfect reflection.
         bool perfect_reflection(const intersection_info<T>& info, ray_parameters<T>& results) const;
@@ -144,48 +66,38 @@ namespace amethyst
     private:
         // Makes sure a normal is available, calculates (or just sets) the distance
         // and intersection point.
-        bool get_parameters_for_next_ray(const intersection_info<T>& info,
-                                         T& distance, point3<T>& point) const;
+        bool get_parameters_for_next_ray(const intersection_info<T>& info, T& distance, point3<T>& point) const;
 
-    }; // class ray_parameters
+        //
+        // Items that shapes may care about.
+        //
 
+        // The line of the ray (includes origin, direction, and range)
+        unit_line3<T> line;
+        // The time value of the ray.
+        T time_ray_was_fired = 0;
 
+        //
+        // Items that are ignored by shapes (will be used by materials).
+        //
 
-    //---------------------------------------------
-    // Default constructor for class ray_parameters
-    //---------------------------------------------
-    template <class T>
-    ray_parameters<T>::ray_parameters() :
-        line(),
-        time_ray_was_fired(0),
-        current_ior(1),
-        effective_contribution(1),
-        depth_max(AMETHYST_DEPTH_MAX),
-        depth(0)
-    {
+        // The IOR of the current medium.
+        T current_ior = 1;
+        // used in determining how far a ray should go (starts out as T(1),
+        // decreases with each transmission/reflection)
+        T effective_contribution = 1;
+        // Specifies hwo deep a ray is allowed to go.
+        long depth_max = AMETHYST_DEPTH_MAX;
+        // The current depth of the ray
+        long depth = 0;
 
-    } // ray_parameters()
-
-    template <class T>
-    ray_parameters<T>::ray_parameters(unit_line3<T>& l, T time, T ior, T contribution, long dm, long d) :
-        line(l),
-        time_ray_was_fired(time),
-        current_ior(ior),
-        effective_contribution(1),
-        depth_max(dm),
-        depth(d)
-    {
-    }
-
-
-    //------------------------------------
-    // Destructor for class ray_parameters
-    //------------------------------------
-    template <class T>
-    ray_parameters<T>::~ray_parameters()
-    {
-
-    } // ~ray_parameters()
+        // Future additions:
+        // vector3<T> polarization_direction; // full vector
+        // or
+        // T polarization_angle; // angle [0-2PI)
+        //
+        // Lighting method enums, etc.
+    };
 
     template <class T>
     bool ray_parameters<T>::get_parameters_for_next_ray(const intersection_info<T>& info,
@@ -311,12 +223,6 @@ namespace amethyst
     template <class T>
     std::ostream& operator<<(std::ostream& o, const ray_parameters<T>& p)
     {
-        o << p.to_string();
-        return o;
+        return o << p.to_string();
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__RAY_PARAMETERS_HPP) */
-
+}

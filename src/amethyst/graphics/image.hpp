@@ -1,32 +1,7 @@
-/*
- * $Id: image.hpp,v 1.7 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2003 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__IMAGE_HPP)
-#define            AMETHYST__IMAGE_HPP
-
-// --------------------------------------
-// Default include of parent class header
-// --------------------------------------
-#include "amethyst/graphics/raster.hpp"
-#include "amethyst/graphics/rgbcolor.hpp"
+#include "graphics/raster.hpp"
+#include "graphics/rgbcolor.hpp"
 
 namespace amethyst
 {
@@ -67,7 +42,3 @@ namespace amethyst
     template <typename T>
     using image = raster<rgbcolor<T>>;
 }
-
-
-#endif /* !defined(AMETHYST__IMAGE_HPP) */
-

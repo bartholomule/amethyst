@@ -1,37 +1,11 @@
-/*
- * $Id: disc.hpp,v 1.3 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2008 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__DISC_HPP)
-#define            AMETHYST__DISC_HPP
-
-// --------------------------------------
-// Default include of parent class header
-// --------------------------------------
 #include "amethyst/graphics/plane.hpp"
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/math/template_math.hpp"
 
 namespace amethyst
 {
-
     /**
      *
      * A disc (circle).
@@ -43,108 +17,59 @@ namespace amethyst
     template <class T>
     class disc : public plane<T>
     {
-
-    private:
-        T radius;
-        T radius_squared;
-
-    protected:
-
     public:
-        disc(const point3<T>& point,
-             const T& radius = 1,
-             const vector3<T>& normal = vector3<T>(0, 0, 1));
+        disc() = default;
+        disc(const point3<T>& point, T radius = 1, const vector3<T>& normal = vector3<T>(0, 0, 1))
+            : plane<T>(point, normal)
+            , m_radius(radius)
+            , m_radius_squared(radius * radius)
+        {
+        }
 
-        disc(const point3<T>& point,
-             const T& radius,
-             const vector3<T>& normal,
-             const vector3<T>& u);
+        disc(const point3<T>& point, T radius, const vector3<T>& normal, const vector3<T>& u)
+            : plane<T>(point, normal, unit(u))
+            , m_radius(radius)
+            , m_radius_squared(radius * radius)
+        {
+        }
 
-        virtual ~disc();
-
-        disc(const disc& old);
-
-        disc& operator= (const disc& old);
+        disc(const disc& old) = default;
+        virtual ~disc() = default;
+        disc& operator=(const disc& old) = default;
 
         /** Returns if the given point is inside the shape. */
-        virtual bool inside(const point3<T>& p) const;
+        bool inside(const point3<T>& p) const override;
 
         /** Returns if the given sphere intersects the shape. */
-        virtual bool intersects(const sphere<T>& s) const;
+        bool intersects(const sphere<T>& s) const override;
 
         /** Returns if the given plane intersects the shape. */
-        virtual bool intersects(const plane<T>& p) const;
+        bool intersects(const plane<T>& p) const override;
 
         /** Returns if the given line intersects the plane. */
-        virtual bool intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements) const;
+        bool intersects_line(const unit_line3<T>& line,
+            intersection_info<T>& intersection,
+            const intersection_requirements& requirements) const override;
 
         /**
          * A quick intersection test.  This will calculate nothing but the
          * distance. This is most useful for shadow tests, and other tests where no
          * textures will be applied.
          */
-        virtual bool quick_intersection(const unit_line3<T>& line,
-                                        T time, T& distance) const;
+        bool quick_intersection(const unit_line3<T>& line,
+            T time, T& distance) const override;
 
-        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
+        std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
 
-        virtual std::string name() const {
-            return "disc";
-        }
+        std::string name() const override { return "disc"; }
 
-        virtual intersection_capabilities get_intersection_capabilities() const;
-        virtual object_capabilities get_object_capabilities() const;
+        intersection_capabilities get_intersection_capabilities() const override;
+        object_capabilities get_object_capabilities() const override;
 
-    }; // class disc
-
-
-    template <class T>
-    disc<T>::disc(const point3<T>& point,
-                  const T& radius,
-                  const vector3<T>& normal)
-        : plane<T>(point, normal)
-        , radius(radius)
-        , radius_squared(radius * radius)
-    {
-    }
-
-    template <class T>
-    disc<T>::disc(const point3<T>& point,
-                  const T& radius,
-                  const vector3<T>& normal,
-                  const vector3<T>& u)
-        : plane<T>(point, normal, unit(u))
-        , radius(radius)
-        , radius_squared(radius * radius)
-    {
-    }
-
-    template <class T>
-    disc<T>::~disc()
-    {
-    } // ~disc()
-
-    //--------------------------------
-    // Copy constructor for class disc
-    //--------------------------------
-    template <class T>
-    disc<T>::disc(const disc<T>& old) :
-        plane<T>(old)
-    {
-    } // disc(disc)
-
-    template <class T>
-    disc<T>& disc<T>::operator= (const disc<T>& old)
-    {
-        if (&old != this)
-        {
-            plane<T>::operator=(old);
-            radius_squared = old.radius_squared;
-        }
-        return *this;
-    } // disc::operator=(disc)
+    private:
+        T m_radius = T(1);
+        T m_radius_squared = T(1);
+    };
 
     template <class T>
     bool disc<T>::inside(const point3<T>& point) const
@@ -152,10 +77,7 @@ namespace amethyst
         coord2<T> uv;
         if (plane<T>::extract_uv_for_point(point, uv))
         {
-            if ((uv.x() * uv.x() + uv.y() * uv.y()) < radius_squared)
-            {
-                return true;
-            }
+            return ((uv.x() * uv.x() + uv.y() * uv.y()) < m_radius_squared);
         }
         return false;
     }
@@ -188,7 +110,7 @@ namespace amethyst
 
             // Use epsilon to determine if it is close enough to consider an
             // intersection.
-            if ((radius + projected_radius + AMETHYST_EPSILON) > distance_to_projected_center)
+            if ((m_radius + projected_radius + AMETHYST_EPSILON) > distance_to_projected_center)
             {
                 return true;
             }
@@ -221,7 +143,7 @@ namespace amethyst
             {
                 coord2<T> uv = temp_intersection.get_uv();
 
-                if ((uv.x() * uv.x() + uv.y() * uv.y()) < (radius_squared + AMETHYST_EPSILON))
+                if ((uv.x() * uv.x() + uv.y() * uv.y()) < (m_radius_squared + AMETHYST_EPSILON))
                 {
                     intersection = temp_intersection;
 
@@ -243,7 +165,7 @@ namespace amethyst
         if (plane<T>::quick_intersection(line, time, plane_dist))
         {
             vector3<T> inter_v = plane<T>::get_origin() - (line.origin() + plane_dist * line.direction());
-            if (dotprod(inter_v, inter_v) < (radius_squared + AMETHYST_EPSILON))
+            if (dotprod(inter_v, inter_v) < (m_radius_squared + AMETHYST_EPSILON))
             {
                 distance = plane_dist;
                 return true;
@@ -264,7 +186,7 @@ namespace amethyst
             internal_tagging += disc<T>::name() + "::";
         }
 
-        retval += internal_tagging + string_format("radius=%1\n", radius);
+        retval += internal_tagging + string_format("radius=%1\n", m_radius);
 
         return retval;
     }
@@ -282,15 +204,10 @@ namespace amethyst
     {
         object_capabilities caps = plane<T>::get_object_capabilities();
 
-        caps &= ~object_capabilities::INFINITE;
+        caps &= ~object_capabilities::NOT_FINITE;
         caps |= object_capabilities::BOUNDABLE;
         caps |= object_capabilities::POLYGONIZATION;
 
         return caps;
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__DISC_HPP) */
-
+}

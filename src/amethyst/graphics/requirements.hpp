@@ -1,27 +1,4 @@
-/*
- * $Id: requirements.hpp,v 1.2 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__REQUIREMENTS_HPP)
-#define            AMETHYST__REQUIREMENTS_HPP
-
+#pragma once
 #include "amethyst/graphics/capabilities.hpp"
 
 namespace amethyst
@@ -38,13 +15,8 @@ namespace amethyst
     {
 
     public:
-        /* Default constructor.  Sets default values */
-        intersection_requirements();
-
-        /** Destructor */
-        virtual ~intersection_requirements();
-
-        /* Uses default copy constructor, assignment operator, etc */
+        intersection_requirements() = default;
+        virtual ~intersection_requirements() = default;
 
         // Specifies if only the first hit is required, so that large aggregates
         // need only find the first hit, and not search for the closest.
@@ -157,10 +129,6 @@ namespace amethyst
         bool capabilities_match(intersection_capabilities c) const;
 
     protected:
-        intersection_capabilities my_requirements;
-    }; // class intersection_requirements
-
-} // namespace amethyst
-
-#endif /* !defined(AMETHYST__REQUIREMENTS_HPP) */
-
+        intersection_capabilities my_requirements = intersection_capabilities::NONE;
+    };
+}

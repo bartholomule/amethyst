@@ -1,36 +1,13 @@
-/*
- * $Id: noise.hpp,v 1.1 2008/06/22 17:27:07 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2008 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__NOISE_HPP)
-#define            AMETHYST__NOISE_HPP
-
-#include <memory>
 #include "amethyst/general/random.hpp"
+#include <memory>
 #include <vector>
 #include "amethyst/math/template_math.hpp"
 #include "amethyst/math/coord3.hpp"
 
 namespace amethyst
 {
-
     /**
      *
      * A class for Perlin-style noise.
@@ -43,31 +20,31 @@ namespace amethyst
     class noise
     {
     public:
-        noise(std::shared_ptr<Random<T>> rnd = new default_random<T>(),
-              int array_size = 256);
-        noise(const noise<T>& n);
-        ~noise();
-        noise<T>& operator=(const noise<T>& n);
-
-
-        T operator()(const coord3<T>& point) const {
-            return value(point);
+        noise(std::shared_ptr<Random<T>> rnd = std::make_shared<default_random<T>>(), size_t array_size = 256)
+            : rnd_gen(rnd)
+            , size_of_arrays(std::max<size_t>(array_size, 16u))
+        {
+            create_arrays();
         }
+        noise(const noise<T>&) = default;
+        ~noise() = default;
+        noise<T>& operator=(const noise<T>&) = default;
+
+
+        T operator()(const coord3<T>& point) const { return value(point); }
         T value(const coord3<T>& point) const;
         T turbulence(const coord3<T>& point, int levels = 8, T d = 2) const;
 
         coord3<T> vector_noise(const coord3<T>& point) const;
         coord3<T> vector_turbulence(const coord3<T>& point, int levels = 8, T d = 2) const;
 
-        int phi_hash(int i) const;
+        size_t phi_hash(size_t i) const;
         coord3<T> gradient(int i, int j, int k) const;
         T omega_knot(int i, int j, int k, T u, T v, T w) const;
         T weighting(T d) const;
 
     protected:
-        T minus_1_to_1() {
-            return 2 * rnd_gen->next() - 1;
-        }
+        T minus_1_to_1() { return 2 * rnd_gen->next() - 1; }
         coord3<T> rand_vec();
 
         std::shared_ptr<Random<T>> rnd_gen;
@@ -75,48 +52,15 @@ namespace amethyst
     private:
         void create_arrays();
 
-        int size_of_arrays;
+        size_t size_of_arrays;
         std::vector<int> P_array;
         std::vector<coord3<T>> G_array;
     };
 
     template <class T>
-    noise<T>::noise(std::shared_ptr<Random<T>> rnd, int array_size) :
-        rnd_gen(rnd),
-        size_of_arrays(my_max(array_size, 16))
-    {
-        create_arrays();
-    }
-
-    template <class T>
-    noise<T>::noise(const noise<T>& n) :
-        size_of_arrays(n.size_of_arrays),
-        P_array(n.P_array),
-        G_array(n.G_array)
-    {
-    }
-
-    template <class T>
-    noise<T>::~noise()
-    {
-    }
-
-    template <class T>
-    noise<T>& noise<T>::operator=(const noise<T>& n)
-    {
-        if (&n != this)
-        {
-            P_array = n.P_array;
-            G_array = n.G_array;
-        }
-        return *this;
-    }
-
-
-    template <class T>
     coord3<T> noise<T>::gradient(int i, int j, int k) const
     {
-        int index = phi_hash(i + phi_hash(j + phi_hash(k)));
+        size_t index = phi_hash(i + phi_hash(j + phi_hash(k)));
         return G_array[index];
     }
 
@@ -210,13 +154,9 @@ namespace amethyst
     }
 
     template <class T>
-    int noise<T>::phi_hash(int i) const
+    size_t noise<T>::phi_hash(size_t i) const
     {
-        int j = i % size_of_arrays;
-        if (j < 0)
-        {
-            j += size_of_arrays;
-        }
+        size_t j = i % size_of_arrays;
         return P_array[j];
     }
 
@@ -258,14 +198,12 @@ namespace amethyst
             G_array[i] = rand_vec();
         }
 
-        for (int i = size_of_arrays - 1; i > 0; --i)
+        if (size_of_arrays > 0)
         {
-            std::swap(P_array[i], P_array[int(rnd_gen->next() * i)]);
+            for (size_t i = size_of_arrays - 1; i > 0; --i)
+            {
+                std::swap(P_array[i], P_array[int(rnd_gen->next() * i)]);
+            }
         }
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__NOISE_HPP) */
-
+}

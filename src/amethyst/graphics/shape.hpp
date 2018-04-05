@@ -1,26 +1,4 @@
-/*
- * $Id: shape.hpp,v 1.12 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__SHAPE_HPP)
-#define            AMETHYST__SHAPE_HPP
+#pragma once
 
 #include "amethyst/math/point3.hpp"
 #include "amethyst/math/line3.hpp"
@@ -35,7 +13,6 @@ namespace amethyst
 {
     template <class T> class sphere;
     template <class T> class plane;
-    template <class T> bool intersects(const sphere<T>& s, const plane<T>& p);
 
     /**
      *
@@ -48,23 +25,13 @@ namespace amethyst
     template <class T>
     class shape : public string_dumpable
     {
-
-    private:
-
-    protected:
-
     public:
-        /** Default constructor */
-        shape();
+        using base_type = T;
 
-        /** Destructor */
-        virtual ~shape();
-
-        /** Copy constructor */
-        shape(const shape& old);
-
-        /** Assignment operator */
-        shape& operator= (const shape& old);
+        shape() = default;
+        virtual ~shape() = default;
+        shape(const shape& old) = default;
+        shape& operator= (const shape& old) = default;
 
         /** Returns if the given point is inside the shape. */
         virtual bool inside(const point3<T>& p) const = 0;
@@ -127,52 +94,8 @@ namespace amethyst
         {
             return object_capabilities::NONE;
         }
+    };
 
-    }; // class shape
-
-
-
-    //------------------------------------
-    // Default constructor for class shape
-    //------------------------------------
-    template <class T>
-    shape<T>::shape()
-    {
-
-    } // shape()
-
-    //---------------------------
-    // Destructor for class shape
-    //---------------------------
-    template <class T>
-    shape<T>::~shape()
-    {
-
-    } // ~shape()
-
-    //---------------------------------
-    // Copy constructor for class shape
-    //---------------------------------
-    template <class T>
-    shape<T>::shape(const shape<T>& old)
-    {
-
-    } // shape(shape)
-
-    //------------------------------------
-    // Assignment operator for class shape
-    //------------------------------------
-    template <class T>
-    shape<T>& shape<T>::operator= (const shape<T>& old)
-    {
-        // Generic check for self-assignment
-        if (&old != this)
-        {
-            // Insert assignment here. DELETEME
-
-        }
-        return *this;
-    } // shape::operator=(shape)
 
     template <class T>
     bool shape<T>::intersects_line(const line3<T>& line,
@@ -203,7 +126,5 @@ namespace amethyst
         return false;
     } // shape::intersects_ray(line3<T>,T)
 
-} // namespace amethyst
 
-
-#endif /* !defined(AMETHYST__SHAPE_HPP) */
+}

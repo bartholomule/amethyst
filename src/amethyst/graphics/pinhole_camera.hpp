@@ -1,30 +1,5 @@
-/*
- * $Id: pinhole_camera.hpp,v 1.3 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__PINHOLE_CAMERA_HPP)
-#define            AMETHYST__PINHOLE_CAMERA_HPP
-
-// --------------------------------------
-// Default include of parent class header
-// --------------------------------------
 #include "amethyst/graphics/base_camera.hpp"
 #include "amethyst/graphics/ray_parameters.hpp"
 #include "amethyst/math/frame.hpp"
@@ -43,17 +18,6 @@ namespace amethyst
     template <class T>
     class pinhole_camera : public base_camera<T>
     {
-
-    private:
-        frame<T> viewing_frame;
-        coord2<T> ll_corner;
-        coord2<T> ur_corner;
-        T viewing_distance;
-        coord2<T> vscreen_size;
-        interval<T> shutter; // Specifies the time the shutter is open.
-
-    protected:
-
     public:
         /** Default constructor */
         pinhole_camera();
@@ -69,14 +33,9 @@ namespace amethyst
                        size_t h,
                        const interval<T>& shutter_open_time = interval<T>());
 
-        /** Destructor */
-        virtual ~pinhole_camera();
-
-        /** Copy constructor */
-        pinhole_camera(const pinhole_camera& old);
-
-        /** Assignment operator */
-        pinhole_camera& operator= (const pinhole_camera& old);
+        virtual ~pinhole_camera() = default;
+        pinhole_camera(const pinhole_camera&) = default;
+        pinhole_camera& operator=(const pinhole_camera&) = default;
 
         /* FIXME! At some point in the future, these will need to have a more
            complete ray, which includes time, etc. */
@@ -91,9 +50,15 @@ namespace amethyst
         virtual std::string name() const {
             return "pinhole_camera";
         }
-    }; // class pinhole_camera
 
-
+    private:
+        frame<T> viewing_frame;
+        coord2<T> ll_corner;
+        coord2<T> ur_corner;
+        T viewing_distance;
+        coord2<T> vscreen_size;
+        interval<T> shutter; // Specifies the time the shutter is open.
+    };
 
     //---------------------------------------------
     // Default constructor for class pinhole_camera
@@ -134,50 +99,6 @@ namespace amethyst
     {
     } // pinhole_camera()
 
-    //------------------------------------
-    // Destructor for class pinhole_camera
-    //------------------------------------
-    template <class T>
-    pinhole_camera<T>::~pinhole_camera()
-    {
-
-    } // ~pinhole_camera()
-
-    //------------------------------------------
-    // Copy constructor for class pinhole_camera
-    //------------------------------------------
-    template <class T>
-    pinhole_camera<T>::pinhole_camera(const pinhole_camera<T>& old) :
-        base_camera<T>(old),
-        viewing_frame(old.viewing_frame),
-        ll_corner(old.ll_corner),
-        ur_corner(old.ur_corner),
-        viewing_distance(old.viewing_distance),
-        vscreen_size(old.vscreen_size)
-    {
-
-    } // pinhole_camera(pinhole_camera)
-
-    //---------------------------------------------
-    // Assignment operator for class pinhole_camera
-    //---------------------------------------------
-    template <class T>
-    pinhole_camera<T>& pinhole_camera<T>::operator= (const pinhole_camera<T>& old)
-    {
-        // Generic check for self-assignment
-        if (&old != this)
-        {
-            viewing_frame = old.viewing_frame;
-            ll_corner = old.ll_corner;
-            ur_corner = old.ur_corner;
-            viewing_distance = old.viewing_distance;
-            vscreen_size = old.vscreen_size;
-
-            base_camera<T>::operator=(old);
-        }
-        return *this;
-    } // pinhole_camera::operator=(pinhole_camera)
-
     template <class T>
     ray_parameters<T> pinhole_camera<T>::get_ray(const coord2<T>& sample_point, T time) const
     {
@@ -206,7 +127,6 @@ namespace amethyst
         }
     }
 
-
     template <class T>
     ray_parameters<T> pinhole_camera<T>::get_ray(const T& px, const T& py, T time) const
     {
@@ -227,13 +147,11 @@ namespace amethyst
         if (!shutter.empty())
         {
             T adjusted_time = shutter.begin() + time * (shutter.end() - shutter.begin());
-            //      std::cout << "Adjusted_time(" << time << ")=" << adjusted_time << std::endl;
 
             return ray_parameters<T>( line, adjusted_time );
         }
         else
         {
-            //      std::cout << "time=" << time << std::endl;
             return ray_parameters<T>( line, time );
         }
     }
@@ -257,9 +175,4 @@ namespace amethyst
 
         return retval;
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__PINHOLE_CAMERA_HPP) */
-
+}

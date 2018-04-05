@@ -7,7 +7,7 @@ add_library(amethyst_graphics
 	conditional_value.hpp
 	disc.hpp
 	dynamic_sphere.hpp
-	filter3d.h
+	filter3d.hpp
 	image.hpp
 	image_converter.hpp
 	image_converter.cpp
@@ -41,9 +41,15 @@ add_library(amethyst_graphics
 	triangle.hpp
 )
 
-unit_test(test_disc LIBS amethyst_general amethyst_graphics)
-unit_test(test_quaternion LIBS amethyst_general amethyst_graphics)
-unit_test(test_raster LIBS amethyst_general amethyst_graphics)
-unit_test(test_fd_stream LIBS amethyst_general)
-unit_test(test_rgbcolor LIBS amethyst_general amethyst_graphics)
-unit_test(test_triangle LIBS amethyst_general amethyst_graphics)
+function(graphics_test name)
+	unit_test(${name} LIBS amethyst_general amethyst_graphics)
+endfunction()
+
+graphics_test(test_disc)
+graphics_test(test_quaternion)
+graphics_test(test_raster)
+graphics_test(test_rgbcolor)
+graphics_test(test_triangle)
+graphics_test(test_sphere)
+
+graphics_test(test_fd_stream LIBS amethyst_general)

@@ -1,26 +1,4 @@
-/*
- * $Id: noise_texture.hpp,v 1.1 2008/06/22 17:27:07 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2008 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__NOISE_TEXTURE_HPP)
-#define            AMETHYST__NOISE_TEXTURE_HPP
+#pragma once
 
 #include <memory>
 #include "amethyst/graphics/noise.hpp"
@@ -47,36 +25,30 @@ namespace amethyst
         noise_texture(const color_type& c0, const color_type& c1, T scale = T(1), const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
         noise_texture(const interp_type& colors, T scale = T(1), const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
 
-        virtual ~noise_texture();
+        virtual ~noise_texture() = default;
 
-        virtual color_type get_color_at_point(const point3<T>& location) const;
+        color_type get_color_at_point(const point3<T>& location) const override;
 
-        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-        virtual std::string name() const {
-            return "noise_texture";
-        }
+        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
+        virtual std::string name() const override { return "noise_texture"; }
     private:
         T m_scale;
         noise<T> m_noise;
         interp_type m_colors;
-
-    }; // class noise_texture
+    };
 
     template <typename T, typename color_type>
     noise_texture<T, color_type>::noise_texture(T scale, const std::shared_ptr<Random<T>>& rnd)
-        : solid_texture<T, color_type>()
-        , m_scale(scale)
-        , m_noise(rnd)
-        , m_colors(create_interpolation<T, color_type>(color_type(0.8, 0.0, 0.0), color_type(0.0, 0.0, 0.8)).clone_new())
+        : noise_texture(
+            create_interpolation<T, color_type>(color_type(0.8, 0.0, 0.0), color_type(0.0, 0.0, 0.8)),
+            scale, rnd
+        )
     {
     }
 
     template <typename T, typename color_type>
     noise_texture<T, color_type>::noise_texture(const color_type& c0, const color_type& c1, T scale, const std::shared_ptr<Random<T>>& rnd)
-        : solid_texture<T, color_type>()
-        , m_scale(scale)
-        , m_noise(rnd)
-        , m_colors(create_interpolation<T, color_type>(c0, c1).clone_new())
+        : noise_texture(create_interpolation<T, color_type>(c0, c1), scale, rnd)
     {
     }
 
@@ -88,11 +60,6 @@ namespace amethyst
         , m_colors(colors)
     {
     }
-
-    template <typename T, typename color_type>
-    noise_texture<T, color_type>::~noise_texture()
-    {
-    } // ~noise_texture()
 
     template <typename T, typename color_type>
     std::string noise_texture<T, color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
@@ -131,9 +98,4 @@ namespace amethyst
         }
         return color_type(0);
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__NOISE_TEXTURE_HPP) */
-
+}

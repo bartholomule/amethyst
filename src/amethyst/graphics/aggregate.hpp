@@ -1,30 +1,5 @@
-/*
- * $Id: aggregate.hpp,v 1.11 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__AGGREGATE_HPP)
-#define            AMETHYST__AGGREGATE_HPP
-
-// --------------------------------------
-// Default include of parent class header
-// --------------------------------------
 #include "amethyst/graphics/shape.hpp"
 #include "amethyst/graphics/capabilities.hpp"
 #include <vector>
@@ -54,48 +29,49 @@ namespace amethyst
         aggregate(const aggregate& old) = default;
         aggregate(aggregate&& old)
             : parent(std::move(old))
-            , m_shape_list(...)
+            , m_shape_list(std::move(old.m_shape_list))
         {
         }
         aggregate& operator=(const aggregate& old) = default;
-        aggregate& operator=(aggregate&& old);
+        aggregate& operator=(aggregate&& old)
+        {
+            parent::operator=(std::move(old));
+            m_shape_list = std::move(old.m_shape_list);
+            return *this;
+        }
 
         /** Returns if the given point is inside the shape. */
-        virtual bool inside(const point3<T>& p) const;
+        bool inside(const point3<T>& p) const override;
 
         /** Returns if the given sphere intersects the shape. */
-        virtual bool intersects(const sphere<T>& s) const;
+        bool intersects(const sphere<T>& s) const override;
 
         /** Returns if the given plane intersects the shape. */
-        virtual bool intersects(const plane<T>& p) const;
+        bool intersects(const plane<T>& p) const override;
 
         /** Returns if the given line intersects the shape. */
-        virtual bool intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements = intersection_requirements()) const;
+        using parent::intersects_line;
 
-        virtual bool intersects_line(const line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements = intersection_requirements()) const;
+        bool intersects_line(const unit_line3<T>& line,
+            intersection_info<T>& intersection,
+            const intersection_requirements& requirements = intersection_requirements()) const override;
 
-        virtual bool intersects_ray(const ray_parameters<T>& ray,
-                                    intersection_info<T>& intersection,
-                                    const intersection_requirements& requirements = intersection_requirements()) const;
+        bool intersects_ray(const ray_parameters<T>& ray,
+            intersection_info<T>& intersection,
+            const intersection_requirements& requirements = intersection_requirements()) const override;
 
         /**
          * A quick intersection test.  This will calculate nothing but the
          * distance. This is most useful for shadow tests, and other tests where no
          * textures will be applied.
          */
-        virtual bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const;
+        bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const override;
 
-        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
+        std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
 
-        virtual std::string name() const {
-            return "aggregate";
-        }
+        std::string name() const override { return "aggregate"; }
 
-        virtual intersection_capabilities get_intersection_capabilities() const
+        intersection_capabilities get_intersection_capabilities() const override
         {
             intersection_capabilities caps = intersection_capabilities::ALL;
 
@@ -108,67 +84,54 @@ namespace amethyst
             }
             return caps;
         }
-        virtual object_capabilities get_object_capabilities() const;
+        object_capabilities get_object_capabilities() const override;
 
-        void add(shape_ptr& sp);
-        size_t size() const;
-        shape_ptr& operator[](size_t index);
-        const shape_ptr& operator[](size_t index) const;
+        void add(shape_ptr sp) { m_shape_list.emplace_back(std::move(sp)); }
+        size_t size() const { return m_shape_list.size(); }
+        shape_ptr& operator[](size_t index) { return m_shape_list[index]; }
+        const shape_ptr& operator[](size_t index) const { return m_shape_list[index]; }
 
     private:
         shape_list m_shape_list;
-    }; // class aggregate
+    };
 
     template <class T>
     bool aggregate<T>::inside(const point3<T>& p) const
     {
-        bool inside_something = false;
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             ((iter != m_shape_list.end()) &&
-              !inside_something);
-             ++iter)
+        for (const auto& s : m_shape_list)
         {
-            if ((*iter)->inside(p))
+            if (s->inside(p))
             {
-                inside_something = true;
-                break;
+                return true;
             }
         }
-        return inside_something;
+        return false;
     }
 
     template <class T>
     bool aggregate<T>::intersects(const sphere<T>& s) const
     {
-        bool intersects_something = false;
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             ((iter != m_shape_list.end()) &&
-              !intersects_something);
-             ++iter)
+        for(const auto& p : m_shape_list)
         {
-            if ((*iter)->intersects(s))
+            if (p->intersects(s))
             {
-                intersects_something = true;
+                return true;
             }
         }
-        return intersects_something;
+        return false;
     }
 
     template <class T>
     bool aggregate<T>::intersects(const plane<T>& p) const
     {
-        bool intersects_something = false;
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             ((iter != m_shape_list.end()) &&
-              !intersects_something);
-             ++iter)
+        for (const auto& s : m_shape_list)
         {
-            if ((*iter)->intersects(p))
+            if (s->intersects(p))
             {
-                intersects_something = true;
+                return true;
             }
         }
-        return intersects_something;
+        return false;
     }
 
     template <class T>
@@ -177,12 +140,10 @@ namespace amethyst
         bool hit_something = false;
         T closest = line.limits().end() + 1;
 
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             (iter != m_shape_list.end());
-             ++iter)
+        for(const auto& s : m_shape_list)
         {
             T dist;
-            if ((*iter)->quick_intersection(line, time, dist))
+            if (s->quick_intersection(line, time, dist))
             {
                 if (dist < closest)
                 {
@@ -195,15 +156,11 @@ namespace amethyst
                 }
             }
         }
+        if (hit_something)
+        {
+            distance = closest;
+        }
         return hit_something;
-    }
-
-    template <class T>
-    bool aggregate<T>::intersects_line(const line3<T>& line,
-                                       intersection_info<T>& intersection,
-                                       const intersection_requirements& requirements) const
-    {
-        return shape<T>::intersects_line(line, intersection, requirements);
     }
 
     template <class T>
@@ -392,11 +349,9 @@ namespace amethyst
 
         std::string level_indent = "  ";
 
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             iter != m_shape_list.end();
-             ++iter)
+        for( const auto& s : m_shape_list)
         {
-            retval += (*iter)->to_string(indentation, level_indent) + "\n";
+            retval += s->to_string(indentation, level_indent) + "\n";
         }
 
         return retval;
@@ -440,32 +395,4 @@ namespace amethyst
         }
         return caps;
     }
-
-    template <class T>
-    void aggregate<T>::add(shape_ptr& sp)
-    {
-        m_shape_list.push_back(sp);
-    }
-
-    template <class T>
-    size_t aggregate<T>::size() const
-    {
-        return m_shape_list.size();
-    }
-
-    template <class T>
-    typename aggregate<T>::shape_ptr& aggregate<T>::operator[](size_t index)
-    {
-        return m_shape_list[index];
-    }
-
-    template <class T>
-    const typename aggregate<T>::shape_ptr& aggregate<T>::operator[](size_t index) const
-    {
-        return m_shape_list[index];
-    }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__AGGREGATE_HPP) */
+}

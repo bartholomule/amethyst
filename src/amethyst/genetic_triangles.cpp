@@ -116,10 +116,6 @@ number_type calculate_error(const image<number_type>& ref, const image<number_ty
     const color* ref_pixels = ref.raw_data();
     const color* img_pixels = img.raw_data();
 
-    color min_color;
-    color max_color;
-    color average_color;
-
     size_t max_pixel = width * height;
     for (size_t i = 0; i < max_pixel; ++i)
     {

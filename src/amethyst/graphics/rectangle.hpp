@@ -1,30 +1,4 @@
-/*
- * $Id: rectangle.hpp,v 1.6 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__RECTANGLE_HPP)
-#define            AMETHYST__RECTANGLE_HPP
-
-// --------------------------------------
-// Include of parent class header
-// --------------------------------------
+#pragma once
 #include "amethyst/graphics/plane.hpp"
 
 namespace amethyst
@@ -41,126 +15,43 @@ namespace amethyst
     template <class T>
     class rectangle : public plane<T>
     {
-
-    private:
-
-    protected:
-
     public:
-        /** Default constructor */
-        rectangle();
+        rectangle() = default;
 
         rectangle(const point3<T>& point = point3<T>(0, 0, 0),
-                  const vector3<T>& u = vector3<T>(1, 0, 0),
-                  const vector3<T>& v = vector3<T>(0, 1, 0));
+            const vector3<T>& u = vector3<T>(1, 0, 0),
+            const vector3<T>& v = vector3<T>(0, 1, 0))
+            : plane(point, u, v)
+        {
+        }
 
         rectangle(const point3<T>& corner1 = point3<T>(0, 0, 0),
-                  const point3<T>& corner2 = point3<T>(1, 0, 0),
-                  const point3<T>& corner3 = point3<T>(0, 1, 0));
-
-        /** Destructor */
-        virtual ~rectangle();
-
-        /** Copy constructor */
-        rectangle(const rectangle& old);
-
-        /** Assignment operator */
-        rectangle& operator= (const rectangle& old);
-
-        /** Returns if the given point is inside the shape. */
-        virtual bool inside(const point3<T>& p) const;
-
-        /** Returns if the given sphere intersects the shape. */
-        virtual bool intersects(const sphere<T>& s) const;
-
-        /** Returns if the given plane intersects the shape. */
-        virtual bool intersects(const plane<T>& p) const;
-
-        /** Returns if the given line intersects the plane. */
-        virtual bool intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements) const;
-
-        /**
-         * A quick intersection test.  This will calculate nothing but the
-         * distance. This is most useful for shadow tests, and other tests where no
-         * textures will be applied.
-         */
-        virtual bool quick_intersection(const unit_line3<T>& line,
-                                        T time, T& distance) const;
-
-        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-
-        virtual std::string name() const {
-            return "rectangle";
-        }
-
-        virtual intersection_capabilities get_intersection_capabilities() const;
-        virtual object_capabilities get_object capabilities() const;
-
-    }; // class rectangle
-
-
-
-    //---------------------------------------
-    // Default constructor for class rectangle
-    //---------------------------------------
-    template <class T>
-    rectangle<T>::rectangle() :
-        plane<T>()
-    {
-
-    } // rectangle()
-
-    template <class T>
-    rectangle<T>::rectangle(const point3<T>& point,
-                            const vector3<T>& u,
-                            const vector3<T>& v) :
-        plane<T>(point, u, v)
-    {
-    } // rectangle(point3,vector3,vector3)
-
-    template <class T>
-    rectangle<T>::rectangle(const point3<T>& corner1,
-                            const point3<T>& corner2,
-                            const point3<T>& corner3) :
-        plane<T>(corner1, corner2, corner3)
-    {
-    } // rectangle(point3,point3,point3)
-
-
-    //------------------------------
-    // Destructor for class rectangle
-    //------------------------------
-    template <class T>
-    rectangle<T>::~rectangle()
-    {
-
-    } // ~rectangle()
-
-    //------------------------------------
-    // Copy constructor for class rectangle
-    //------------------------------------
-    template <class T>
-    rectangle<T>::rectangle(const rectangle<T>& old) :
-        plane<T>(old)
-    {
-
-    } // rectangle(rectangle)
-
-    //---------------------------------------
-    // Assignment operator for class rectangle
-    //---------------------------------------
-    template <class T>
-    rectangle<T>& rectangle<T>::operator= (const rectangle<T>& old)
-    {
-        // Generic check for self-assignment
-        if (&old != this)
+            const point3<T>& corner2 = point3<T>(1, 0, 0),
+            const point3<T>& corner3 = point3<T>(0, 1, 0))
+            : plane(corner1, corner2, corner3)
         {
-            plane<T>::operator=(old);
         }
-        return *this;
-    } // rectangle::operator=(rectangle)
+
+        virtual ~rectangle() = default;
+        rectangle(const rectangle&) = default;
+        rectangle& operator=(const rectangle&) = default;
+
+        bool inside(const point3<T>& p) const override;
+        bool intersects(const sphere<T>& s) const override;
+        bool intersects(const plane<T>& p) const override;
+
+        bool intersects_line(const unit_line3<T>& line, intersection_info<T>& intersection,
+            const intersection_requirements& requirements) const override;
+
+        bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const override;
+
+        std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
+
+        std::string name() const override { return "rectangle"; }
+
+        intersection_capabilities get_intersection_capabilities() const override;
+        object_capabilities get_object capabilities() const override;
+    };
 
     template <class T>
     bool rectangle<T>::inside(const point3<T>& point) const
@@ -295,9 +186,4 @@ namespace amethyst
 
         return caps;
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__RECTANGLE_HPP) */
-
+}

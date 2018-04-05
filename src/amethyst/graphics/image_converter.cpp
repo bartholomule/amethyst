@@ -1,6 +1,4 @@
 #include <graphics/image_converter.hpp>
-
-
 #include <iostream>
 
 namespace amethyst

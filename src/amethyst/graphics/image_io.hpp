@@ -1,10 +1,8 @@
-#if    !defined(KH_IMAGEOUT_H)
-#define         KH_IMAGEOUT_H
+#pragma once
 /*
-   imageout.h
+   image_io.hpp
    This is intended as a way to convert a raster to an image that can be output
    to a file or whatever.
-
  */
 /*
    Revision history:
@@ -101,8 +99,4 @@ namespace amethyst
         virtual raster<ColorType> input(std::istream& i) const = 0;
     protected:
     };
-} // namespace amethyst
-
-#endif /* !defined(KH_IMAGEOUT_H) */
-
-
+}
