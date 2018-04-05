@@ -4,7 +4,6 @@
 
    A 3d coordinate class that has some basic functionality.  Also, some
    functions to act on that class (at the bottom).
-
  */
 
 /*
@@ -31,50 +30,9 @@
 
 namespace amethyst
 {
-    template <class T>
+    template <typename T>
     class coord3
     {
-    private:
-        /* class that has 3 Ts stored directly */
-        struct coord3_direct
-        {
-            T x; T y; T z;
-        };
-        /* class that has 3 Ts stored in an array */
-        struct coord3_array
-        {
-            T coords[3];
-        };
-        /* union to allow accesses to both indirectly through an array, and directly
-           through a name, without adding any extra processing time or space
-           requirements */
-        union coord3_union
-        {
-            coord3_union() = default;
-            coord3_union(T x, T y, T z)
-                : direct{ x, y, z }
-            {
-            }
-            coord3_union(const coord3_union& old)
-                : direct{ old.direct.x, old.direct.y, old.direct.z }
-            {
-            }
-            T& operator[](unsigned index) { return array.coords[index]; }
-            T operator[](unsigned index) const { return array.coords[index]; }
-            coord3_union& operator=(const coord3_union& old)
-            {
-                direct.x = old.direct.x;
-                direct.y = old.direct.y;
-                direct.z = old.direct.z;
-                return *this;
-            }
-            coord3_direct direct;
-            coord3_array array;
-        };
-
-        /* The internal coordinates of this class */
-        coord3_union coords;
-
     public:
         enum COORD_VALUES
         {
@@ -83,26 +41,29 @@ namespace amethyst
         typedef T base;
 
         coord3() = default;
-        explicit coord3(T u) : coords(u, u, u) { }
-        coord3(T x, T y, T z) : coords(x, y, z) { }
+        explicit coord3(T u) : coord3(u, u, u) { }
+        constexpr coord3(T x, T y, T z)
+            : m_x(x), m_y(y), m_z(z) { }
         coord3(const coord3& old_coord) = default;
+        ~coord3() = default;
 
         void set(T x, T y, T z)
         {
-            coords.direct.x = x;
-            coords.direct.y = y;
-            coords.direct.z = z;
+            m_x = x;
+            m_y = y;
+            m_z = z;
         }
 
         /* Accessors */
-        T& operator[](unsigned coord_index) { return coords[coord_index]; }
-        T operator[](unsigned coord_index) const { return coords[coord_index]; }
-        T& x() { return coords.direct.x; }
-        T x() const { return coords.direct.x; }
-        T& y() { return coords.direct.y; }
-        T y() const { return coords.direct.y; }
-        T& z() { return coords.direct.z; }
-        T z() const { return coords.direct.z; }
+        T& operator[](unsigned i) { return (i == X) ? m_x : ((i == Y) ? m_y : m_z); }
+        constexpr T operator[](unsigned i) const { return (i == X) ? m_x : ((i == Y) ? m_y : m_z); }
+
+        T& x() { return m_x; }
+        constexpr T x() const { return m_x; }
+        T& y() { return m_y; }
+        constexpr T y() const { return m_y; }
+        T& z() { return m_z; }
+        constexpr T z() const { return m_z; }
 
         coord3& operator= (const coord3& old_coord) = default;
         coord3& operator+=(const coord3& p2);
@@ -117,176 +78,163 @@ namespace amethyst
 
         inline T length() const
         {
-            return T(sqrt(double((x() * x()) +
-                                 (y() * y()) +
-                                 (z() * z()))));
+            return T(sqrt(double((x() * x()) + (y() * y()) + (z() * z()))));
         }
 
+    private:
+        T m_x;
+        T m_y;
+        T m_z;
     };
 
-    template <class T>
+    template <typename T>
     inline coord3<T>& coord3<T>::operator+=(const coord3<T>& p2)
     {
-        coords.direct.x += p2.coords.direct.x;
-        coords.direct.y += p2.coords.direct.y;
-        coords.direct.z += p2.coords.direct.z;
+        m_x += p2.m_x;
+        m_y += p2.m_y;
+        m_z += p2.m_z;
         return *this;
     }
 
-    template <class T>
+    template <typename T>
     inline coord3<T>& coord3<T>::operator-=(const coord3<T>& p2)
     {
-        coords.direct.x -= p2.coords.direct.x;
-        coords.direct.y -= p2.coords.direct.y;
-        coords.direct.z -= p2.coords.direct.z;
+        m_x -= p2.m_x;
+        m_y -= p2.m_y;
+        m_z -= p2.m_z;
         return *this;
     }
 
     // Piecewise multiplication...
-    template <class T>
+    template <typename T>
     inline coord3<T>& coord3<T>::operator*=(const coord3<T>& p2)
     {
-        coords.direct.x *= p2.coords.direct.x;
-        coords.direct.y *= p2.coords.direct.y;
-        coords.direct.z *= p2.coords.direct.z;
+        m_x *= p2.m_x;
+        m_y *= p2.m_y;
+        m_z *= p2.m_z;
         return *this;
     }
 
-    template <class T>
+    template <typename T>
     inline coord3<T>& coord3<T>::operator*=(T factor)
     {
-        coords.direct.x *= factor;
-        coords.direct.y *= factor;
-        coords.direct.z *= factor;
+        m_x *= factor;
+        m_y *= factor;
+        m_z *= factor;
         return *this;
     }
 
-    template <class T>
+    template <typename T>
     inline coord3<T>& coord3<T>::operator/=(T factor)
     {
-        coords.direct.x /= factor;
-        coords.direct.y /= factor;
-        coords.direct.z /= factor;
+        m_x /= factor;
+        m_y /= factor;
+        m_z /= factor;
         return *this;
     }
 
-    template <class T>
+    template <typename T>
     template <class U>
     inline coord3<T>& coord3<T>::operator*=(U factor)
     {
-        coords.direct.x = T(coords.direct.x * factor);
-        coords.direct.y = T(coords.direct.y * factor);
-        coords.direct.z = T(coords.direct.z * factor);
+        m_x = T(m_x * factor);
+        m_y = T(m_y * factor);
+        m_z = T(m_z * factor);
         return *this;
     }
 
-    template <class T>
+    template <typename T>
     template <class U>
     inline coord3<T>& coord3<T>::operator/=(U factor)
     {
-        coords.direct.x = T(coords.direct.x / factor);
-        coords.direct.y = T(coords.direct.y / factor);
-        coords.direct.z = T(coords.direct.z / factor);
+        m_x = T(m_x / factor);
+        m_y = T(m_y / factor);
+        m_z = T(m_z / factor);
         return *this;
     }
 
     /* non-member math functions (also inlined for an attempt at some speed) */
-    template <class T>
-    inline coord3<T> operator+(const coord3<T>& p1, const coord3<T>& p2)
+    template <typename T>
+    coord3<T> operator+(const coord3<T>& p1, const coord3<T>& p2)
     {
-        coord3<T> p(p1); p += p2; return p;
+        return { p1.x() + p2.x(), p1.y() + p2.y(), p1.z() + p2.z() };
     }
 
-    template <class T>
-    inline coord3<T> operator-(const coord3<T>& p1, const coord3<T>& p2)
+    template <typename T>
+    inline constexpr coord3<T> operator-(const coord3<T>& p1, const coord3<T>& p2)
     {
-        coord3<T> p(p1); p -= p2; return p;
+        return { p1.x() - p2.x(), p1.y() - p2.y(), p1.z() - p2.z() };
     }
 
-    template <class T>
-    inline coord3<T> operator*(const coord3<T>& p1, T factor)
+    template <typename T, class U>
+    inline constexpr coord3<T> operator*(const coord3<T>& p1, U factor)
     {
-        coord3<T> p(p1); p *= factor;  return p;
+        return { p1.x() * factor, p1.y() * factor, p1.z() * factor };
     }
 
-    template <class T>
-    inline coord3<T> operator*(T factor, const coord3<T>& p1)
+    template <typename T, class U>
+    inline constexpr coord3<T> operator*(U factor, const coord3<T>& p1)
     {
-        coord3<T> p(p1); p *= factor;  return p;
+        return { factor * p1.x(), factor * p1.y(), factor * p1.z() };
     }
 
-    template <class T, class U>
-    inline coord3<T> operator*(const coord3<T>& p1, U factor)
-    {
-        coord3<T> p(p1); p *= factor;  return p;
-    }
-
-    template <class T, class U>
-    inline coord3<T> operator*(U factor, const coord3<T>& p1)
-    {
-        coord3<T> p(p1); p *= factor;  return p;
-    }
-
-    template <class T>
-    inline coord3<T> operator*(const coord3<T>& p1, const coord3<T>& p2)
+    template <typename T>
+    inline constexpr coord3<T> operator*(const coord3<T>& p1, const coord3<T>& p2)
     {
         return coord3<T>(p1.x() * p2.x(),
                          p1.y() * p2.y(),
                          p1.z() * p2.z());
     }
-    template <class T>
-    inline coord3<T> operator/(const coord3<T>& p1, T factor)
-    {
-        coord3<T> p(p1); p /= factor;  return p;
-    }
 
-    template <class T, class U>
-    inline coord3<T> operator/(const coord3<T>& p1, U factor)
+    template <typename T, class U>
+    inline constexpr coord3<T> operator/(const coord3<T>& p1, U factor)
     {
-        coord3<T> p(p1); p /= factor;  return p;
+        return { p1.x() / factor, p1.y() / factor, p1.z() / factor };
     }
 
     // Unary minus
-    template <class T>
-    inline coord3<T> operator-(const coord3<T>& p1)
+    template <typename T>
+    inline constexpr coord3<T> operator-(const coord3<T>& p1)
     {
-        return T(-1) * p1;
+        return { -p1.x(), -p1.y(), -p1.z() };
     }
 
-
-    /* exports from this header file */
-    template <class T>
-    inline T dotprod(const coord3<T>& c1, const coord3<T>& c2)
+    template <typename T>
+    inline constexpr T dotprod(const coord3<T>& c1, const coord3<T>& c2)
     {
         return (c1.x() * c2.x()) + (c1.y() * c2.y()) + (c1.z() * c2.z());
     }
 
-    template <class T>
-    inline coord3<T> crossprod(const coord3<T>& c1, const coord3<T>& c2)
+    template <typename T>
+    inline constexpr coord3<T> crossprod(const coord3<T>& l, const coord3<T>& r)
     {
-        return coord3<T>((c1.y() * c2.z()) - (c2.y() * c1.z()),
-                         (c2.x() * c1.z()) - (c1.x() * c2.z()),
-                         (c1.x() * c2.y()) - (c2.x() * c1.y()));
+        return {
+            (l.y() * r.z()) - (r.y() * l.z()),
+            (r.x() * l.z()) - (l.x() * r.z()),
+            (l.x() * r.y()) - (r.x() * l.y())
+        };
     }
 
-    template <class T>
-    inline T length(const coord3<T>& c)
+    template <typename T>
+    inline constexpr T length(const coord3<T>& c)
     {
-        return c.length();
+        return T(sqrt(dotprod(c, c)));
     }
 
-    template <class T> inline T squared_length(const coord3<T>& c)
+    template <typename T>
+    inline constexpr T squared_length(const coord3<T>& c)
     {
         return dotprod(c, c);
     }
 
-    template <class T> inline coord3<T> unit(const coord3<T>& c)
+    template <typename T>
+    inline constexpr coord3<T> unit(const coord3<T>& c)
     {
-        return c / c.length();
+        return c / length(c);
     }
 
-    template <class T>
-    std::ostream& operator<< (std::ostream& o, const coord3<T>& c)
+    template <typename T>
+    std::ostream& operator<<(std::ostream& o, const coord3<T>& c)
     {
         o << "{" << c.x() << "," << c.y() << "," << c.z() << "}";
         return o;
