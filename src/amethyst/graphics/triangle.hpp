@@ -259,7 +259,7 @@ namespace amethyst
     {
         object_capabilities caps = plane<T>::get_object_capabilities();
 
-        caps &= ~object_capabilities::INFINITE;
+        caps &= ~object_capabilities::NOT_FINITE;
         caps |= object_capabilities::BOUNDABLE;
         caps |= object_capabilities::POLYGONIZATION;
 

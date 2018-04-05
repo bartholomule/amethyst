@@ -285,11 +285,11 @@ namespace amethyst
     }
 
     template <class T>
-    object_capabilities rectangle<T>::get_object capabilities() const
+    object_capabilities rectangle<T>::get_object_capabilities() const
     {
         object_capabilities caps = plane<T>::get_object_capabilities();
 
-        caps &= ~object_capabilities::INFINITE;
+        caps &= ~object_capabilities::NOT_FINITE;
         caps |= object_capabilities::BOUNDABLE;
         caps |= object_capabilities::POLYGONIZATION;
 

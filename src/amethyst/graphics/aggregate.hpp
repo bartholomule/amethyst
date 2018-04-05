@@ -417,13 +417,13 @@ namespace amethyst
         {
             object_capabilities obj_caps = (*iter)->get_object_capabilities();
 
-            if (obj_caps & object_capabilities::INFINITE)
+            if (obj_caps & object_capabilities::NOT_FINITE)
             {
                 caps &= ~object_capabilities::BOUNDABLE;
             }
             if (obj_caps & object_capabilities::BOUNDABLE)
             {
-                caps &= ~object_capabilities::INFINITE;
+                caps &= ~object_capabilities::NOT_FINITE;
             }
             if (obj_caps & object_capabilities::MOVABLE)
             {

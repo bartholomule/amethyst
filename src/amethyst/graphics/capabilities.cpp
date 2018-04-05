@@ -1,29 +1,7 @@
-/*
- * $Id: capabilities.cpp,v 1.3 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
 #include "capabilities.hpp"
 
 namespace amethyst
 {
-
     namespace // anonymous
     {
         void add_to_string_list(std::string& s, const std::string& item)
@@ -158,7 +136,7 @@ namespace amethyst
     {
         std::string retval;
 
-        ADD_TO_RESULT_LONG(object_capabilities::INFINITE, "Infinite");
+        ADD_TO_RESULT_LONG(object_capabilities::NOT_FINITE, "Infinite");
         ADD_TO_RESULT_LONG(object_capabilities::BOUNDABLE, "Boundable");
         ADD_TO_RESULT_LONG(object_capabilities::MOVABLE, "Movable");
         ADD_TO_RESULT_LONG(object_capabilities::POLYGONIZATION, "Polygonization");
@@ -178,7 +156,7 @@ namespace amethyst
     {
         std::string retval;
 
-        ADD_TO_RESULT_SHORT(object_capabilities::INFINITE, "I");
+        ADD_TO_RESULT_SHORT(object_capabilities::NOT_FINITE, "I");
         ADD_TO_RESULT_SHORT(object_capabilities::BOUNDABLE, "B");
         ADD_TO_RESULT_SHORT(object_capabilities::MOVABLE, "M");
         ADD_TO_RESULT_SHORT(object_capabilities::POLYGONIZATION, "P");
@@ -189,9 +167,6 @@ namespace amethyst
 
     CAPABILITIES_DEFINITION(object_capabilities);
 
-    ///////////////////////////////////////////////////////////////////////////
-
-    ///////////////////////////////////////////////////////////////////////////
     std::string material_capabilities::to_string() const
     {
         std::string retval;
@@ -223,5 +198,4 @@ namespace amethyst
     }
 
     CAPABILITIES_DEFINITION(material_capabilities);
-
-} // namespace amethyst
+}

@@ -598,7 +598,7 @@ namespace amethyst
     {
         object_capabilities caps = shape<T>::get_object_capabilities();
 
-        caps |= object_capabilities::INFINITE;
+        caps |= object_capabilities::NOT_FINITE;
         caps |= object_capabilities::SIMPLE;
 
         return caps;
