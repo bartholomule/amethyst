@@ -1,27 +1,4 @@
-/*
- * $Id: interpolated_value.hpp,v 1.7 2008/12/15 17:27:26 kpharris Exp $
- *
- * Part of "Amethyst" -- A playground for graphics development.
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
-
-#if       !defined(AMETHYST__INTERPOLATED_VALUE_HPP)
-#define            AMETHYST__INTERPOLATED_VALUE_HPP
-
+#pragma once
 /*
  * This file provides classes/functions for interpolating values using various
  * methods.  For now, this includes interpolation among:
@@ -63,6 +40,7 @@
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/general/string_dumpable.hpp"
 #include "amethyst/general/inspect.hpp"
+#include "amethyst/general/enum.hpp"
 #include <string>
 #include <algorithm>
 #include <vector>
@@ -79,10 +57,47 @@ namespace amethyst
         interpolation_type value;
 
         interpolation_point() = default;
-        interpolation_point(const parametric_type& p, const interpolation_type& v) :
-            parameter(p),
-            value(v)
+        interpolation_point(const parametric_type& p, const interpolation_type& v)
+            : parameter(p)
+            , value(v)
         {
+        }
+
+        // Comparison operators (all defined in terms of < or ==, to reduce the
+        // operations needed).
+        friend bool operator==(const interpolation_point& p1, const interpolation_point& p2)
+        {
+            return p1.parameter == p2.parameter;
+        }
+
+        friend bool operator!=(const interpolation_point& p1, const interpolation_point& p2)
+        {
+            return !(p1 == p2);
+        }
+
+        friend bool operator<(const interpolation_point& p1, const interpolation_point& p2)
+        {
+            return p1.parameter < p2.parameter;
+        }
+
+        friend bool operator>(const interpolation_point& p1, const interpolation_point& p2)
+        {
+            return !(p1 < p2) && !(p1 == p2);
+        }
+
+        friend bool operator<=(const interpolation_point& p1, const interpolation_point& p2)
+        {
+            return (p1 < p2) || (p1 == p2);
+        }
+
+        friend bool operator>=(const interpolation_point& p1, const interpolation_point& p2)
+        {
+            return !(p1 < p2);
+        }
+
+        friend std::ostream& operator<<(std::ostream& o, const interpolation_point& ip)
+        {
+            return o << "{ " << ip.parameter << ", " << ip.value << " }";
         }
     };
 
@@ -105,14 +120,8 @@ namespace amethyst
     class interpolated_value : public string_dumpable
     {
     public:
-
-        /** Default constructor */
-        interpolated_value() {
-        }
-
-        /** Destructor */
-        virtual ~interpolated_value() {
-        }
+        interpolated_value() = default;
+        virtual ~interpolated_value() = default;
 
         virtual bool valid_parameter(parametric_type parameter) const = 0;
         virtual interpolation_type interpolate(parametric_type parameter) const = 0;
@@ -120,117 +129,46 @@ namespace amethyst
 
         virtual std::vector<interpolation_point<parametric_type, interpolation_type>> get_interpolation_points() const = 0;
 
-        virtual std::string name() const {
-            return "interpolation_base_class";
-        }
+        std::string name() const override { return "interpolation_base_class"; }
 
-        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const {
+        std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override
+        {
             return std::string();
         }
-    }; // class interpolated_value
+    };
 
-
-    // Comparison operators (all defined in terms of < or ==, to reduce the
-    // operations needed).
-    template <class parametric_type, class interpolation_type>
-    inline bool operator==(const interpolation_point<parametric_type, interpolation_type>& p1,
-                           const interpolation_point<parametric_type, interpolation_type>& p2)
-    {
-        return p1.parameter == p2.parameter;
-    }
-    template <class parametric_type, class interpolation_type>
-    inline bool operator!=(const interpolation_point<parametric_type, interpolation_type>& p1,
-                           const interpolation_point<parametric_type, interpolation_type>& p2)
-    {
-        return !(p1 == p2);
-    }
-
-    template <class parametric_type, class interpolation_type>
-    inline bool operator<(const interpolation_point<parametric_type, interpolation_type>& p1,
-                          const interpolation_point<parametric_type, interpolation_type>& p2)
-    {
-        return p1.parameter < p2.parameter;
-    }
-
-    template <class parametric_type, class interpolation_type>
-    inline bool operator>(const interpolation_point<parametric_type, interpolation_type>& p1,
-                          const interpolation_point<parametric_type, interpolation_type>& p2)
-    {
-        return !(p1 < p2) && !(p1 == p2);
-    }
-
-    template <class parametric_type, class interpolation_type>
-    inline bool operator<=(const interpolation_point<parametric_type, interpolation_type>& p1,
-                           const interpolation_point<parametric_type, interpolation_type>& p2)
-    {
-        return (p1 < p2) || (p1 == p2);
-    }
-
-    template <class parametric_type, class interpolation_type>
-    inline bool operator>=(const interpolation_point<parametric_type, interpolation_type>& p1,
-                           const interpolation_point<parametric_type, interpolation_type>& p2)
-    {
-        return !(p1 < p2);
-    }
-
-    template <class parametric_type, class interpolation_type>
-    std::ostream& operator<<(std::ostream& o,
-                             const interpolation_point<parametric_type, interpolation_type>& ip)
-    {
-        return o << "{ " << ip.parameter << ", " << ip.value << " }";
-    }
-
-    enum endpoint_behavior { ENDPOINT_STOP, ENDPOINT_CONTINUE };
-
-    std::ostream& operator<<(std::ostream& o, endpoint_behavior behavior )
-    {
-        switch (behavior)
-        {
-        case ENDPOINT_STOP:
-            o << "STOP";
-            break;
-        case ENDPOINT_CONTINUE:
-            o << "CONTINUE";
-            break;
-        }
-        return o;
-    }
+    enum class endpoint_action { stop, continue_forever };
+    MAKE_ENUM_CONVERTABLE_DECLARATIONS(endpoint_action);
 
 
     // This function exists so that only a single function needs to be
-    // specialized in order to make complex types (eg. a matrix), which require
-    // more complicated interpolation methods, usable in all of these
-    // interpolation functions.
+    // specialized in order to make complex types (eg. a matrix) usable
+    // in all of these interpolation functions even if they require more
+    // complicated interpolation methods.
     template <class parametric_type, class interpolation_type>
     inline interpolation_type basic_interpolation(parametric_type adjusted_value,
-                                                  const interpolation_type& v1,
-                                                  const interpolation_type& v2)
+        const interpolation_type& v1, const interpolation_type& v2)
     {
         return v1 * parametric_type(1 - adjusted_value) +
                v2 * adjusted_value;
     }
 
-
     template <class parametric_type, class interpolation_type>
     inline interpolation_type block_interpolate(parametric_type val,
-                                                const interpolation_type& v1,
-                                                const interpolation_type& v2,
-                                                endpoint_behavior behavior)
+        const interpolation_type& v1, const interpolation_type& v2, endpoint_action behavior)
     {
         return v1;
     }
 
     template <class parametric_type, class interpolation_type>
     inline interpolation_type linear_interpolate(parametric_type val,
-                                                 const interpolation_type& v1,
-                                                 const interpolation_type& v2,
-                                                 endpoint_behavior behavior)
+        const interpolation_type& v1, const interpolation_type& v2, endpoint_action behavior)
     {
-        if ((val < 0) && (behavior == ENDPOINT_STOP))
+        if ((val < 0) && (behavior == endpoint_action::stop))
         {
             return v1;
         }
-        if ((val > 1) && (behavior == ENDPOINT_STOP))
+        if ((val > 1) && (behavior == endpoint_action::stop))
         {
             return v2;
         }
@@ -284,29 +222,23 @@ namespace amethyst
 
     template <class parametric_type, class interpolation_type>
     inline interpolation_type cubic_interpolate(parametric_type val,
-                                                const interpolation_type& v1,
-                                                const interpolation_type& v2,
-                                                endpoint_behavior behavior)
+        const interpolation_type& v1, const interpolation_type& v2, endpoint_action behavior)
     {
-        if ((val < 0) && (behavior == ENDPOINT_STOP))
+        // FIXME! This is only minimally correct. It does do the proper curve to the
+        // nearest neighbor, but real bicubic interpolation needs to check values
+        // farther away.
+
+        if ((val < 0) && (behavior == endpoint_action::stop))
         {
             return v1;
         }
-        if ((val > 1) && (behavior == ENDPOINT_STOP))
+        if ((val > 1) && (behavior == endpoint_action::stop))
         {
             return v2;
         }
-
-        // This is how I've done cubic filtering before:
+        // Filter (warp) the parameter so that linear interpolation will appear to have used
+        // the correct values for the interpolation components.
         parametric_type val2 = (3 * val * val - 2 * val * val * val);
-
-        //
-        // This is how Peter Shirley's second edition says to do a cubic filter:
-        //parametric_type val2 = helper_functions::interpolated_cubic_filter<parametric_type>(val);
-
-        // NOTE: I don't know what I was thinking when I put that here, but that
-        // is a *FILTER*, not normal interpolation.  The filter extends beyond
-        // the data we want.  That needs to be moved to some filtering junk.
 
         return basic_interpolation(val2, v1, v2);
     }
@@ -315,16 +247,12 @@ namespace amethyst
     template <class parametric_type, class interpolation_type>
     struct interpolation_base
     {
-        std::string name() const {
-            return "interpolation_base";
-        }
+        std::string name() const { return "interpolation_base"; }
 
         interpolation_type operator()(const parametric_type& param,
-                                      const parametric_type& pmin,
-                                      const parametric_type& pmax,
-                                      const interpolation_type& vmin,
-                                      const interpolation_type& vmax,
-                                      endpoint_behavior b) const
+            const parametric_type& pmin, const parametric_type& pmax,
+            const interpolation_type& vmin, const interpolation_type& vmax,
+            endpoint_action b) const
         {
             return block_interpolate(param, vmin, vmax, b);
         }
@@ -333,16 +261,12 @@ namespace amethyst
     template <class parametric_type, class interpolation_type>
     struct linear_interpolation : public interpolation_base<parametric_type, interpolation_type>
     {
-        std::string name() const {
-            return "linear_interpolation";
-        }
+        std::string name() const { return "linear_interpolation"; }
 
         interpolation_type operator()(const parametric_type& param,
-                                      const parametric_type& pmin,
-                                      const parametric_type& pmax,
-                                      const interpolation_type& vmin,
-                                      const interpolation_type& vmax,
-                                      endpoint_behavior b) const
+            const parametric_type& pmin, const parametric_type& pmax,
+            const interpolation_type& vmin, const interpolation_type& vmax,
+            endpoint_action b) const
         {
             parametric_type t = (param - pmin) / (pmax - pmin);
             return linear_interpolate(t, vmin, vmax, b);
@@ -352,16 +276,12 @@ namespace amethyst
     template <class parametric_type, class interpolation_type>
     struct cubic_interpolation : public interpolation_base<parametric_type, interpolation_type>
     {
-        std::string name() const {
-            return "cubic_interpolation";
-        }
+        std::string name() const { return "cubic_interpolation"; }
 
         interpolation_type operator()(const parametric_type& param,
-                                      const parametric_type& pmin,
-                                      const parametric_type& pmax,
-                                      const interpolation_type& vmin,
-                                      const interpolation_type& vmax,
-                                      endpoint_behavior b) const
+            const parametric_type& pmin, const parametric_type& pmax,
+            const interpolation_type& vmin, const interpolation_type& vmax,
+            endpoint_action b) const
         {
             parametric_type t = (param - pmin) / (pmax - pmin);
             return cubic_interpolate(t, vmin, vmax, b);
@@ -371,27 +291,24 @@ namespace amethyst
     template <class parametric_type, class interpolation_type, class interpolation_function>
     struct user_interpolation : public interpolation_base<parametric_type, interpolation_type>
     {
-        user_interpolation(interpolation_function f, std::string fn_name) : fun(f), user_function_name(fn_name) {
+        user_interpolation() = delete;
+        user_interpolation(interpolation_function f, std::string fn_name)
+            : fun(f), user_function_name(fn_name)
+        {
         }
 
-        std::string name() const {
-            return "user_interpolation_function<" + user_function_name + ">";
-        }
+        std::string name() const { return "user_interpolation_function<" + user_function_name + ">"; }
 
         interpolation_type operator()(const parametric_type& param,
-                                      const parametric_type& pmin,
-                                      const parametric_type& pmax,
-                                      const interpolation_type& vmin,
-                                      const interpolation_type& vmax,
-                                      endpoint_behavior b) const
+            const parametric_type& pmin, const parametric_type& pmax,
+            const interpolation_type& vmin, const interpolation_type& vmax,
+            endpoint_action b) const
         {
             parametric_type t = (param - pmin) / (pmax - pmin);
             return fun(t, vmin, vmax, b);
         }
 
     private:
-        user_interpolation() {
-        }
         interpolation_function fun;
         std::string user_function_name;
     };
@@ -403,42 +320,28 @@ namespace amethyst
     public:
         typedef interpolated_pair<parametric_type, interpolation_type, interpolation_function> self_type;
         typedef amethyst::interpolation_point<parametric_type, interpolation_type> interpolation_point;
-    private:
-        interpolation_point ip1, ip2;
-        interpolation_function fun;
-        endpoint_behavior behavior;
-    public:
-        interpolated_pair(const interpolation_type& v1,
-                          const interpolation_type& v2,
-                          interpolation_function f = interpolation_function(),
-                          endpoint_behavior b = ENDPOINT_STOP) :
-            ip1(0, v1),
-            ip2(1, v2),
-            fun(f),
-            behavior(b)
+
+        interpolated_pair(const interpolation_type& v1, const interpolation_type& v2,
+            interpolation_function f = interpolation_function(),
+            endpoint_action b = endpoint_action::stop)
+            : interpolated_pair(interpolation_point(0, v1), interpolation_point(1, v2), f, b)
         {
         }
 
         interpolated_pair(const interpolation_point& p1, const interpolation_point& p2,
-                          interpolation_function f = interpolation_function(),
-                          endpoint_behavior b = ENDPOINT_STOP) :
-            ip1(p1),
-            ip2(p2),
-            fun(f),
-            behavior(b)
+            interpolation_function f = interpolation_function(),
+            endpoint_action b = endpoint_action::stop)
+            : ip1(p1)
+            , ip2(p2)
+            , fun(f)
+            , behavior(b)
         {
         }
         // NOTE: copy constructor/assign operator use compiler default.
+        virtual ~interpolated_pair() = default;
+        virtual self_type* clone_new() const { return new self_type(*this); }
 
-        virtual ~interpolated_pair() {
-        }
-        virtual self_type* clone_new() const {
-            return new self_type(*this);
-        }
-
-        virtual std::string name() const {
-            return "interpolated_pair<" + fun.name() + ">";
-        }
+        virtual std::string name() const { return "interpolated_pair<" + fun.name() + ">"; }
 
         virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const
         {
@@ -476,6 +379,11 @@ namespace amethyst
             retval.push_back(ip2);
             return retval;
         }
+
+    private:
+        interpolation_point ip1, ip2;
+        interpolation_function fun;
+        endpoint_action behavior;
     };
 
 
@@ -486,58 +394,42 @@ namespace amethyst
     public:
         typedef interpolated_vector<parametric_type, interpolation_type, interpolation_function> self_type;
         typedef amethyst::interpolation_point<parametric_type, interpolation_type> interpolation_point;
-    private:
-        std::vector<interpolation_point> iv;
-        interpolation_function fun;
-        endpoint_behavior behavior;
-    public:
 
         interpolated_vector(const interpolation_type& v1, const interpolation_type& v2,
-                            interpolation_function f = interpolation_function(),
-                            endpoint_behavior b = ENDPOINT_STOP) :
-            iv(2),
-            fun(f),
-            behavior(b)
+            interpolation_function f = interpolation_function(),
+            endpoint_action b = endpoint_action::stop)
+            : iv{ { interpolation_point(parametric_type(0), v1), interpolation_point(parametric_type(0), v2) } }
+            , fun(f)
+            , behavior(b)
         {
-            iv[0] = interpolation_point(parametric_type(0), v1);
-            iv[1] = interpolation_point(parametric_type(1), v2);
         }
 
         interpolated_vector(const interpolation_point& p1, const interpolation_point& p2,
-                            interpolation_function f = interpolation_function(),
-                            endpoint_behavior b = ENDPOINT_STOP) :
-            iv(2),
-            fun(f),
-            behavior(b)
+            interpolation_function f = interpolation_function(),
+            endpoint_action b = endpoint_action::stop)
+            : iv{ { p1, p2 } }
+            , fun(f)
+            , behavior(b)
         {
-            iv[0] = p1;
-            iv[1] = p2;
             // Make sure the points are in order.
             std::sort(iv.begin(), iv.end());
         }
 
-        interpolated_vector(const std::vector<interpolation_point>& v,
-                            interpolation_function f = interpolation_function(),
-                            endpoint_behavior b = ENDPOINT_STOP) :
-            iv(v),
-            fun(f),
-            behavior(b)
+        interpolated_vector(std::vector<interpolation_point> v,
+            interpolation_function f = interpolation_function(),
+            endpoint_action b = endpoint_action::stop)
+            : iv(std::move(v))
+            , fun(f)
+            , behavior(b)
         {
             // Make sure the points are in order.
             std::sort(iv.begin(), iv.end());
         }
 
         // NOTE: copy constructor/assign operator use compiler default.
-
-        virtual ~interpolated_vector() {
-        }
-        virtual self_type* clone_new() const {
-            return new self_type(*this);
-        }
-
-        virtual std::string name() const {
-            return "interpolated_vector<" + fun.name() + ">";
-        }
+        virtual ~interpolated_vector() = default;
+        virtual self_type* clone_new() const { return new self_type(*this); }
+        virtual std::string name() const { return "interpolated_vector<" + fun.name() + ">"; }
 
         virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const
         {
@@ -574,10 +466,12 @@ namespace amethyst
             {
                 size_t i = 0;
 
-                for (;
-                     (i < iv.size()) && (iv[i].parameter < parameter);
-                     ++i)
+                for (; (i < iv.size()); ++i)
                 {
+                    if (iv[i].parameter > parameter)
+                    {
+                        break;
+                    }
                 }
 
 
@@ -592,23 +486,17 @@ namespace amethyst
                     before = i;
                     after = i + 1;
                 }
-                else // if( i >= iv.size() )
+                else
                 {
                     before = iv.size() - 2;
                     after = before + 1;
                 }
 
-                //	cout << "param=" << parameter << " i=" << i << " before=" << before << " after=" << after << endl;
+                parametric_type t = parameter;
 
-                parametric_type t = parameter; //(parameter - iv[before].parameter) / (iv[after].parameter - iv[before].parameter);
-
-                //	cout << "iv[before]=" << iv[before] << "  iv[after]=" << iv[after] << " t=" << t << endl;
-
-                //	return fun((parameter - iv[before].parameter) /
-                //	(iv[after].parameter - iv[before].parameter),
                 return fun(t,
-                           iv[before].parameter, iv[after].parameter,
-                           iv[before].value, iv[after].value, behavior);
+                    iv[before].parameter, iv[after].parameter,
+                    iv[before].value, iv[after].value, behavior);
             }
             else if (!iv.empty())
             {
@@ -620,13 +508,17 @@ namespace amethyst
             }
         }
 
-        virtual std::vector<interpolation_point> get_interpolation_points() const
+        std::vector<interpolation_point> get_interpolation_points() const override
         {
             return iv;
         }
-    }; // interpolated_vector
+    private:
+        std::vector<interpolation_point> iv;
+        interpolation_function fun;
+        endpoint_action behavior;
+    };
 
-    enum interpolation_method { INTERP_BLOCK, INTERP_LINEAR, INTERP_CUBIC };
+    enum class interpolation_method { block, linear, cubic };
 
 
     // This struct is only here to allow a proper typedef for an interpolation
@@ -634,12 +526,12 @@ namespace amethyst
     template <class T, class IT>
     struct it_wrapper
     {
-        typedef IT (*user_interpolation_function)(T, const IT&, const IT&, endpoint_behavior);
+        typedef IT (*user_interpolation_function)(T, const IT&, const IT&, endpoint_action);
     };
 
     template <class T, class IT>
     user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>
-    get_interpolation_function(interpolation_method method = INTERP_CUBIC)
+    get_interpolation_function(interpolation_method method = interpolation_method::cubic)
     {
         typedef typename it_wrapper<T, IT>::user_interpolation_function fn_ptr;
 
@@ -648,15 +540,15 @@ namespace amethyst
 
         switch (method)
         {
-        case INTERP_BLOCK:
+        case interpolation_method::block:
             fun = &block_interpolate<T, IT>;
             fn_name = "block";
             break;
-        case INTERP_LINEAR:
+        case interpolation_method::linear:
             fun = &linear_interpolate<T, IT>;
             fn_name = "linear";
             break;
-        case INTERP_CUBIC:
+        case interpolation_method::cubic:
             fun = &cubic_interpolate<T, IT>;
             fn_name = "cubic";
             break;
@@ -669,8 +561,8 @@ namespace amethyst
     std::shared_ptr<interpolated_pair<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>>
     create_interpolation(const interpolation_point<T, IT>& i1,
                          const interpolation_point<T, IT>& i2,
-                         endpoint_behavior b = ENDPOINT_STOP,
-                         interpolation_method method = INTERP_CUBIC)
+                         endpoint_action b = endpoint_action::stop,
+                         interpolation_method method = interpolation_method::cubic)
     {
         typedef typename it_wrapper<T, IT>::user_interpolation_function fn_ptr;
 
@@ -683,8 +575,8 @@ namespace amethyst
     template <class T, class IT>
     std::shared_ptr<interpolated_vector<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>>
     create_interpolation(const std::vector<interpolation_point<T, IT>>& vec,
-                         endpoint_behavior b = ENDPOINT_STOP,
-                         interpolation_method method = INTERP_CUBIC)
+                         endpoint_action b = endpoint_action::stop,
+                         interpolation_method method = interpolation_method::cubic)
     {
         typedef typename it_wrapper<T, IT>::user_interpolation_function fn_ptr;
 
@@ -696,20 +588,16 @@ namespace amethyst
     template <class T, class IT>
     std::shared_ptr<interpolated_vector<T, IT, user_interpolation<T, IT, typename it_wrapper<T, IT>::user_interpolation_function>>>
     create_interpolation(const IT& i1, const IT& i2, const IT& i3, T exponent = 1,
-                         endpoint_behavior b = ENDPOINT_STOP,
-                         interpolation_method method = INTERP_CUBIC)
+                         endpoint_action b = endpoint_action::stop,
+                         interpolation_method method = interpolation_method::cubic)
     {
-        std::vector<interpolation_point<T, IT>> vec(3);
-
-        vec[0] = interpolation_point<T, IT>(T(0.0), i1);
-        vec[1] = interpolation_point<T, IT>(pow(T(0.5), exponent), i2);
-        vec[2] = interpolation_point<T, IT>(T(1.0), i3);
+        std::vector<interpolation_point<T, IT>> vec
+        {
+            interpolation_point<T, IT>(T(0.0), i1),
+            interpolation_point<T, IT>(pow(T(0.5), exponent), i2),
+            interpolation_point<T, IT>(T(1.0), i3)
+        };
 
         return create_interpolation<T, IT>(vec, b, method);
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__INTERPOLATED_VALUE_HPP) */
-
+}

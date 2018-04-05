@@ -15,6 +15,7 @@ add_library(amethyst_graphics
 	image_loader.hpp
 	image_loader.cpp
 	interpolated_value.hpp
+	interpolated_value.cpp
 	intersection_info.hpp
 	marble_texture.hpp
 	material.hpp
