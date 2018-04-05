@@ -39,10 +39,10 @@ namespace amethyst
         line_base(const line_base& old) = default;
         line_base& operator=(const line_base& old) = default;
 
-        point_type o() const { return line_origin; }
-        point_type origin() const { return line_origin; }
-        vector_type v() const { return line_direction; }
-        vector_type direction() const { return line_direction; }
+        constexpr point_type o() const { return line_origin; }
+        constexpr point_type origin() const { return line_origin; }
+        constexpr vector_type v() const { return line_direction; }
+        constexpr vector_type direction() const { return line_direction; }
 
         point_type minimum() const { return line_origin + line_limits.begin() * direction(); }
         point_type maximum() const { return line_origin + line_limits.end() * direction(); }

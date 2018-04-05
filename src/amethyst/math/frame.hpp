@@ -57,7 +57,7 @@ namespace amethyst
         onb<T>& basis() { return m_basis; }
         point3<T>& origin() { return m_origin; }
         const onb<T>& basis() const { return m_basis; }
-        const point3<T>& origin() const { return m_origin; }
+        constexpr const point3<T>& origin() const { return m_origin; }
 
         //
         // Transfrom from external frame INTO this frame.

@@ -134,70 +134,64 @@ namespace amethyst
 
     /* non-member math functions (also inlined for an attempt at some speed) */
     template <class T>
-    inline coord2<T> operator+(coord2<T> p1, const coord2<T>& p2)
+    inline constexpr coord2<T> operator+(const coord2<T> p1, const coord2<T>& p2)
     {
-        p1 += p2;
-        return p1;
+        return { p1.x() + p2.x(), p1.y() + p2.y() };
     }
     template <class T>
-    inline coord2<T> operator-(coord2<T> p1, const coord2<T>& p2)
+    inline constexpr coord2<T> operator-(const coord2<T>& p1, const coord2<T>& p2)
     {
-        p1 -= p2;
-        return p1;
+        return { p1.x() - p2.x(), p1.y() - p2.y() };
     }
     template <class T, typename U>
-    inline coord2<T> operator*(coord2<T> p1, U d)
+    inline constexpr coord2<T> operator*(const coord2<T>& p1, U d)
     {
-        p1 *= d;
-        return p1;
+        return { p1.x() * d, p1.y() * d };
     }
     template <class T, typename U>
-    inline coord2<T> operator*(U d, coord2<T> p1)
+    inline constexpr coord2<T> operator*(U d, const coord2<T>& p1)
     {
-        p1 *= d;
-        return p1;
+        return { p1.x() * d, p1.y() * d };
     }
     template <class T, typename U>
-    inline coord2<T> operator/(coord2<T> p1, U d)
+    inline constexpr coord2<T> operator/(coord2<T> p1, U d)
     {
-        p1 /= d;
-        return p1;
+        return { p1.x() / d, p1.y() / d };
     }
 
     template <class T>
     inline coord2<T> operator*(coord2<T> p1, const coord2<T>& p2)
     {
-        p1 *= p2;
-        return p1;
+        return { p1.x() * p2.x(), p1.y() * p2.y() };
     }
 
     /* Unary minus */
     template <class T>
-    inline coord2<T> operator-(const coord2<T>& p1)
+    inline constexpr coord2<T> operator-(const coord2<T>& p1)
     {
-        return T(-1) * p1;
+        return { -p1.x(), -p1.y() };
     }
 
     template <class T>
-    inline T dotprod(const coord2<T>& c1, const coord2<T>& c2)
+    inline constexpr T dotprod(const coord2<T>& c1, const coord2<T>& c2)
     {
-        return (c1.x() * c2.x()) + (c1.y() * c2.c.y());
+        return (c1.x() * c2.x()) + (c1.y() * c2.y());
     }
 
     template <class T>
-    inline T length(const coord2<T>& c)
+    inline constexpr T length(const coord2<T>& c)
     {
-        return c.length();
+        return sqrt(dotprod(c, c));
     }
 
     template <class T>
-    inline coord2<T> unit(const coord2<T>& c)
+    inline constexpr coord2<T> unit(const coord2<T>& c)
     {
         return c / c.length();
     }
 
     template <class T>
-    std::ostream& operator<< (std::ostream& o, const coord2<T>& c)
+    std::ostream& operator<<(std::ostream& o, const coord2<T>& c)
     {
         o << "{" << c.x() << "," << c.y() << "}";
         return o;

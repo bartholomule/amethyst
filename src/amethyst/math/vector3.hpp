@@ -36,7 +36,7 @@ namespace amethyst
 
         vector3() = default;
         vector3(const vector3<T>&) = default;
-        inline vector3(T x, T y, T z) : parent(x, y, z) { }
+        inline constexpr vector3(T x, T y, T z) : parent(x, y, z) { }
         inline explicit vector3(const parent& c) : parent(c) { }
         vector3& operator=(const vector3&) = default;
 
@@ -49,90 +49,83 @@ namespace amethyst
 
         inline vector3& operator+=(const vector3& p2) { parent::operator+=(p2); return *this; }
         inline vector3& operator-=(const vector3& p2) { parent::operator-=(p2); return *this; }
-        template <class U>
+        template <typename U>
         inline vector3& operator*=(U factor) { parent::operator*=(factor); return *this; }
-        template <class U>
+        template <typename U>
         inline vector3& operator/=(U factor) { parent::operator*=(factor); return *this; }
 
     };
 
     template <class T>
-    inline vector3<T> operator-(const vector3<T>& v1)
+    inline constexpr vector3<T> operator-(const vector3<T>& v1)
     {
-        return T(-1) * v1;
+        return { -v1.x(), -v1.y(), -v1.z() };
     }
 
-    template <class T, class U>
-    inline vector3<T> operator*(vector3<T> v, U factor)
+    template <class T, typename U>
+    inline constexpr vector3<T> operator*(const vector3<T>& v, U factor)
     {
-        v *= factor;
-        return v;
+        return { v.x() * factor, v.y() * factor, v.z() * factor };
     }
 
-    template <class T, class U>
-    inline vector3<T> operator*(U factor, vector3<T> v)
+    template <class T, typename U>
+    inline constexpr vector3<T> operator*(U factor, const vector3<T>& v)
     {
-        v *= factor;
-        return v;
+        return { v.x() * factor, v.y() * factor, v.z() * factor };
     }
 
-    template <class T, class U>
-    inline vector3<T> operator/(vector3<T> v, U factor)
+    template <class T, typename U>
+    inline constexpr vector3<T> operator/(const vector3<T>& v, U factor)
     {
-        v /= factor;
-        return v;
+        return { v.x() / factor, v.y() / factor, v.z() / factor };
     }
 
     template <class T>
-    inline vector3<T> operator-(vector3<T> v1, const vector3<T>& v2)
+    inline constexpr vector3<T> operator-(const vector3<T>& v1, const vector3<T>& v2)
     {
-        v1 -= v2;
-        return v1;
+        return { v1.x() - v2.x(), v1.y() - v2.y(), v1.z() - v2.z() };
     }
 
     template <class T>
-    inline vector3<T> operator+(vector3<T> v1, const vector3<T>& v2)
+    inline constexpr vector3<T> operator+(vector3<T> v1, const vector3<T>& v2)
     {
-        v1 += v2;
-        return v1;
+        return { v1.x() + v2.x(), v1.y() + v2.y(), v1.z() + v2.z() };
     }
 
     template <class T>
-    inline vector3<T> crossprod(const vector3<T>& v1, const vector3<T>& v2)
+    inline constexpr vector3<T> crossprod(const vector3<T>& l, const vector3<T>& r)
     {
-        return vector3<T>(
-            (v1.y() * v2.z()) - (v2.y() * v1.z()),
-            (v2.x() * v1.z()) - (v1.x() * v2.z()),
-            (v1.x() * v2.y()) - (v2.x() * v1.y())
-            );
+        return {
+            (l.y() * r.z()) - (r.y() * l.z()),
+            (r.x() * l.z()) - (l.x() * r.z()),
+            (l.x() * r.y()) - (r.x() * l.y())
+        };
     }
 
     template <typename T>
-    inline T dotprod(const vector3<T>& v1, const vector3<T>& v2)
+    inline constexpr T dotprod(const vector3<T>& v1, const vector3<T>& v2)
     {
         return (v1.x() * v2.x()) + (v1.y() * v2.y()) + (v1.z() * v2.z());
     }
 
+    // Can't be constexpr because std::sqrt isn't constexpr, and I can't select my version at compile time.
     template <class T>
     inline T length(const vector3<T>& v)
     {
-        T squared_length = dotprod(v, v);
-        return T(sqrt(double(squared_length)));
+        return sqrt(dotprod(v, v));
     }
 
     template <class T>
-    inline T squared_length(const vector3<T>& v)
+    inline constexpr T squared_length(const vector3<T>& v)
     {
         return dotprod(v, v);
     }
 
-    // FIXME! Find an exception to throw...
+    // Also can't be constexpr.
     template <class T>
     inline vector3<T> unit(const vector3<T>& v)
     {
-        T len = length(v);
-        // FIXME! Check the squared length >= 0
-        return v / len;
+        return v / length(v);
     }
 
     template <class T>
