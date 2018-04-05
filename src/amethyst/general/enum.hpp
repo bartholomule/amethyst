@@ -52,10 +52,8 @@ namespace amethyst
             std::string compact_name;
 
             enum_flag_mapping() = delete;
-            enum_flag_mapping(enum_type v, std::string n) : value(v), name(std::move(n)) {
-            }
-            enum_flag_mapping(enum_type v, std::string n, std::string c) : value(v), name(std::move(n)), compact_name(std::move(c)) {
-            }
+            enum_flag_mapping(enum_type v, std::string n) : value(v), name(std::move(n)) { }
+            enum_flag_mapping(enum_type v, std::string n, std::string c) : value(v), name(std::move(n)), compact_name(std::move(c)) { }
         };
 
         std::vector<enum_flag_mapping> m_mappings;
@@ -75,15 +73,15 @@ namespace amethyst
 
         std::string unmatched_text(enum_type e) const
         {
-            return string_format(m_umatched_format, std::underlying_type_t<enum_type>(e));
+            return string_format(m_unmatched_format, std::underlying_type_t<enum_type>(e));
         }
 
         std::string unmatched_text(const std::string& s) const
         {
-            return string_format(m_umatched_format, s);
+            return string_format(m_unmatched_format, s);
         }
 
-        std::string get_name(const enum_flag_mapping& m, bool compact)
+        std::string get_name(const enum_flag_mapping& m, bool compact) const
         {
             if (compact && !m.compact_name.empty())
             {
@@ -102,7 +100,7 @@ namespace amethyst
                     return get_name(v, compact);
                 }
             }
-            return unmatched(e);
+            return unmatched_text(e);
         }
 
         std::string enum_to_string(enum_type e) const
@@ -183,7 +181,8 @@ namespace amethyst
     template <> enum_type enum_from_string<enum_type>(const std::string& text); \
     std::string to_string(enum_type); \
     std::string to_compact_string(enum_type); \
-    std::string inspect(enum_type);
+    std::string inspect(enum_type); \
+    std::ostream& operator<<(std::ostream&, enum_type);
 
 #define MAKE_ORABLE_ENUM_CONVERTABLE_DECLARATIONS(enum_type) \
     MAKE_ENUM_CONVERTABLE_DECLARATIONS(enum_type)
@@ -207,6 +206,10 @@ namespace amethyst
     std::string inspect(enum_type e) \
     { \
         return to_string(e); \
+    } \
+    std::ostream& operator<<(std::ostream& o, enum_type t)\
+    { \
+        return o << to_string(t); \
     }
 
 #define MAKE_ENUM_CONVERTABLE_DEFINITIONS(enum_type, unmatched, ...) \
