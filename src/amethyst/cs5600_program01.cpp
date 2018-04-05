@@ -153,8 +153,7 @@ void program1_extra()
             complex q(x_pos, complex::coord_type(y_pos, 0, 0));
 
             //			std::cerr << "pix(" << x_pos << ", " << y_pos << ") -->(" << x << ", " << y << ")" << std::endl;
-            number_type escape = mandelbrot_escape(q, q,
-                                                   std::bind2nd(std::ptr_fun(&bailout_circle), escape_max_value),
+            number_type escape = mandelbrot_escape(q, q, std::bind(bailout_circle, std::placeholders::_1, escape_max_value),
                                                    escape_max_iterations);
 
             color c = colors->interpolate(1 - escape);
