@@ -19,10 +19,7 @@ namespace amethyst
     class pinhole_camera : public base_camera<T>
     {
     public:
-        /** Default constructor */
         pinhole_camera();
-
-        /** Fully-specified constructor */
         pinhole_camera(const point3<T>& eye,
                        const vector3<T>& gaze,
                        const vector3<T>& up,

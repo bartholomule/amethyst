@@ -1,35 +1,9 @@
-/*
- * $Id: triangle.hpp,v 1.10 2008/06/21 22:25:10 kpharris Exp $
- *
- * Part of "Amethyst" a playground for graphics development
- * Copyright (C) 2004 Kevin Harris
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- */
+#pragma once
 
-#if       !defined(AMETHYST__TRIANGLE_HPP)
-#define            AMETHYST__TRIANGLE_HPP
-
-// --------------------------------------
-// Include of parent class header
-// --------------------------------------
 #include "amethyst/graphics/plane.hpp"
 
 namespace amethyst
 {
-
     /**
      *
      * A simple triangle class, which is based on the plane class.
@@ -41,115 +15,33 @@ namespace amethyst
     template <class T>
     class triangle : public plane<T>
     {
-
-    private:
-
-    protected:
-
     public:
-        /** Default constructor */
-        triangle();
+        triangle() = default;
 
         triangle(const point3<T>& corner1 = point3<T>(0, 0, 0),
-                 const point3<T>& corner2 = point3<T>(1, 0, 0),
-                 const point3<T>& corner3 = point3<T>(0, 1, 0));
-
-        /** Destructor */
-        virtual ~triangle();
-
-        /** Copy constructor */
-        triangle(const triangle& old);
-
-        /** Assignment operator */
-        triangle& operator= (const triangle& old);
-
-        /** Returns if the given point is inside the shape. */
-        virtual bool inside(const point3<T>& p) const;
-
-        /** Returns if the given sphere intersects the shape. */
-        virtual bool intersects(const sphere<T>& s) const;
-
-        /** Returns if the given plane intersects the shape. */
-        virtual bool intersects(const plane<T>& p) const;
-
-        /** Returns if the given line intersects the plane. */
-        virtual bool intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements) const;
-
-
-        /**
-         * A quick intersection test.  This will calculate nothing but the
-         * distance. This is most useful for shadow tests, and other tests where no
-         * textures will be applied.
-         */
-        virtual bool quick_intersection(const unit_line3<T>& line,
-                                        T time, T& distance) const;
-
-        virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
-
-        virtual std::string name() const {
-            return "triangle";
-        }
-
-        virtual intersection_capabilities get_intersection_capabilities() const;
-        virtual object_capabilities get_object_capabilities() const;
-
-    }; // class triangle
-
-
-
-    //---------------------------------------
-    // Default constructor for class triangle
-    //---------------------------------------
-    template <class T>
-    triangle<T>::triangle() :
-        plane<T>()
-    {
-
-    } // triangle()
-
-    template <class T>
-    triangle<T>::triangle(const point3<T>& corner1,
-                          const point3<T>& corner2,
-                          const point3<T>& corner3) :
-        plane<T>(corner1, corner2, corner3)
-    {
-    } // triangle(point3,point3,point3)
-
-
-    //------------------------------
-    // Destructor for class triangle
-    //------------------------------
-    template <class T>
-    triangle<T>::~triangle()
-    {
-
-    } // ~triangle()
-
-    //------------------------------------
-    // Copy constructor for class triangle
-    //------------------------------------
-    template <class T>
-    triangle<T>::triangle(const triangle<T>& old) :
-        plane<T>(old)
-    {
-
-    } // triangle(triangle)
-
-    //---------------------------------------
-    // Assignment operator for class triangle
-    //---------------------------------------
-    template <class T>
-    triangle<T>& triangle<T>::operator= (const triangle<T>& old)
-    {
-        // Generic check for self-assignment
-        if (&old != this)
+            const point3<T>& corner2 = point3<T>(1, 0, 0),
+            const point3<T>& corner3 = point3<T>(0, 1, 0))
+            : plane<T>(corner1, corner2, corner3)
         {
-            plane<T>::operator=(old);
         }
-        return *this;
-    } // triangle::operator=(triangle)
+        virtual ~triangle() = default;
+        triangle(const triangle&) = default;
+        triangle& operator=(const triangle&) = default;
+
+        bool inside(const point3<T>& p) const override;
+        bool intersects(const sphere<T>& s) const override;
+        bool intersects(const plane<T>& p) const override;
+        bool intersects_line(const unit_line3<T>& line, intersection_info<T>& intersection,
+            const intersection_requirements& requirements) const override;
+        bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const override;
+
+        std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
+        std::string name() const override { return "triangle"; }
+
+        intersection_capabilities get_intersection_capabilities() const override;
+        object_capabilities get_object_capabilities() const override;
+    };
+
 
     template <class T>
     bool triangle<T>::inside(const point3<T>& point) const
@@ -198,9 +90,8 @@ namespace amethyst
     }
 
     template <class T>
-    bool triangle<T>::intersects_line(const unit_line3<T>& line,
-                                      intersection_info<T>& intersection,
-                                      const intersection_requirements& requirements) const
+    bool triangle<T>::intersects_line(const unit_line3<T>& line, intersection_info<T>& intersection,
+        const intersection_requirements& requirements) const
     {
         intersection_info<T> temp_intersection;
 
@@ -292,8 +183,4 @@ namespace amethyst
         }
         return false;
     }
-
-} // namespace amethyst
-
-
-#endif /* !defined(AMETHYST__TRIANGLE_HPP) */
+}

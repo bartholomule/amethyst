@@ -1,6 +1,6 @@
 #pragma once
 
-#include "texture.hpp"
+#include "surface_texture.hpp"
 #include "image_loader.hpp"
 #include "math/interval.hpp"
 
@@ -13,7 +13,7 @@ namespace amethyst
     };
 
     template <typename T, typename color_type>
-    class image_texture : public texture<T, color_type>
+    class image_texture : public surface_texture<T, color_type>
     {
     public:
         using image_type = raster<color_type>;
@@ -49,8 +49,7 @@ namespace amethyst
             return "image_texture";
         }
 
-
-        color_type get_color(const point3<T>& location, const coord2<T>& coord) const override
+        color_type get_color_at_location(const coord2<T>& coord) const override
         {
             coord2<T> clipped = coord;
             if (m_limits_x.outside(clipped.x()) || m_limits_y.outside(clipped.y()))

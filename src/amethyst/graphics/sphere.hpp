@@ -1,8 +1,5 @@
 #pragma once
 
-// --------------------------------------
-// Default include of parent class header
-// --------------------------------------
 #include "amethyst/graphics/shape.hpp"
 #include "amethyst/general/defines.hpp"
 #include "amethyst/general/string_format.hpp"

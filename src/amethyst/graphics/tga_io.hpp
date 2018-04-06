@@ -1,8 +1,7 @@
-#if    !defined(KH_TGA_OUT_H)
-#define         KH_TGA_OUT_H
+#pragma once
 
 /*
-   tga_out.h
+   tga_io.hpp
 
    An extension of the image_output class (in imageout.h) to output to a targa file.
  */
@@ -184,9 +183,4 @@ namespace amethyst
 
         return dest;
     }
-
-} // namespace amethyst
-
-#endif /* !defined(KH_TGA_OUT_H) */
-
-
+}

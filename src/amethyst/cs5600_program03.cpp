@@ -69,20 +69,16 @@ using generator = sample_generator_2d<number_type>;
 
 struct point_entry
 {
-    point_entry() {
-    }
-    point_entry(point3<number_type>& p, rgbcolor<number_type>& c) : location(p), color(c) {
-    }
+    point_entry() { }
+    point_entry(point3<number_type>& p, rgbcolor<number_type>& c) : location(p), color(c) { }
     point3<number_type> location;
     rgbcolor<number_type> color;
 };
 
 struct vert_index_triplet
 {
-    vert_index_triplet() : first(-1), second(-1), third(-1) {
-    }
-    vert_index_triplet(int one, int two, int three) : first(one), second(two), third(three) {
-    }
+    vert_index_triplet() : first(-1), second(-1), third(-1) { }
+    vert_index_triplet(int one, int two, int three) : first(one), second(two), third(three) { }
     int first;
     int second;
     int third;
@@ -128,6 +124,8 @@ bool parse_file_data(const std::string& name, file_data& data)
     file >> data.num_triangles;
     std::cout << "tris=" << data.num_triangles << std::endl;
 
+    data.vertices.reserve(data.num_triangles);
+
     for (size_t v = 0; v < data.num_verts; ++v)
     {
         point_entry p;
@@ -140,7 +138,7 @@ bool parse_file_data(const std::string& name, file_data& data)
         file >> p.color[1];
         file >> p.color[2];
 
-        data.vertices.push_back(p);
+        data.vertices.emplace_back(p);
     }
     for (size_t t = 0; t < data.num_triangles; ++t)
     {
