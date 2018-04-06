@@ -21,9 +21,9 @@ namespace amethyst
     public:
         typedef std::shared_ptr<interpolated_value<T, color_type>> interp_type;
 
-        noise_texture(T scale = T(1), const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
-        noise_texture(const color_type& c0, const color_type& c1, T scale = T(1), const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
-        noise_texture(const interp_type& colors, T scale = T(1), const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
+        noise_texture(T scale = T(1), const std::shared_ptr<random<T>>& rnd = std::shared_ptr<random<T>>(new default_random<T>()));
+        noise_texture(const color_type& c0, const color_type& c1, T scale = T(1), const std::shared_ptr<random<T>>& rnd = std::shared_ptr<random<T>>(new default_random<T>()));
+        noise_texture(const interp_type& colors, T scale = T(1), const std::shared_ptr<random<T>>& rnd = std::shared_ptr<random<T>>(new default_random<T>()));
 
         virtual ~noise_texture() = default;
 
@@ -38,7 +38,7 @@ namespace amethyst
     };
 
     template <typename T, typename color_type>
-    noise_texture<T, color_type>::noise_texture(T scale, const std::shared_ptr<Random<T>>& rnd)
+    noise_texture<T, color_type>::noise_texture(T scale, const std::shared_ptr<random<T>>& rnd)
         : noise_texture(
             create_interpolation<T, color_type>(color_type(0.8, 0.0, 0.0), color_type(0.0, 0.0, 0.8)),
             scale, rnd
@@ -47,13 +47,13 @@ namespace amethyst
     }
 
     template <typename T, typename color_type>
-    noise_texture<T, color_type>::noise_texture(const color_type& c0, const color_type& c1, T scale, const std::shared_ptr<Random<T>>& rnd)
+    noise_texture<T, color_type>::noise_texture(const color_type& c0, const color_type& c1, T scale, const std::shared_ptr<random<T>>& rnd)
         : noise_texture(create_interpolation<T, color_type>(c0, c1), scale, rnd)
     {
     }
 
     template <typename T, typename color_type>
-    noise_texture<T, color_type>::noise_texture(const typename noise_texture<T, color_type>::interp_type& colors, T scale, const std::shared_ptr<Random<T>>& rnd)
+    noise_texture<T, color_type>::noise_texture(const typename noise_texture<T, color_type>::interp_type& colors, T scale, const std::shared_ptr<random<T>>& rnd)
         : solid_texture<T, color_type>()
         , m_scale(scale)
         , m_noise(rnd)

@@ -20,9 +20,9 @@ namespace amethyst
     {
     public:
         typedef std::shared_ptr<interpolated_value<T, color_type>> interp_type;
-        marble_texture(T line_width = 0.5, T scale = T(1), int octaves = 8, const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
-        marble_texture(const color_type& c0, const color_type& c1, const color_type& c2, T line_width = 0.5, T scale = T(1), int octaves = 8, const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
-        marble_texture(const interp_type& colors, T line_width = 0.5, T scale = T(1), int octaves = 8, const std::shared_ptr<Random<T>>& rnd = std::shared_ptr<Random<T>>(new default_random<T>()));
+        marble_texture(T line_width = 0.5, T scale = T(1), int octaves = 8, const std::shared_ptr<random<T>>& rnd = std::shared_ptr<random<T>>(new default_random<T>()));
+        marble_texture(const color_type& c0, const color_type& c1, const color_type& c2, T line_width = 0.5, T scale = T(1), int octaves = 8, const std::shared_ptr<random<T>>& rnd = std::shared_ptr<random<T>>(new default_random<T>()));
+        marble_texture(const interp_type& colors, T line_width = 0.5, T scale = T(1), int octaves = 8, const std::shared_ptr<random<T>>& rnd = std::shared_ptr<random<T>>(new default_random<T>()));
 
         virtual ~marble_texture() = default;
 
@@ -40,7 +40,7 @@ namespace amethyst
     }; // class marble_texture
 
     template <typename T, typename color_type>
-    marble_texture<T, color_type>::marble_texture(T line_width, T scale, int octaves, const std::shared_ptr<Random<T>>& rnd)
+    marble_texture<T, color_type>::marble_texture(T line_width, T scale, int octaves, const std::shared_ptr<random<T>>& rnd)
         : marble_texture(
             create_interpolation<T, color_type>(color_type(0.06, 0.04, 0.02), color_type(0.4, 0.2, 0.1), color_type(0.8, 0.8, 0.8), 2),
             line_width, scale, octaves, rnd
@@ -49,7 +49,7 @@ namespace amethyst
     }
 
     template <typename T, typename color_type>
-    marble_texture<T, color_type>::marble_texture(const color_type& c0, const color_type& c1, const color_type& c2, T line_width, T scale, int octaves, const std::shared_ptr<Random<T>>& rnd)
+    marble_texture<T, color_type>::marble_texture(const color_type& c0, const color_type& c1, const color_type& c2, T line_width, T scale, int octaves, const std::shared_ptr<random<T>>& rnd)
         : marble_texture(
             create_interpolation<T, color_type>(c0, c1, c2),
             line_width, scale, octaves, rnd)
@@ -57,7 +57,7 @@ namespace amethyst
     }
 
     template <typename T, typename color_type>
-    marble_texture<T, color_type>::marble_texture(const typename marble_texture<T, color_type>::interp_type& colors, T line_width, T scale, int octaves, const std::shared_ptr<Random<T>>& rnd)
+    marble_texture<T, color_type>::marble_texture(const typename marble_texture<T, color_type>::interp_type& colors, T line_width, T scale, int octaves, const std::shared_ptr<random<T>>& rnd)
         : solid_texture<T, color_type>()
         , m_freq(M_PI / line_width)
         , m_scale(scale)

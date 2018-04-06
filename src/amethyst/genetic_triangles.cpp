@@ -71,7 +71,7 @@ void rasterize_triangles(std::vector<alpha_triangle> triangles, image<number_typ
 }
 
 void generate_random_triangles(std::vector<alpha_triangle>& triangles,
-                               size_t count, int width, int height, Random<number_type>& r)
+                               size_t count, int width, int height, random<number_type>& r)
 {
     triangles.clear();
     for (size_t i = 0; i < count; ++i)
@@ -241,7 +241,7 @@ void convert_to_triangles(pleb& p, std::vector<alpha_triangle>& output, size_t i
 }
 
 
-void shuffle_range(std::vector<pleb>& data, size_t index1, size_t index2, Random<number_type>& random)
+void shuffle_range(std::vector<pleb>& data, size_t index1, size_t index2, random<number_type>& rnd)
 {
     if (!data.empty())
     {
@@ -250,7 +250,7 @@ void shuffle_range(std::vector<pleb>& data, size_t index1, size_t index2, Random
         size_t current = data.size() - 1;
         while (current > 1)
         {
-            size_t swap_number = size_t(random.next_int(uint32_t(current)));
+            size_t swap_number = size_t(rnd.next_int(uint32_t(current)));
 
             for (size_t index = index1; index < index2; ++index)
             {
@@ -261,7 +261,7 @@ void shuffle_range(std::vector<pleb>& data, size_t index1, size_t index2, Random
     }
 }
 
-void unique_random_list(std::vector<size_t>& output, size_t min_value, size_t max_value, size_t count, Random<number_type>& random)
+void unique_random_list(std::vector<size_t>& output, size_t min_value, size_t max_value, size_t count, random<number_type>& rnd)
 {
     output.clear();
     output.reserve(count);
@@ -275,7 +275,7 @@ void unique_random_list(std::vector<size_t>& output, size_t min_value, size_t ma
 
     while (output.size() < count)
     {
-        size_t next_loc = min_value + random.next_int(uint32_t(range));
+        size_t next_loc = min_value + rnd.next_int(uint32_t(range));
         if (std::find(output.begin(), output.end(), next_loc) == output.end())
         {
             output.push_back(next_loc);
@@ -283,7 +283,7 @@ void unique_random_list(std::vector<size_t>& output, size_t min_value, size_t ma
     }
 }
 
-void random_cross(const pleb& p1, const pleb& p2, size_t points, size_t count, std::vector<pleb>& output, Random<number_type>& random)
+void random_cross(const pleb& p1, const pleb& p2, size_t points, size_t count, std::vector<pleb>& output, random<number_type>& rnd)
 {
     //	std::cout << "Generating random cross..." << std::endl;
     output.clear();
@@ -295,7 +295,7 @@ void random_cross(const pleb& p1, const pleb& p2, size_t points, size_t count, s
     const size_t num_data_points = p1.pleb_data.size() * 18;
     //	std::cout << "Generating " << points << " points between 1 and " << num_data_points << std::endl;
 
-    unique_random_list(point_locations, 1, num_data_points, points, random);
+    unique_random_list(point_locations, 1, num_data_points, points, rnd);
     std::sort(point_locations.begin(), point_locations.end());
 
     // Populate the output with the existing plebs...  Evenly divided.
@@ -313,44 +313,44 @@ void random_cross(const pleb& p1, const pleb& p2, size_t points, size_t count, s
     size_t last_index = 0;
     for (std::vector<size_t>::const_iterator iter = point_locations.begin(); iter != point_locations.end(); ++iter)
     {
-        shuffle_range(output, last_index, *iter, random);
+        shuffle_range(output, last_index, *iter, rnd);
         last_index = *iter;
     }
-    shuffle_range(output, last_index, num_data_points, random);
+    shuffle_range(output, last_index, num_data_points, rnd);
 }
 
-pleb::pleb_data_entry create_random_triangle(Random<number_type>& random)
+pleb::pleb_data_entry create_random_triangle(random<number_type>& rnd)
 {
     pleb::pleb_data_entry e;
     for (size_t t = 0; t < 3; ++t)
     {
-        e.pleb_verts[t].x = random.next_int(100);
-        e.pleb_verts[t].y = random.next_int(100);
-        e.pleb_verts[t].r = random.next();
-        e.pleb_verts[t].g = random.next();
-        e.pleb_verts[t].b = random.next();
-        e.pleb_verts[t].a = random.next();
+        e.pleb_verts[t].x = rnd.next_int(100);
+        e.pleb_verts[t].y = rnd.next_int(100);
+        e.pleb_verts[t].r = rnd.next();
+        e.pleb_verts[t].g = rnd.next();
+        e.pleb_verts[t].b = rnd.next();
+        e.pleb_verts[t].a = rnd.next();
     }
     return e;
 }
 
-void random_pleb(size_t count, Random<number_type>& random, pleb& retval)
+void random_pleb(size_t count, random<number_type>& rnd, pleb& retval)
 {
     retval.pleb_data.resize(count);
     for (size_t i = 0; i < count; ++i)
     {
-        retval.pleb_data[i] = create_random_triangle(random);
+        retval.pleb_data[i] = create_random_triangle(rnd);
     }
 }
 
-void generate_random_population(size_t width, size_t height, Random<number_type>& random, size_t count, size_t triangles, population& output)
+void generate_random_population(size_t width, size_t height, random<number_type>& rnd, size_t count, size_t triangles, population& output)
 {
     output.clear();
     output.resize(count);
 
     for (size_t i = 0; i < count; ++i)
     {
-        random_pleb(triangles, random, output[i]);
+        random_pleb(triangles, rnd, output[i]);
     }
 }
 
@@ -549,44 +549,44 @@ bool read_population(const std::string& filename, population& populous, size_t& 
     return true;
 }
 
-void mutate_plebs(population& populous, number_type mutation_rate, Random<number_type>& random, size_t max_width, size_t max_height)
+void mutate_plebs(population& populous, number_type mutation_rate, random<number_type>& rnd, size_t max_width, size_t max_height)
 {
     std::cout << "Mutating children... ";
     for (size_t i = 0; i < populous.size(); ++i)
     {
-        if (random.next() < mutation_rate)
+        if (rnd.next() < mutation_rate)
         {
             std::cout << i << " ";
             // Mutate me...
             size_t data_points = populous[i].pleb_data.size() * 18;
-            size_t spot = random.next_int(uint32_t(data_points));
+            size_t spot = rnd.next_int(uint32_t(data_points));
             size_t triangle = spot / 18;
             size_t raw_offset = spot % 18;
 
             switch (raw_offset % 6)
             {
             case 0: // x
-                populous[i].pleb_data[triangle].raw_data[raw_offset] = random.next_int(uint32_t(max_width));
+                populous[i].pleb_data[triangle].raw_data[raw_offset] = rnd.next_int(uint32_t(max_width));
                 break;
             case 1: // y
-                populous[i].pleb_data[triangle].raw_data[raw_offset] = random.next_int(uint32_t(max_height));
+                populous[i].pleb_data[triangle].raw_data[raw_offset] = rnd.next_int(uint32_t(max_height));
                 break;
             default: // r, g, b, a
-                populous[i].pleb_data[triangle].raw_data[raw_offset] = random.next();
+                populous[i].pleb_data[triangle].raw_data[raw_offset] = rnd.next();
             }
         }
     }
     std::cout << std::endl;
 }
 
-typedef void (*generation_tweaker)(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random);
-typedef void (*generation_crosser)(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, Random<number_type>& random);
+typedef void (*generation_tweaker)(population& populous, size_t generation, size_t width, size_t height, random<number_type>& rnd);
+typedef void (*generation_crosser)(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, random<number_type>& rnd);
 
 void run_for_generations(population& populous, const image<number_type>& reference,
                          size_t starting_generation,
                          size_t generations,
                          number_type gamma,
-                         Random<number_type>& random,
+                         random<number_type>& rnd,
                          image_io<number_type>& io,
                          generation_crosser cross_generation,
                          generation_tweaker modify_generation)
@@ -618,23 +618,23 @@ void run_for_generations(population& populous, const image<number_type>& referen
             }
             std::cout << std::endl;
             // Cross over..
-            cross_generation(populous, generation, best, worst, width, height, random);
+            cross_generation(populous, generation, best, worst, width, height, rnd);
 
             // Do any non-crossing modifications (such as adding new genes).
-            modify_generation(populous, generation, width, height, random);
+            modify_generation(populous, generation, width, height, rnd);
         }
         write_population(GLOBALS.population_filename, populous, generation);
     }
 }
 
-void cross_best_replace_worst(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t crossover_points, number_type mutation_rate, size_t width, size_t height, Random<number_type>& random)
+void cross_best_replace_worst(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t crossover_points, number_type mutation_rate, size_t width, size_t height, random<number_type>& rnd)
 {
     population crossed;
     std::cout << "Crossing " << best[0].pleb_index << " with " << best[1].pleb_index << std::endl;
-    random_cross(populous[best[0].pleb_index], populous[best[1].pleb_index], crossover_points, (size_t(1) << crossover_points), crossed, random);
+    random_cross(populous[best[0].pleb_index], populous[best[1].pleb_index], crossover_points, (size_t(1) << crossover_points), crossed, rnd);
 
     // Mutate and repopulate...
-    mutate_plebs(crossed, mutation_rate, random, width, height);
+    mutate_plebs(crossed, mutation_rate, rnd, width, height);
 
     // Replace the worst...
     for (size_t i = 0; i < crossed.size(); ++i)
@@ -654,7 +654,7 @@ size_t triangles_at_generation(size_t generation)
     return std::min<size_t>(GLOBALS.max_triangles, size_t(expected));
 }
 
-void cross_best_with_random(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, Random<number_type>& random)
+void cross_best_with_random(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, random<number_type>& rnd)
 {
     population crossed;
     const pleb best_pleb = populous[best[0].pleb_index];
@@ -668,7 +668,7 @@ void cross_best_with_random(population& populous, size_t generation, const std::
     }
     else if (num_to_cross * GLOBALS.num_offspring < (GLOBALS.max_population_size - GLOBALS.num_offspring))
     {
-        if (random.next() < GLOBALS.birth_rate)
+        if (rnd.next() < GLOBALS.birth_rate)
         {
             // Add one more...
             ++num_to_cross;
@@ -678,17 +678,17 @@ void cross_best_with_random(population& populous, size_t generation, const std::
     for (size_t count = 0; count < num_to_cross; ++count)
     {
         // Yes, this could end up doing some cloning, and it won't matter -- odds are better with a smaller population size.
-        size_t random_guy = random.next_int(uint32_t(populous.size()));
+        size_t random_guy = rnd.next_int(uint32_t(populous.size()));
         std::cout << "Crossing " << best[0].pleb_index << " with random guy " << random_guy << std::endl;
 
         population crossing;
-        random_cross(best_pleb, populous[random_guy], GLOBALS.crossover_points, GLOBALS.num_offspring, crossing, random);
+        random_cross(best_pleb, populous[random_guy], GLOBALS.crossover_points, GLOBALS.num_offspring, crossing, rnd);
 
         crossed.insert(crossed.end(), crossing.begin(), crossing.end());
     }
 
     // Mutate...
-    mutate_plebs(crossed, GLOBALS.mutation_rate, random, width, height);
+    mutate_plebs(crossed, GLOBALS.mutation_rate, rnd, width, height);
 
     // Kill some.
     size_t num_to_kill = size_t(GLOBALS.death_rate * populous.size());
@@ -701,7 +701,7 @@ void cross_best_with_random(population& populous, size_t generation, const std::
 
     std::cout << "Killing " << num_to_kill << " plebs (out of " << populous.size() << "):";
     std::vector<size_t> death_list;
-    unique_random_list(death_list, 0, populous.size(), num_to_kill, random);
+    unique_random_list(death_list, 0, populous.size(), num_to_kill, rnd);
     std::sort(death_list.begin(), death_list.end(), std::greater<size_t>());
     for (size_t i = 0; i < death_list.size(); ++i)
     {
@@ -722,18 +722,18 @@ void cross_best_with_random(population& populous, size_t generation, const std::
         while (populous.size() < GLOBALS.min_population_size)
         {
             population::value_type pleb;
-            random_pleb(triangles, random, pleb);
+            random_pleb(triangles, rnd, pleb);
             populous.push_back(pleb);
         }
     }
 }
 
-void leave_alone(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random)
+void leave_alone(population& populous, size_t generation, size_t width, size_t height, random<number_type>& rnd)
 {
     // Do nothing
 }
 
-void add_occasional_triangles(population& populous, size_t generation, size_t width, size_t height, Random<number_type>& random)
+void add_occasional_triangles(population& populous, size_t generation, size_t width, size_t height, random<number_type>& rnd)
 {
     size_t triangles = triangles_at_generation(generation);
 
@@ -746,7 +746,7 @@ void add_occasional_triangles(population& populous, size_t generation, size_t wi
     {
         if (i->pleb_data.size() < triangles)
         {
-            i->pleb_data.push_back(create_random_triangle(random));
+            i->pleb_data.push_back(create_random_triangle(rnd));
         }
     }
 }
@@ -1274,11 +1274,11 @@ try
         reference = scale_image(reference, GLOBALS.width, GLOBALS.height);
     }
 
-    mersenne_twist_random<number_type> random;
+    mersenne_twist_random<number_type> rnd;
 
     population populous;
 
-    generate_random_population(GLOBALS.width, GLOBALS.height, random,
+    generate_random_population(GLOBALS.width, GLOBALS.height, rnd,
                                GLOBALS.min_population_size, GLOBALS.min_triangles, populous);
 
     if (resume)
@@ -1294,7 +1294,7 @@ try
 
     run_for_generations(populous, reference,
                         starting_generation, num_generations,
-                        gamma, random, *GLOBALS.io, &cross_best_with_random, &add_occasional_triangles);
+                        gamma, rnd, *GLOBALS.io, &cross_best_with_random, &add_occasional_triangles);
 
     return 0;
 }

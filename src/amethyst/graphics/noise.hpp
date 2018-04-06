@@ -20,7 +20,7 @@ namespace amethyst
     class noise
     {
     public:
-        noise(std::shared_ptr<Random<T>> rnd = std::make_shared<default_random<T>>(), size_t array_size = 256)
+        noise(std::shared_ptr<random<T>> rnd = std::make_shared<default_random<T>>(), size_t array_size = 256)
             : rnd_gen(rnd)
             , size_of_arrays(std::max<size_t>(array_size, 16u))
         {
@@ -47,7 +47,7 @@ namespace amethyst
         T minus_1_to_1() { return 2 * rnd_gen->next() - 1; }
         coord3<T> rand_vec();
 
-        std::shared_ptr<Random<T>> rnd_gen;
+        std::shared_ptr<random<T>> rnd_gen;
 
     private:
         void create_arrays();
