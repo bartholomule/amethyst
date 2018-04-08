@@ -122,15 +122,15 @@ namespace amethyst
         {
             size_t sample_height = size_t(sqrt(num_samples));
             size_t sample_width = num_samples / sample_height;
-            T scalarY = NEAR_ONE / T(sample_height - 1);
-            T scalarX = NEAR_ONE / T(sample_width - 1);
+            T scalarY = NEAR_ONE / T(sample_height + 1);
+            T scalarX = NEAR_ONE / T(sample_width + 1);
 
             std::vector<coord2<T>> v;
             v.reserve(num_samples);
 
-            for (size_t y = 0; y < sample_height; ++y)
+            for (size_t y = 1; y <= sample_height; ++y)
             {
-                for (size_t x = 0; x < sample_width; ++x)
+                for (size_t x = 1; x <= sample_width; ++x)
                 {
                     v.emplace_back(coord2<T>(x * scalarX, y * scalarY));
                 }

@@ -153,9 +153,9 @@ namespace amethyst
     template <class T>
     std::vector<T> regular_sample_1d<T>::get_samples(int num_samples)
     {
-        const T scalar = NEAR_ONE / T(num_samples - 1);
+        const T scalar = NEAR_ONE / T(num_samples + 1);
         std::vector<T> v;
-        for (int x = 0; x < num_samples; ++x)
+        for (int x = 1; x <= num_samples; ++x)
         {
             v.push_back(x * scalar);
         }
@@ -165,8 +165,8 @@ namespace amethyst
     template <class T>
     void regular_sample_1d<T>::get_samples(int num_samples, sample_output_fn pf)
     {
-        const T scalar = NEAR_ONE / T(num_samples - 1);
-        for (int x = 0; x < num_samples; ++x)
+        const T scalar = NEAR_ONE / T(num_samples + 1);
+        for (int x = 1; x <= num_samples; ++x)
         {
             pf(x * scalar);
         }
