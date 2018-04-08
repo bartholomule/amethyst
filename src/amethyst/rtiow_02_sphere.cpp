@@ -16,8 +16,10 @@ using Line = unit_line3<double>;
 
 Color color(const unit_line3<double>& l)
 {
+    constexpr Point center = { 0, 0, -1 };
+    constexpr double radius = 0.5;
     double d;
-    if (quick_sphere_intersection_test(Point(0, 0, -1), 0.5, 0.5 * 0.5, l, d))
+    if (quick_sphere_intersection_test(center, radius, radius * radius, l, d))
     {
         return Color(1, 0, 0);
     }
@@ -39,8 +41,8 @@ int main(int argc, const char** argv)
 
     auto img = render<double, Color>(nx, ny,
         [&](double x, double y) {
-           double u = double(x) / double(nx);
-            double v = double(y) / double(ny);
+            double u = double(x) / double(nx);
+            double v = (double(ny - 1) - y) / double(ny); // flipped because render() does (0,0) as the top left.
             Line l(origin, lower_left_corner + u * horizontal + v * vertical);
             return color(l);
         }, spp

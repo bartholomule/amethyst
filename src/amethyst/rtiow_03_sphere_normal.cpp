@@ -46,7 +46,7 @@ int main(int argc, const char** argv)
     auto img = render<double, Color>(nx, ny,
         [&](double x, double y) {
             double u = double(x) / double(nx);
-            double v = double(y) / double(ny);
+            double v = (double(ny - 1) - y) / double(ny); // flipped because render() does (0,0) as the top left.
             Line l(origin, lower_left_corner + u * horizontal + v * vertical);
             return color(l);
         },

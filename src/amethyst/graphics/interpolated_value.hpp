@@ -162,7 +162,7 @@ namespace amethyst
 
     template <class parametric_type, class interpolation_type>
     inline interpolation_type linear_interpolate(parametric_type val,
-        const interpolation_type& v1, const interpolation_type& v2, endpoint_action behavior)
+        const interpolation_type& v1, const interpolation_type& v2, endpoint_action behavior = endpoint_action::stop)
     {
         if ((val < 0) && (behavior == endpoint_action::stop))
         {
