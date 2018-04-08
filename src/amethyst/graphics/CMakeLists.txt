@@ -39,7 +39,8 @@ add_library(amethyst_graphics
 	solid_texture.hpp
 	sphere.hpp
 	stb_image.h
-	stb_image.cpp
+	stb_image_helper.cpp
+	stb_image_helper.hpp
 	stb_image_write.h
 	surface_texture.hpp
 	texture.hpp

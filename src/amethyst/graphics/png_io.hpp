@@ -2,14 +2,13 @@
 
 #include "graphics/image_io.hpp"
 #include "general/string_format.hpp"
+#include "graphics/stb_image_helper.hpp"
 #include <iostream>
 #include <fstream>
 #include <functional>
 
 namespace amethyst
 {
-    raster<rgbcolor<uint8_t>> load_image_with_stb(const std::string& filename);
-
     bool write_png(const std::string& filename, const raster<rgbcolor<uint8_t>>& data);
     bool write_png(const std::string& filename, const raster<rgbcolor<double>>& data);
     bool write_png(const std::string& filename, const raster<rgbcolor<float>>& data);

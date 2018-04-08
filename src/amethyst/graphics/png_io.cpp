@@ -5,23 +5,6 @@
 
 namespace amethyst
 {
-    raster<rgbcolor<uint8_t>> load_image_with_stb(const std::string& filename)
-    {
-        int x, y, n;
-        std::shared_ptr<unsigned char> data(stbi_load(filename.c_str(), &x, &y, &n, 3), stbi_image_free);
-        rgbcolor<uint8_t>* reinterpreted = reinterpret_cast<rgbcolor<uint8_t>*>(data.get());
-        raster<rgbcolor<uint8_t>> result(x, y);
-        for (size_t j = 0; j < size_t(y); ++j)
-        {
-            for (size_t i = 0; i < size_t(x); ++i)
-            {
-                result(x, y) = reinterpreted[j * y + i];
-            }
-        }
-
-        return result;
-    }
-
     bool write_png(const std::string& filename, const raster<rgbcolor<uint8_t>>& data)
     {
         return stbi_write_png(filename.c_str(), int(data.get_width()), int(data.get_height()), 3, data.reinterpret<const unsigned char*>(), 0);
