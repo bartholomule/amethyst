@@ -28,7 +28,7 @@ namespace amethyst
 
         virtual std::string default_extension() const = 0;
 
-        bool output(const std::string& filename, const raster<ColorType>& source) const
+        virtual bool output(const std::string& filename, const raster<ColorType>& source) const
         {
             std::filebuf f;
             f.open(filename.c_str(), std::ios_base::out | std::ios_base::binary);
@@ -91,7 +91,7 @@ namespace amethyst
             return bool(i);
         }
 
-        raster<ColorType> input(const std::string& filename) const
+        virtual raster<ColorType> input(const std::string& filename) const
         {
             std::ifstream i(filename.c_str(), std::ios::binary);
             return input(i);

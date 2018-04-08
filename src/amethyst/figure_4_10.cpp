@@ -136,8 +136,8 @@ int main(int argc, char** argv)
         }
     }
 
-    std::cerr << "Saving image as figure_4_10.ppm ..." << std::endl;
-    save_image("figure_4_10.ppm", image);
+    std::cerr << "Saving image as figure_4_10.png ..." << std::endl;
+    save_image("figure_4_10.png", image);
     return 0;
 }
 

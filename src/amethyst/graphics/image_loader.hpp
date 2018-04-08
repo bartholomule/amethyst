@@ -1,6 +1,7 @@
 #pragma once
 #include "ppm_io.hpp"
 #include "tga_io.hpp"
+#include "png_io.hpp"
 
 namespace amethyst
 {
@@ -19,6 +20,10 @@ namespace amethyst
         if (impl::endsWith(filename, ".tga") || impl::endsWith(filename, ".TGA"))
         {
             return std::make_unique<tga_io<T, ColorType>>();
+        }
+        if (impl::endsWith(filename, ".png") || impl::endsWith(filename, ".PNG"))
+        {
+            return std::make_unique<png_io<T, ColorType>>();
         }
 
         throw std::runtime_error("Unknown image format for file: " + filename);

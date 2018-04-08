@@ -43,7 +43,7 @@ try
         }
     }
 
-    save_image("figure_6_2.ppm", image);
+    save_image("figure_6_2.png", image);
     return 0;
 }
 catch (const std::exception& e)

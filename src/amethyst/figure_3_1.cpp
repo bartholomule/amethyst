@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             }
         }
     }
-    std::cerr << "Saving image as figure_3_1.ppm..." << std::endl;
-    save_image("figure_3_1.ppm", image);
+    std::cerr << "Saving image as figure_3_1.png..." << std::endl;
+    save_image("figure_3_1.png", image);
     return 0;
 }

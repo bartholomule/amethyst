@@ -73,8 +73,8 @@ void program1()
             }
         }
     }
-    ppm_io<unsigned char> output;
-    output.output("cs5600_program01.ppm", image);
+    png_io<unsigned char> output;
+    output.output("cs5600_program01.png", image);
 }
 
 
@@ -162,7 +162,7 @@ void program1_extra()
         }
     }
 
-    save_image("cs5600_program01_extra.ppm", image);
+    save_image("cs5600_program01_extra.png", image);
 }
 
 int main(int argc, const char** argv)

@@ -53,7 +53,7 @@ int main(int argc, const char** argv)
         }
     }
 
-    save_image("rtiow_03_sphere_normal.ppm", img);
+    save_image("rtiow_03_sphere_normal.png", img);
 
     return 0;
 }

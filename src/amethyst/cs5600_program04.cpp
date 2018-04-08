@@ -383,8 +383,8 @@ int main(int argc, const char** argv)
         std::cout << "rasterizing with antialiasing" << std::endl;
         rasterize_triangles(data, image, samples);
         std::cout << "Writing data to file.." << std::endl;
-        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.ppm", samples(0, 0).size(), data.gamma), image, data.gamma);
-        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.ppm", samples(0, 0).size(), 1.7), image, 1.7);
+        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.png", samples(0, 0).size(), data.gamma), image, data.gamma);
+        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.png", samples(0, 0).size(), 1.7), image, 1.7);
 
         data.samples_per_pixel = 64;
         samples = get_samples(data.width, data.height,
@@ -393,8 +393,8 @@ int main(int argc, const char** argv)
         std::cout << "rasterizing with antialiasing" << std::endl;
         rasterize_triangles(data, image, samples);
         std::cout << "Writing data to file.." << std::endl;
-        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.ppm", samples(0, 0).size(), data.gamma), image, data.gamma);
-        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.ppm", samples(0, 0).size(), 1.7), image, 1.7);
+        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.png", samples(0, 0).size(), data.gamma), image, data.gamma);
+        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.png", samples(0, 0).size(), 1.7), image, 1.7);
         data.samples_per_pixel = 256;
         samples = get_samples(data.width, data.height,
                               data.samples_per_pixel,
@@ -402,15 +402,15 @@ int main(int argc, const char** argv)
         std::cout << "rasterizing with antialiasing" << std::endl;
         rasterize_triangles(data, image, samples);
         std::cout << "Writing data to file.." << std::endl;
-        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.ppm", samples(0, 0).size(), data.gamma), image, data.gamma);
-        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.ppm", samples(0, 0).size(), 1.7), image, 1.7);
+        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.png", samples(0, 0).size(), data.gamma), image, data.gamma);
+        save_image(string_format("cs5600_program04_antialiased-%1spp-%2.png", samples(0, 0).size(), 1.7), image, 1.7);
 
         std::cout << "rasterizing" << std::endl;
         samples = get_samples(data.width, data.height, 1);
         rasterize_triangles(data, image, samples);
         std::cout << "Writing data to file.." << std::endl;
-        save_image(string_format("cs5600_program04-%1spp-%2.ppm", samples(0, 0).size(), data.gamma), image, data.gamma);
-        save_image(string_format("cs5600_program04-%1spp-%2.ppm", samples(0, 0).size(), 1.7), image, 1.7);
+        save_image(string_format("cs5600_program04-%1spp-%2.png", samples(0, 0).size(), data.gamma), image, data.gamma);
+        save_image(string_format("cs5600_program04-%1spp-%2.png", samples(0, 0).size(), 1.7), image, 1.7);
     }
     else
     {

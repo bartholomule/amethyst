@@ -40,7 +40,7 @@ int main(int argc, const char** argv)
         }
     }
 
-    save_image("rtiow_01_gradient.ppm", img);
+    save_image("rtiow_01_gradient.png", img);
 
     return 0;
 }

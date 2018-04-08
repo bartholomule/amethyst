@@ -47,7 +47,7 @@ int main(int argc, const char** argv)
         }
     }
 
-    save_image("rtiow_02_sphere.ppm", img);
+    save_image("rtiow_02_sphere.png", img);
 
     return 0;
 }

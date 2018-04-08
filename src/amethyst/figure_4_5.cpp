@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         }
     }
 
-    save_image("figure_4_5.ppm", image);
+    save_image("figure_4_5.png", image);
     return 0;
 }
 

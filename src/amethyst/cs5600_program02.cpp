@@ -146,7 +146,7 @@ int main(int argc, const char** argv)
             for (size_t i = 0; i < sizeof(sample_counts) / sizeof(*sample_counts); ++i)
             {
                 generate_image(
-                    string_format("cs5600_program02-%1-%2-%3.ppm",
+                    string_format("cs5600_program02-%1-%2-%3.png",
                                   generators[j].first,
                                   sample_counts[i],
                                   gamma),

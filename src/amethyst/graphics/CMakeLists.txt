@@ -23,6 +23,8 @@ add_library(amethyst_graphics
 	noise_texture.hpp
 	pinhole_camera.hpp
 	plane.hpp
+	png_io.hpp
+	png_io.cpp
 	ppm_io.hpp
 	raster.hpp
 	ray_parameters.hpp
@@ -36,6 +38,9 @@ add_library(amethyst_graphics
 	simple_texture.hpp
 	solid_texture.hpp
 	sphere.hpp
+	stb_image.h
+	stb_image.cpp
+	stb_image_write.h
 	surface_texture.hpp
 	texture.hpp
 	tga_io.hpp
