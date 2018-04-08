@@ -164,3 +164,27 @@ namespace amethyst
     using std::inspectEmptiness;
 }
 
+
+// TEMPORARY HACK!
+namespace std
+{
+    template <typename T>
+    std::ostream& operator<<(std::ostream& o, const std::shared_ptr<T>& p)
+    {
+        if (p)
+            o << *p;
+        else
+            o << "<nullptr>";
+        return o;
+    }
+
+    template <typename T>
+    std::ostream& operator<<(std::ostream& o, const std::unique_ptr<T>& p)
+    {
+        if (p)
+            o << *p;
+        else
+            o << "<nullptr>";
+        return o;
+    }
+}
