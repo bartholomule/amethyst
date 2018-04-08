@@ -10,4 +10,11 @@ namespace amethyst
         }
         return t;
     }
+
+    // Integer division where the result is rounded up instead of down.
+    template <typename T>
+    inline T div_ceil(T x, T y)
+    {
+        return (x / y) + T((x % y != 0) ? !((x > 0) ^ (y > 0)) : 0);
+    }
 }
