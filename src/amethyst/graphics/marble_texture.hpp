@@ -26,7 +26,7 @@ namespace amethyst
 
         virtual ~marble_texture() = default;
 
-        color_type get_color_at_point(const point3<T>& location) const override;
+        color_type get_color_at_point(const point3<T>& location, const vector3<T>& normal) const override;
 
         std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
         std::string name() const override { return "marble_texture"; }
@@ -95,7 +95,7 @@ namespace amethyst
     }
 
     template <typename T, typename color_type>
-    color_type marble_texture<T, color_type>::get_color_at_point(const point3<T>& location) const
+    color_type marble_texture<T, color_type>::get_color_at_point(const point3<T>& location, const vector3<T>& normal) const
     {
         coord3<T> v(location.x() * m_freq, location.y() * m_freq, location.z() * m_freq);
         T turb = m_scale * m_noise.turbulence(v, m_octaves);

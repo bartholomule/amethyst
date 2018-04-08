@@ -31,6 +31,8 @@ try
 
     image_texture<float_type, color> mytexture(filename, image_mapping_type::repeated);
 
+    const vec normal = { 0, 0, -1 };
+
     for (int y = 0; y < HEIGHT; ++y)
     {
         for (int x = 0; x < WIDTH; ++x)
@@ -39,7 +41,7 @@ try
             float_type u = x;
             float_type v = HEIGHT - y;
 
-            image(x, y) = mytexture.get_color(point(), uv_coord(u, v));
+            image(x, y) = mytexture.get_color(point(), uv_coord(u, v), normal);
         }
     }
 

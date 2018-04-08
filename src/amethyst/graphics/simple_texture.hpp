@@ -19,7 +19,7 @@ namespace amethyst
         simple_texture(const color_type& color) : m_color(color) { }
         virtual ~simple_texture() = default;
 
-        color_type get_color(const point3<T>& location, const coord2<T>& coord) const override
+        color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const override
         {
             return m_color;
         }

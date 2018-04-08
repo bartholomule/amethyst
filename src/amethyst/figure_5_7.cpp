@@ -106,7 +106,7 @@ int main(int argc, char** argv)
                     // Assign a color which is just a cosine between the normal and the light vector.
                     float_type f = ambience + (1 - ambience) * std::max<float_type>(dotprod(normal, -light_vector) - AMETHYST_EPSILON, 0);
 
-                    current_color += f * texture.get_color(stuff.get_first_point(), stuff.get_uv());
+                    current_color += f * texture.get_color(stuff.get_first_point(), stuff.get_uv(), normal);
                 }
             }
             current_color *= 1.0 / float_type(SAMPLES_PER_PIXEL);

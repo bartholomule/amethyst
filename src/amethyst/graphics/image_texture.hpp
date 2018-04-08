@@ -49,7 +49,7 @@ namespace amethyst
             return "image_texture";
         }
 
-        color_type get_color_at_location(const coord2<T>& coord) const override
+        color_type get_color_at_location(const coord2<T>& coord, const vector3<T>& normal) const override
         {
             coord2<T> clipped = coord;
             if (m_limits_x.outside(clipped.x()) || m_limits_y.outside(clipped.y()))

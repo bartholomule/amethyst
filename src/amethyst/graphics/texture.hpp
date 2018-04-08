@@ -16,14 +16,14 @@ namespace amethyst
      * @version $Revision: 1.1 $
      *
      */
-    template <class T, class color_type>
+    template <typename T, typename color_type>
     class texture : public string_dumpable
     {
     public:
         texture() = default;
         virtual ~texture() = default;
 
-        virtual color_type get_color(const point3<T>& location, const coord2<T>& coord) const = 0;
+        virtual color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const = 0;
 
         std::string name() const override
         {

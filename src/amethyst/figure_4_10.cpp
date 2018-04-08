@@ -128,7 +128,7 @@ int main(int argc, char** argv)
                     // Assign a color which is just a cosine between the normal and the light vector (y).
                     float_type f = 0.1 + 0.9 * std::max<float_type>(dotprod(normal, vec(0, 1, 0)), 0);
 
-                    current_color += f * texture.get_color(stuff.get_first_point(), stuff.get_uv());
+                    current_color += f * texture.get_color(stuff.get_first_point(), stuff.get_uv(), normal);
                 }
             }
             current_color *= 1.0 / float_type(TIME_MAG);

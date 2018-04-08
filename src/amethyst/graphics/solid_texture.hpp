@@ -22,12 +22,12 @@ namespace amethyst
         solid_texture() = default;
         virtual ~solid_texture() = default;
 
-        color_type get_color(const point3<T>& location, const coord2<T>& coord) const override
+        color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const override
         {
-            return get_color_at_point(location);
+            return get_color_at_point(location, normal);
         }
 
-        virtual color_type get_color_at_point(const point3<T>& location) const = 0;
+        virtual color_type get_color_at_point(const point3<T>& location, const vector3<T>& normal) const = 0;
 
         virtual std::string name() const
         {

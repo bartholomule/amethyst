@@ -20,11 +20,11 @@ namespace amethyst
         surface_texture() = default;
         virtual ~surface_texture() = default;
 
-        color_type get_color(const point3<T>& location, const coord2<T>& coord) const override
+        color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const override
         {
-            return get_color_at_location(coord);
+            return get_color_at_location(coord, normal);
         }
 
-        virtual color_type get_color_at_location(const coord2<T>& location) const = 0;
+        virtual color_type get_color_at_location(const coord2<T>& location, const vector3<T>& normal) const = 0;
     };
 }
