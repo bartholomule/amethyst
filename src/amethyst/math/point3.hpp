@@ -35,9 +35,9 @@ namespace amethyst
 
         point3() = default;
         constexpr explicit point3(const coord3<T>& c) : parent(c) { }
+        constexpr point3(T a, T b, T c) : parent(a, b, c) { }
         operator coord3<T>() const { return *this; }
         point3(const point3&) = default;
-        using parent::parent;
 
         coord3<T> getcoord() const
         {
