@@ -192,7 +192,7 @@ namespace amethyst
         P_array.resize(size_of_arrays);
         G_array.resize(size_of_arrays);
 
-        for (int i = 0; i < size_of_arrays; ++i)
+        for (size_t i = 0; i < size_of_arrays; ++i)
         {
             P_array[i] = i;
             G_array[i] = rand_vec();

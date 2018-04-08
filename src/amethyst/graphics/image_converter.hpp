@@ -36,9 +36,9 @@ namespace amethyst
      * Generic conversion from one type of image to another.
      */
     template <class U, class T>
-    image<U> convert_image(const image<T>& img)
+    raster<rgbcolor<U>> convert_image(const raster<rgbcolor<T>>& img)
     {
-        image<U> result(img.get_width(), img.get_height());
+        raster<rgbcolor<U>> result(img.get_width(), img.get_height());
 
         for (unsigned y = 0; y < result.get_height(); ++y)
         {

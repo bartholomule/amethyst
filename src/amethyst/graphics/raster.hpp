@@ -107,7 +107,10 @@ namespace amethyst
          *
          */
         template <class U>
-        U reinterpret();
+        U reinterpret() const
+        {
+            return reinterpret_cast<U>(raster_data);
+        }
 
         /*
          * Normally a bad thing to do, but this gives huge performance benefits
@@ -581,14 +584,6 @@ namespace amethyst
 
         // Delete the old data (if any). Deleting NULL should be safe.
         delete[] old_data;
-    }
-
-
-    template <class T>
-    template <class U>
-    inline U raster<T>::reinterpret()
-    {
-        return reinterpret_cast<U>(raster_data);
     }
 
     // **********************************************************************

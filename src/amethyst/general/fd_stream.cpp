@@ -69,7 +69,7 @@ namespace amethyst
         }
         std::streamsize xsputn (std::streambuf::char_type* s, std::streamsize n)
         {
-            return do_write(s, n);
+            return std::streamsize(do_write(s, n));
         }
 
     private:

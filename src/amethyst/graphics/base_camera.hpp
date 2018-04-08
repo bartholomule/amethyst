@@ -2,6 +2,7 @@
 #include "amethyst/math/unit_line3.hpp"
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/general/string_dumpable.hpp"
+#include "amethyst/graphics/ray_parameters.hpp"
 
 namespace amethyst
 {
@@ -16,10 +17,6 @@ namespace amethyst
     template <class T>
     class base_camera : public string_dumpable
     {
-
-
-    protected:
-
     public:
         base_camera() = default;
         base_camera(size_t w, size_t h) : nx(w), ny(h) { }

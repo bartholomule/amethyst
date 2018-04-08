@@ -76,11 +76,9 @@ namespace amethyst
             intersection_capabilities caps = intersection_capabilities::ALL;
 
             // Checkme! Are any of these capabilities disjoint (like the ones in the object capabilities)?
-            for (typename shape_list::const_iterator iter = m_shape_list.begin();
-                 iter != m_shape_list.end();
-                 ++iter)
+            for (const auto& obj : m_shape_list)
             {
-                caps &= (*iter)->get_intersection_capabilities();
+                caps &= obj->get_intersection_capabilities();
             }
             return caps;
         }
@@ -173,12 +171,10 @@ namespace amethyst
         // Clear it out...
         intersection = intersection_info<T>();
 
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             (iter != m_shape_list.end());
-             ++iter)
+        for(const auto& obj : m_shape_list)
         {
             intersection_info<T> temp_intersection;
-            if ((*iter)->intersects_line(line, temp_intersection, requirements))
+            if (obj->intersects_line(line, temp_intersection, requirements))
             {
 
                 if (intersects_something && requirements.needs_containers())
@@ -258,12 +254,10 @@ namespace amethyst
         // Clear it out...
         intersection = intersection_info<T>();
 
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             (iter != m_shape_list.end());
-             ++iter)
+        for (const auto& obj : m_shape_list)
         {
             intersection_info<T> temp_intersection;
-            if ((*iter)->intersects_ray(ray, temp_intersection, requirements))
+            if (obj->intersects_ray(ray, temp_intersection, requirements))
             {
 
                 if (intersects_something && requirements.needs_containers())
@@ -366,11 +360,9 @@ namespace amethyst
         caps |= object_capabilities::CONTAINER;
         caps &= ~object_capabilities::IMPLICIT;
 
-        for (typename shape_list::const_iterator iter = m_shape_list.begin();
-             iter != m_shape_list.end();
-             ++iter)
+        for (const auto& obj : m_shape_list)
         {
-            object_capabilities obj_caps = (*iter)->get_object_capabilities();
+            object_capabilities obj_caps = obj->get_object_capabilities();
 
             if (obj_caps & object_capabilities::NOT_FINITE)
             {

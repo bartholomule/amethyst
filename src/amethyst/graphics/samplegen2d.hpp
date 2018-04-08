@@ -168,7 +168,7 @@ namespace amethyst
         std::vector<coord2<T>> get_samples(size_t num_samples) override
         {
             std::vector<coord2<T>> vec(num_samples);
-            for (int i = 0; i < num_samples; ++i)
+            for (size_t i = 0; i < num_samples; ++i)
             {
                 coord2<T> p = sample_generator_2d<T>::next_rand();
                 vec[i].set((p.x() + i) / double(num_samples),
@@ -324,10 +324,10 @@ namespace amethyst
         std::vector<coord2<T>> get_samples(size_t num_samples) override
         {
             std::vector<coord2<T>> samples(num_samples);
-            int samples_gathered = 0;
-            int current_sample;
-            int bad_attempts = 0;
-            int restarts = 0;
+            size_t samples_gathered = 0;
+            size_t current_sample;
+            size_t bad_attempts = 0;
+            size_t restarts = 0;
             coord2<T> next_point;
 
             while (samples_gathered < num_samples)

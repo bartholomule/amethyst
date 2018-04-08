@@ -39,8 +39,8 @@ namespace amethyst
         using parent = coord3<T>;
 
         rgbcolor() = default;
-        rgbcolor(T a) : parent(a, a, a) { }
-        rgbcolor(T r, T g, T b) : parent(r, g, b) { }
+        constexpr rgbcolor(T a) : parent(a, a, a) { }
+        constexpr rgbcolor(T r, T g, T b) : parent(r, g, b) { }
         /** Destructor -- NON VIRTUAL! (does nothing) */
         ~rgbcolor() = default;
         rgbcolor(const rgbcolor& old) = default;
@@ -81,6 +81,19 @@ namespace amethyst
     rgbcolor<T> operator*(const rgbcolor<T>& r, U factor)
     {
         return { T(factor * r.r()), T(factor * r.g()), T(factor  * r.b()) };
+    }
+
+    template <typename T>
+    rgbcolor<T> operator*(const rgbcolor<T>& l, const rgbcolor<T>& r)
+    {
+        return { l.r() * r.r(), l.g() * r.g(), l.b() * r.b() };
+    }
+
+    template <class T, class U>
+    constexpr rgbcolor<T> operator/(const rgbcolor<T>& r, U factor)
+    {
+        U f = U(1) / factor;
+        return { T(f * r.r()), T(f * r.g()), T(f * r.b()) };
     }
 
     /** Addition of two colors. */
