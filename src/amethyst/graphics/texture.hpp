@@ -30,4 +30,7 @@ namespace amethyst
             return "texture";
         }
     };
+
+    template <typename T, typename color_type>
+    using texture_ptr = std::shared_ptr<texture<T, color_type>>;
 }

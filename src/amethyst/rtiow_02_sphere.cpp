@@ -5,6 +5,7 @@
 #include "graphics/image_loader.hpp"
 #include "graphics/image.hpp"
 #include "graphics/sphere.hpp"
+#include "graphics/renderer.hpp"
 
 using namespace amethyst;
 using Point = point3<double>;
@@ -27,25 +28,23 @@ Color color(const unit_line3<double>& l)
 
 int main(int argc, const char** argv)
 {
-    int nx = 200;
-    int ny = 100;
+    const int nx = 400;
+    const int ny = 200;
+    const int spp = 16;
 
-    Point lower_left_corner(-2, -1, -1);
-    Vec horizontal(4, 0, 0);
-    Vec vertical(0, 2, 0);
-    Point origin(0, 0, 0);
+    const Point lower_left_corner(-2, -1, -1);
+    const Vec horizontal(4, 0, 0);
+    const Vec vertical(0, 2, 0);
+    const Point origin(0, 0, 0);
 
-    Image img(nx, ny);
-    for (int j = 0; j < ny; ++j)
-    {
-        for (int i = 0; i < nx; ++i)
-        {
-            double u = double(i) / double(nx);
-            double v = double(j) / double(ny);
+    auto img = render<double, Color>(nx, ny,
+        [&](double x, double y) {
+           double u = double(x) / double(nx);
+            double v = double(y) / double(ny);
             Line l(origin, lower_left_corner + u * horizontal + v * vertical);
-            img(i, ny - j - 1) = color(l);
-        }
-    }
+            return color(l);
+        }, spp
+    );
 
     save_image("rtiow_02_sphere.png", img);
 

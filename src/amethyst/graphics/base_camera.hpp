@@ -60,4 +60,7 @@ namespace amethyst
         retval += internal_tagging + string_format("height=%1\n", ny);
         return retval;
     }
+
+    template <typename T>
+    using camera_ptr = std::shared_ptr<base_camera<T>>;
 }

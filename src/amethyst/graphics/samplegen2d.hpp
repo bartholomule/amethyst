@@ -67,6 +67,9 @@ namespace amethyst
         std::shared_ptr<random_type> rand_gen;
     };
 
+    template <typename T>
+    using sample_generator_2d_ptr = std::shared_ptr<sample_generator_2d<T>>;
+
     template <class T>
     class random_sample_2d : public sample_generator_2d<T>
     {

@@ -127,4 +127,6 @@ namespace amethyst
     } // shape::intersects_ray(line3<T>,T)
 
 
+    template <typename T>
+    using shape_ptr = std::shared_ptr<shape<T>>;
 }
