@@ -19,37 +19,29 @@ namespace amethyst
         const T C = dotprod(o_c, o_c) - radius_squared;
         const T discriminant = B * B - 4 * A * C;
 
-        if (discriminant >= 0)
+        if (discriminant < 0)
         {
-            const T sqrtd = sqrt(discriminant);
-
-            // If t1 is inside, it MUST be the closest, as A will always be positive
-            // (squared length of the line), and the subtraction will be less than
-            // the addition (as the square root will always be positive).
-            const T t1 = (-B - sqrtd) / (2 * A);
-            if (line.inside(t1))
-            {
-                distance = t1;
-                return true;
-            }
-
-            // The first side (although a hit), wasn't inside the range.
-            const T t2 = (-B + sqrtd) / (2 * A);
-            if (line.inside(t2))
-            {
-                distance = t2;
-                return true;
-            }
+            return false;
         }
-        // FIXME! This is kludgy.  More tests are needed and some thought into generalizing
-        // intersections with lines originating inside the sphere.
-        else if (C >= -AMETHYST_EPSILON && C <= AMETHYST_EPSILON)
+
+        const T sqrtd = sqrt(discriminant);
+
+        // If t1 is inside, it MUST be the closest, as A will always be positive
+        // (squared length of the line), and the subtraction will be less than
+        // the addition (as the square root will always be positive).
+        const T t1 = (-B - sqrtd) / (2 * A);
+        if (line.inside(t1))
         {
-            if (line.inside(radius))
-            {
-                distance = radius;
-                return true;
-            }
+            distance = t1;
+            return true;
+        }
+
+        // The first side (although a hit), wasn't inside the range.
+        const T t2 = (-B + sqrtd) / (2 * A);
+        if (line.inside(t2))
+        {
+            distance = t2;
+            return true;
         }
         return false;
     }
@@ -82,45 +74,22 @@ namespace amethyst
         virtual ~sphere() = default;
         sphere& operator=(const sphere& old) = default;
 
-        point3<T> get_center() const
-        {
-            return m_center;
-        }
-        T get_radius() const
-        {
-            return m_radius;
-        }
+        point3<T> get_center() const { return m_center; }
+        T get_radius() const { return m_radius; }
 
-        /** Returns if the given point is inside the sphere. */
         bool inside(const point3<T>& p) const override;
-
-        /** Returns if the given sphere intersects the sphere. */
         bool intersects(const sphere<T>& s) const override;
-
-        /** Returns if the given plane intersects the shape. */
         bool intersects(const plane<T>& p) const override;
 
-        /** Returns if the given line intersects the sphere. */
-        //    virtual bool intersects_line(const line3<T>& line, intersection_info<T>& intersection) const;
-
-        /** Returns if the given line intersects the sphere. */
+        using shape<T>::intersects_line;
         bool intersects_line(const unit_line3<T>& line,
             intersection_info<T>& intersection, const intersection_requirements& requirements) const override;
 
-        /**
-         * A quick intersection test.  This will calculate nothing but the
-         * distance. This is most useful for shadow tests, and other tests where no
-         * textures will be applied.
-         */
-        bool quick_intersection(const unit_line3<T>& line,
-            T time, T& distance) const override;
+        bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const override;
 
         std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
 
-        std::string name() const override
-        {
-            return "sphere";
-        }
+        std::string name() const override { return "sphere"; }
 
         intersection_capabilities get_intersection_capabilities() const override;
         object_capabilities get_object_capabilities() const override;
