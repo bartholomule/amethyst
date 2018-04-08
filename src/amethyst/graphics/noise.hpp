@@ -53,7 +53,7 @@ namespace amethyst
         void create_arrays();
 
         size_t size_of_arrays;
-        std::vector<int> P_array;
+        std::vector<size_t> P_array;
         std::vector<coord3<T>> G_array;
     };
 
@@ -202,7 +202,7 @@ namespace amethyst
         {
             for (size_t i = size_of_arrays - 1; i > 0; --i)
             {
-                std::swap(P_array[i], P_array[int(rnd_gen->next() * i)]);
+                std::swap(P_array[i], P_array[rnd_gen->next_int(uint32_t(i))]);
             }
         }
     }
