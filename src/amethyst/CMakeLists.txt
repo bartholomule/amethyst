@@ -39,6 +39,7 @@ compile_example(cs5600_program03)
 compile_example(cs5600_program04)
 compile_example(genetic_triangles)
 compile_example(load_and_save)
+compile_example(mobius)
 
 compile_example(rtiow_01_gradient)
 compile_example(rtiow_02_sphere)
