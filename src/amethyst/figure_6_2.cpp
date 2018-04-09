@@ -7,43 +7,37 @@
 #include "amethyst/graphics/rgbcolor.hpp"
 #include "amethyst/graphics/image_loader.hpp"
 #include "amethyst/graphics/image_texture.hpp"
+#include "amethyst/graphics/renderer.hpp"
 #include <iostream>
 
 using namespace amethyst;
 
-using float_type = double;
-using point = point3<float_type>;
-using vec = vector3<float_type>;
-using color = rgbcolor<float_type>;
-using uv_coord = coord2<float_type>;
+#define WIDTH 1000
+#define HEIGHT 700
 
-#define WIDTH 800
-#define HEIGHT 800
-
-int main(int argc, char** argv)
+int main()
 try
 {
-    (void)argc;
-    (void)argv;
-
-    raster<color> image(WIDTH, HEIGHT);
     std::string filename = "earth.ppm";
 
-    image_texture<float_type, color> mytexture(filename, image_mapping_type::repeated);
+    image_texture<double, rgbcolor<double>> mytexture(filename, image_mapping_type::repeated);
 
-    const vec normal = { 0, 0, -1 };
+    // Show it in a 2x2 grid
+    constexpr double ycount = 2;
+    constexpr double xcount = 2;
 
-    for (int y = 0; y < HEIGHT; ++y)
-    {
-        for (int x = 0; x < WIDTH; ++x)
-        {
-            // UV coords should be from the bottom left.
-            float_type u = x;
-            float_type v = HEIGHT - y;
+    constexpr vector3<double> normal = { 0, 0, -1 };
+    constexpr double xfactor = xcount / double(WIDTH);
+    constexpr double yfactor = -ycount / double(HEIGHT); // flipped because render() does (0,0) as the top left.
+    constexpr double yoffset = double(HEIGHT - 1) / double(HEIGHT);
 
-            image(x, y) = mytexture.get_color(point(), uv_coord(u, v), normal);
-        }
-    }
+    auto image = render<double, rgbcolor<double>>(WIDTH, HEIGHT,
+        [&](double x, double y) {
+            coord2<double> c = { x * xfactor, y * yfactor + yoffset };
+            auto pix = mytexture.get_color({}, c, normal);
+            return pix;
+        }, 16
+    );
 
     save_image("figure_6_2.png", image);
     return 0;

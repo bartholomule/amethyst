@@ -220,16 +220,21 @@ namespace amethyst
     template <class T>
     coord2<T> sphere<T>::get_uv(const point3<T>& location) const
     {
-        vector3<T> point_vector = location - m_center;
+        constexpr T twopi = 2 * M_PI;
+        constexpr T inv_twopi = 1.0 / twopi;
+        constexpr T inv_pi = 1.0 / M_PI;
 
-        T cos_theta = point_vector.y() / m_radius;
+        vector3<T> point_vector = (location - m_center) / m_radius;
+
+        T cos_theta = point_vector.y();
         // phi = [-pi,pi]
         // theta = [0,pi]
         T theta = acos(cos_theta);
         T phi = atan2(point_vector.z(), point_vector.x());
-        T u = (phi + M_PI) / (2 * M_PI);
-        T v = theta / M_PI;
 
-        return coord2<T>(u, v);
+        T u = (M_PI - phi) * inv_twopi;
+        T v = 1 - theta * inv_pi;
+
+        return { u, v };
     }
 }

@@ -3,6 +3,7 @@
 #include "surface_texture.hpp"
 #include "image_loader.hpp"
 #include "math/interval.hpp"
+#include "math/vector2.hpp"
 
 namespace amethyst
 {
@@ -22,13 +23,11 @@ namespace amethyst
             : m_type(type)
         {
             load_image(filename);
-            m_limits_x.set(0, T(m_image->get_width()));
-            m_limits_y.set(0, T(m_image->get_height()));
+            m_scale.set(T(m_image->get_width()), T(m_image->get_height()));
         }
         image_texture(std::shared_ptr<image_type> img, image_mapping_type type = image_mapping_type::once)
             : m_image(img)
-            , m_limits_x(0, T(m_image->get_width()))
-            , m_limits_y(0, T(m_image->get_height()))
+            , m_scale(m_image->get_width(), m_image->get_height())
         {
         }
         image_texture(image_type img, image_mapping_type type = image_mapping_type::once)
@@ -40,8 +39,9 @@ namespace amethyst
 
         void load_image(const std::string& filename)
         {
-            auto loader = getImageLoader<T, color_type>(filename);
-            m_image = std::make_shared<image_type>(loader->input(filename));
+            m_image = std::make_shared<image_type>(convert_image<color_type::number_type>(load_image_with_stb(filename)));
+            // auto loader = getImageLoader<T, color_type>(filename);
+            // m_image = std::make_shared<image_type>(loader->input(filename));
         }
 
         std::string name() const override
@@ -51,33 +51,42 @@ namespace amethyst
 
         color_type get_color_at_location(const coord2<T>& coord, const vector3<T>& normal) const override
         {
-            coord2<T> clipped = coord;
-            if (m_limits_x.outside(clipped.x()) || m_limits_y.outside(clipped.y()))
+            if (m_type == image_mapping_type::once)
             {
-                if (m_type == image_mapping_type::once)
+                if ((coord.x() > 1) || (coord.x() < 0) || (coord.y() > 1) || (coord.y() < 0))
                 {
                     return color_type(0, 0, 0);
                 }
-                clipped.set(
-                    fmod(clipped.x(), m_limits_x.size()),
-                    fmod(clipped.y(), m_limits_y.size())
-                );
-                if (clipped.x() < 0)
-                {
-                    clipped.x() += m_limits_x.size();
-                }
-                if (clipped.y() < 0)
-                {
-                    clipped.y() += m_limits_y.size();
-                }
             }
+
+            coord2<T> clipped{ fmod(coord.x(), T(1.0)), fmod(coord.y(), T(1)) };
+
+            if (clipped.x() < 0)
+            {
+                clipped.x() += T(1);
+            }
+            if (clipped.y() < 0)
+            {
+                clipped.y() += T(1);
+            }
+
+            // Now clipped is in [0,1]^2
+
+            coord2<T> wh{ T(m_image->get_width()), T(m_image->get_height()) };
+
+            auto scaled = clipped * wh;
+
             // FIXME! Interpolate and make this less ugly.
-            return (*m_image)(size_t(clipped.x()), m_image->get_height() - 1 - size_t(clipped.y()));
+            auto pix = (*m_image)(
+                size_t(scaled.x()),
+                size_t((m_image->get_height() - 1) - scaled.y())
+                );
+            return pix;
         }
 
         std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override
         {
-            std::string retval;// = texture<T, color_type>::internal_members(indentation, prefix_with_classname);
+            std::string retval;
             std::string internal_tagging = indentation;
 
             if (prefix_with_classname)
@@ -87,7 +96,7 @@ namespace amethyst
 
             retval += internal_tagging + string_format("image=[%1,%2]\n", m_image->get_width(), m_image->get_height());
             retval += internal_tagging + "type=" + ((m_type == image_mapping_type::once) ? "once" : "repeated");
-            retval += internal_tagging + string_format("limits=[%1,%2]\n", inspect(m_limits_x), inspect(m_limits_y));
+            retval += internal_tagging + string_format("scale=%1\n", inspect(m_scale));
 
             return retval;
         }
@@ -95,7 +104,6 @@ namespace amethyst
     private:
         std::shared_ptr<image_type> m_image;
         image_mapping_type m_type;
-        interval<T> m_limits_x;
-        interval<T> m_limits_y;
+        vector2<T> m_scale;
     };
 }
