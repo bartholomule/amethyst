@@ -29,43 +29,8 @@ namespace amethyst
     class coord2
     {
     private:
-        /* class that has 2 Ts stored directly */
-        struct coord2_direct
-        {
-            T x; T y;
-        };
-        /* class that has 2 Ts stored in an array */
-        struct coord2_array
-        {
-            T coords[2];
-        };
-        /* union to allow accesses to both indirectly through an array, and directly
-           through a name, without adding any extra processing time or space
-           requirements */
-        union coord2_union
-        {
-            coord2_union() = default;
-            coord2_union(const coord2_union& old)
-                : direct{ old.direct.x, old.direct.y }
-            {
-            }
-
-            coord2_union(T x, T y) { direct.x = x; direct.y = y; }
-            T& operator[](int index) { return array.coords[index]; }
-            T operator[](int index) const { return array.coords[index]; }
-            coord2_union& operator=(const coord2_union& old)
-            {
-                direct.x = old.direct.x;
-                direct.y = old.direct.y;
-                return *this;
-            }
-
-            coord2_direct direct;
-            coord2_array array;
-        };
-
-        /* The internal coordinates of this class */
-        coord2_union coords;
+        T m_x;
+        T m_y;
 
     public:
         enum COORD_VALUES
@@ -75,54 +40,54 @@ namespace amethyst
         typedef T base;
 
         coord2() = default;
-        coord2(T x, T y) : coords(x, y) { }
-        coord2(const coord2& old_coord) : coords(old_coord.coords) { }
+        coord2(T x, T y) : m_x(x), m_y(y) { }
+        coord2(const coord2&) = default;
 
         void set(T x, T y)
         {
-            coords.direct.x = x;
-            coords.direct.y = y;
+            m_x = x;
+            m_y = y;
         }
 
         /* Accessors */
-        T& operator[](int coord_index) { return coords[coord_index]; }
-        T operator[](int coord_index) const { return coords[coord_index]; }
-        T& x() { return coords.direct.x; }
-        T x() const { return coords.direct.x; }
-        T& y() { return coords.direct.y; }
-        T y() const { return coords.direct.y; }
+        T& operator[](unsigned i) { return (i == X) ? m_x : m_y; }
+        constexpr T operator[](unsigned i) const { return (i == X) ? m_x : m_y; }
+        T& x() { return m_x; }
+        T x() const { return m_x; }
+        T& y() { return m_y; }
+        T y() const { return m_y; }
 
-        coord2& operator=(const coord2& old) { coords = old.coords; return *this; }
+        coord2& operator=(const coord2& old) = default;
         coord2& operator+=(const coord2& p2)
         {
-            coords.direct.x += p2.coords.direct.x;
-            coords.direct.y += p2.coords.direct.y;
+            m_x += p2.m_x;
+            m_y += p2.m_y;
             return *this;
         }
         coord2& operator-=(const coord2& p2)
         {
-            coords.direct.x -= p2.coords.direct.x;
-            coords.direct.y -= p2.coords.direct.y;
+            m_x -= p2.m_x;
+            m_y -= p2.m_y;
             return *this;
         }
         coord2& operator*=(const coord2& p2) // Piecewise multiplication.
         {
-            coords.direct.x *= p2.coords.direct.x;
-            coords.direct.y *= p2.coords.direct.y;
+            m_x *= p2.m_x;
+            m_y *= p2.m_y;
             return *this;
         }
         template <class U>
         coord2& operator*=(U factor)
         {
-            coords.direct.x = T(coords.direct.x * factor);
-            coords.direct.y = T(coords.direct.y * factor);
+            m_x = T(m_x * factor);
+            m_y = T(m_y * factor);
             return *this;
         }
         template <class U>
         coord2& operator/=(U factor)
         {
-            coords.direct.x = T(coords.direct.x / factor);
-            coords.direct.y = T(coords.direct.y / factor);
+            m_x = T(m_x / factor);
+            m_y = T(m_y / factor);
             return *this;
         }
         /* Functions that more relate to vectors, but are needed */
