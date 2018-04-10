@@ -3,6 +3,7 @@
 #include "amethyst/math/point3.hpp"
 #include "amethyst/math/coord2.hpp"
 #include "amethyst/general/string_dumpable.hpp"
+#include "amethyst/graphics/ray_parameters.hpp"
 
 namespace amethyst
 {
@@ -24,6 +25,11 @@ namespace amethyst
         virtual ~texture() = default;
 
         virtual color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const = 0;
+
+        virtual bool reflect_ray(const ray_parameters<T>& ray, const intersection_info<T>& intersection, ray_parameters<T>& reflected) const
+        {
+            return false;
+        }
 
         std::string name() const override
         {

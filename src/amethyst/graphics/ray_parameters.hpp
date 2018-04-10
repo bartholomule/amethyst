@@ -120,16 +120,16 @@ namespace amethyst
 
         if (info.have_distance())
         {
-            distance = info.get_distance();
+            distance = info.get_first_distance();
         }
         else
         {
-            distance = length(info.get_point() - line.origin());
+            distance = length(info.get_first_point() - line.origin());
         }
 
         if (info.have_point())
         {
-            point = info.get_point();
+            point = info.get_first_point();
         }
         else
         {
@@ -164,9 +164,9 @@ namespace amethyst
         }
         vector3<T> new_direction = unit(line.direction() - 2 * cos * normal);
 
-        // Checkme! Should the range be limited like this?
-        results.set_line(unit_line3<T>(point, new_direction, interval<T>(line.limits.begin() + distance,
-                                                                         line.limits.end() - distance)));
+        auto limits = line.limits();
+        limits.set(std::max(AMETHYST_EPSILON, limits.begin()), limits.end());
+        results.set_line(unit_line3<T>(point, new_direction, limits));
         return true;
     }
 

@@ -57,6 +57,51 @@ namespace amethyst
         return result;
     }
 
+    template <typename T, typename color_type = rgbcolor<T>>
+    color_type sample_scene(
+        T x, T y,
+        const ray_parameters<T>& ray,
+        const shape_ptr<T>& scene,
+        const texture_ptr<T, color_type> scene_texture,
+        const intersection_requirements& requirements,
+        const lighting_function<T, color_type>& brightness,
+        const background_function<T, color_type>& background)
+    {
+        constexpr color_type black = { 0, 0, 0 };
+
+        intersection_info<T> intersection;
+        if (scene->intersects_ray(ray, intersection, requirements))
+        {
+            color_type light = brightness(intersection.get_first_point(), intersection.get_normal());
+
+            coord2<T> uv{};
+            if (intersection.have_uv())
+            {
+                uv = intersection.get_uv();
+            }
+
+            vector3<T> normal{};
+            if (intersection.have_normal())
+            {
+                normal = intersection.get_normal();
+            }
+
+            color_type local_color = scene_texture->get_color(intersection.get_first_point(), uv, normal);
+            color_type reflected_color = black;
+            ray_parameters<T> next_ray;
+            if (scene_texture->reflect_ray(ray, intersection, next_ray))
+            {
+                // FIXME! Separate reflectance vs color.
+                reflected_color = local_color * sample_scene(x, y, next_ray, scene, scene_texture, requirements, brightness, background);
+            }
+
+            return light * local_color + reflected_color;
+        }
+        else
+        {
+            return background(x, y, ray.get_line());
+        }
+    }
 
     // This will change a whole bunch as we progress, but there is way too much
     // duplicated code in the samples that are being written.
@@ -87,29 +132,7 @@ namespace amethyst
         auto color = [&](T x, T y)
         {
             ray_parameters<T> r = camera->get_ray(x, y);
-            intersection_info<T> intersection;
-            if (scene->intersects_ray(r, intersection, requirements))
-            {
-                auto light = brightness(intersection.get_first_point(), intersection.get_normal());
-
-                coord2<T> uv{};
-                if (intersection.have_uv())
-                {
-                    uv = intersection.get_uv();
-                }
-
-                vector3<T> normal{};
-                if (intersection.have_normal())
-                {
-                    normal = intersection.get_normal();
-                }
-
-                return light * scene_texture->get_color(intersection.get_first_point(), uv, normal);
-            }
-            else
-            {
-                return background(x, y, r.get_line());
-            }
+            return sample_scene(x, y, r, scene, scene_texture, requirements, brightness, background);
         };
 
         return render<T, color_type>(width, height, color, samples_per_pixel, sampler);
