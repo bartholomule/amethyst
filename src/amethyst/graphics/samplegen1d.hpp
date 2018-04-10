@@ -22,36 +22,26 @@
    from the samplegen2d.cpp file.
    16May2004 Changed the names from 2d to 1d.  Added a clone function.
  */
-#include "amethyst/general/random.hpp"
-#include <vector>
-#include <memory>
-#include <functional>
+#include "samplegen_base.hpp"
 
 namespace amethyst
 {
     template <class T>
-    class sample_generator_1d
+    class sample_generator_1d : public sample_generator_base<T, 1>
     {
     public:
-        using sample_output_fn = std::function<void(T)>;
-        using random_type = random<T>;
+        using parent = sample_generator_base<T, 1>;
 
-        sample_generator_1d(const random_type& r = default_random<T>()) : rand_gen(r.clone_new()) { }
-        sample_generator_1d(std::shared_ptr<random_type> r) : rand_gen(std::move(r)) { }
+        using parent::parent;
         sample_generator_1d(const sample_generator_1d&) = default;
         virtual ~sample_generator_1d() = default;
 
-        virtual std::vector<T> get_samples(int num_samples) = 0;
-        virtual void get_samples(int num_samples, sample_output_fn pf) = 0;
         virtual std::unique_ptr<sample_generator_1d<T>> clone_new() const = 0;
 
-        const random_type& get_rand_gen() const { return *rand_gen; }
+        using parent::get_samples;
 
     protected:
-        T next_rand() { return rand_gen->next(); }
-
-    private:
-        std::shared_ptr<random_type> rand_gen;
+        using parent::next_rand;
     };
 
     template <class T>
@@ -63,8 +53,8 @@ namespace amethyst
         {
         }
         virtual ~random_sample_1d() = default;
-        std::vector<T> get_samples(int num_samples) override;
-        void get_samples(int num_samples, sample_output_fn pf) override;
+        std::vector<T> get_samples(size_t num_samples) override;
+        void get_samples(size_t num_samples, sample_output_fn pf) override;
         std::unique_ptr<random_sample_1d<T>> clone_new() const override
         {
             return std::make_unique<random_sample1d<T>>(*this);
@@ -80,8 +70,8 @@ namespace amethyst
         {
         }
         virtual ~regular_sample_1d() = default;
-        std::vector<T> get_samples(int num_samples) override;
-        void get_samples(int num_samples, sample_output_fn pf) override;
+        std::vector<T> get_samples(size_t num_samples) override;
+        void get_samples(size_t num_samples, sample_output_fn pf) override;
         std::unique_ptr<regular_sample_1d<T>> clone_new() const override
         {
             return std::make_unique<regular_sample_1d<T>>(*this);
@@ -97,8 +87,8 @@ namespace amethyst
         {
         }
         virtual ~jitter_sample_1d() = default;
-        std::vector<T> get_samples(int num_samples) override;
-        void get_samples(int num_samples, sample_output_fn pf) override;
+        std::vector<T> get_samples(size_t num_samples) override;
+        void get_samples(size_t num_samples, sample_output_fn pf) override;
         std::unique_ptr<sample_generator_1d<T>> clone_new() const override
         {
             return std::make_unique<jitter_sample_1d<T>>(*this);
@@ -117,8 +107,8 @@ namespace amethyst
         {
         }
         virtual ~poisson_sample_1d() = default;
-        std::vector<T> get_samples(int num_samples) override;
-        void get_samples(int num_samples, sample_output_fn pf) override;
+        std::vector<T> get_samples(size_t num_samples) override;
+        void get_samples(size_t num_samples, sample_output_fn pf) override;
         std::unique_ptr<sample_generator_1d<T>> clone_new() const override
         {
             return std::make_unique<poisson_sample_1d<T>>(*this);
@@ -128,7 +118,7 @@ namespace amethyst
     };
 
     template <class T>
-    std::vector<T> random_sample_1d<T>::get_samples(int num_samples)
+    std::vector<T> random_sample_1d<T>::get_samples(size_t num_samples)
     {
         std::vector<T> v;
         int i;
@@ -141,7 +131,7 @@ namespace amethyst
     }
 
     template <class T>
-    void random_sample_1d<T>::get_samples(int num_samples, sample_output_fn pf)
+    void random_sample_1d<T>::get_samples(size_t num_samples, sample_output_fn pf)
     {
         int i;
         for (i = 0; i < num_samples; ++i)
@@ -151,7 +141,7 @@ namespace amethyst
     }
 
     template <class T>
-    std::vector<T> regular_sample_1d<T>::get_samples(int num_samples)
+    std::vector<T> regular_sample_1d<T>::get_samples(size_t num_samples)
     {
         const T scalar = NEAR_ONE / T(num_samples + 1);
         std::vector<T> v;
@@ -163,7 +153,7 @@ namespace amethyst
     }
 
     template <class T>
-    void regular_sample_1d<T>::get_samples(int num_samples, sample_output_fn pf)
+    void regular_sample_1d<T>::get_samples(size_t num_samples, sample_output_fn pf)
     {
         const T scalar = NEAR_ONE / T(num_samples + 1);
         for (int x = 1; x <= num_samples; ++x)
@@ -173,7 +163,7 @@ namespace amethyst
     }
 
     template <class T>
-    std::vector<T> jitter_sample_1d<T>::get_samples(int num_samples)
+    std::vector<T> jitter_sample_1d<T>::get_samples(size_t num_samples)
     {
         int x;
         std::vector<T> v;
@@ -185,7 +175,7 @@ namespace amethyst
     }
 
     template <class T>
-    void jitter_sample_1d<T>::get_samples(int num_samples, sample_output_fn pf)
+    void jitter_sample_1d<T>::get_samples(size_t num_samples, sample_output_fn pf)
     {
         int x;
         for (x = 0; x < num_samples; ++x)
@@ -195,7 +185,7 @@ namespace amethyst
     }
 
     template <class T>
-    std::vector<T> poisson_sample_1d<T>::get_samples(int num_samples)
+    std::vector<T> poisson_sample_1d<T>::get_samples(size_t num_samples)
     {
         std::vector<T> samples(num_samples);
         int samples_gathered = 0;
@@ -221,7 +211,7 @@ namespace amethyst
     }
 
     template <class T>
-    void poisson_sample_1d<T>::get_samples(int num_samples, sample_output_fn pf)
+    void poisson_sample_1d<T>::get_samples(size_t num_samples, sample_output_fn pf)
     {
         std::vector<T> v = get_samples(num_samples);
         for (T t : v)

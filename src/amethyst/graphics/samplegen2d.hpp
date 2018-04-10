@@ -23,48 +23,24 @@
    06Apr2018 Refactored a bit, made more C++11-ish.
  */
 
-#include "amethyst/general/random.hpp"
-#include "amethyst/math/coord2.hpp"
-#include <algorithm>
-#include <vector>
-#include <memory>
+#include "samplegen_base.hpp"
 
 namespace amethyst
 {
 
     template <class T>
-    class sample_generator_2d
+    class sample_generator_2d : public sample_generator_base<T, 2>
     {
     public:
-        using sample_output_fn = std::function<void(coord2<T>)>;
-        using random_type = random<T>;
+        using parent = sample_generator_base<T, 2>;
 
-        sample_generator_2d(const random_type& r = default_random<T>()) : sample_generator_2d(r.clone_new()) { }
-        sample_generator_2d(std::shared_ptr<random_type> r) : rand_gen(std::move(r)) { }
-        sample_generator_2d(const sample_generator_2d<T>& gen) : rand_gen(gen.rand_gen->clone_new()) { }
+        using parent::parent;
+        sample_generator_2d(const sample_generator_2d<T>&) = default;
         virtual ~sample_generator_2d() = default;
-
-        virtual std::vector<coord2<T>> get_samples(size_t num_samples) = 0;
-        virtual void get_samples(size_t num_samples, sample_output_fn pf)
-        {
-            std::vector<coord2<T>> v = get_samples(num_samples);
-            for (auto s : v)
-            {
-                pf(s);
-            }
-        }
         virtual std::unique_ptr<sample_generator_2d<T>> clone_new() const = 0;
 
-        const random_type& get_rand_gen() const { return *rand_gen; }
-        void set_rand_gen(const random_type& r) { rand_gen = r.clone_new(); }
-
     protected:
-        coord2<T> next_rand() { return { rand_gen->next(), rand_gen->next() }; }
-        T next_fp_rand() { return rand_gen->next(); }
-        uint32_t next_int_rand() { return rand_gen->next_int(); };
-
-    private:
-        std::shared_ptr<random_type> rand_gen;
+        using parent::next_rand;
     };
 
     template <typename T>
