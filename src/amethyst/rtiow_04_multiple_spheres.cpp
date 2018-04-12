@@ -7,7 +7,7 @@
 #include "graphics/sphere.hpp"
 #include "graphics/renderer.hpp"
 #include "graphics/aggregate.hpp"
-#include "graphics/solid_texture.hpp"
+#include "graphics/texture/solid_texture.hpp"
 #include "graphics/pinhole_camera.hpp"
 #include "graphics/aggregate.hpp"
 #include "graphics/interpolated_value.hpp"

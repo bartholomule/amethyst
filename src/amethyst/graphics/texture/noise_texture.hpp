@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "amethyst/graphics/noise.hpp"
-#include "amethyst/graphics/solid_texture.hpp"
+#include "amethyst/graphics/texture/solid_texture.hpp"
 #include "amethyst/graphics/interpolated_value.hpp"
 
 namespace amethyst

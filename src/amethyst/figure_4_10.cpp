@@ -19,8 +19,8 @@
 #include "amethyst/general/random.hpp"
 #include "amethyst/graphics/samplegen2d.hpp"
 #include "amethyst/graphics/samplegen1d.hpp"
-#include "amethyst/graphics/simple_texture.hpp"
-#include "amethyst/graphics/noise_texture.hpp"
+#include "amethyst/graphics/texture/simple_texture.hpp"
+#include "amethyst/graphics/texture/noise_texture.hpp"
 
 
 #include <iostream>

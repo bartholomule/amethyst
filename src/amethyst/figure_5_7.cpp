@@ -17,7 +17,7 @@
 #include "amethyst/general/random.hpp"
 #include "amethyst/graphics/samplegen2d.hpp"
 #include "amethyst/graphics/samplegen1d.hpp"
-#include "amethyst/graphics/marble_texture.hpp"
+#include "amethyst/graphics/texture/marble_texture.hpp"
 
 
 #include <iostream>

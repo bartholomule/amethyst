@@ -6,7 +6,7 @@
 #include "amethyst/graphics/raster.hpp"
 #include "amethyst/graphics/rgbcolor.hpp"
 #include "amethyst/graphics/image_loader.hpp"
-#include "amethyst/graphics/image_texture.hpp"
+#include "amethyst/graphics/texture/image_texture.hpp"
 #include "amethyst/graphics/renderer.hpp"
 #include <iostream>
 

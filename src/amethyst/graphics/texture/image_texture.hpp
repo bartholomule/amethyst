@@ -1,7 +1,7 @@
 #pragma once
 
 #include "surface_texture.hpp"
-#include "image_loader.hpp"
+#include "graphics/image_loader.hpp"
 #include "math/interval.hpp"
 #include "math/vector2.hpp"
 

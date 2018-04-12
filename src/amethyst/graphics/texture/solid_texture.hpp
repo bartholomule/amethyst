@@ -1,6 +1,6 @@
 #pragma once
 
-#include "amethyst/graphics/texture.hpp"
+#include "amethyst/graphics/texture/texture.hpp"
 
 namespace amethyst
 {

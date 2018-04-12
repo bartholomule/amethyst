@@ -6,7 +6,7 @@
 #include "amethyst/graphics/renderer.hpp"
 #include "amethyst/graphics/aggregate.hpp"
 #include "amethyst/graphics/image_loader.hpp"
-#include "amethyst/graphics/image_texture.hpp"
+#include "amethyst/graphics/texture/image_texture.hpp"
 #include "amethyst/graphics/pinhole_camera.hpp"
 #include "amethyst/graphics/sphere.hpp"
 

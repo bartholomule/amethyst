@@ -3,7 +3,7 @@
 #include "base_camera.hpp"
 #include "rgbcolor.hpp"
 #include "raster.hpp"
-#include "texture.hpp"
+#include "texture/texture.hpp"
 #include "samplegen2d.hpp"
 #include "shape.hpp"
 #include "intersection_info.hpp"
