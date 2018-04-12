@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 {
     (void)argc;
     (void)argv;
-    aggregate<float_type> sl;
+    aggregate<float_type, color> sl;
 
     point e(0, 0, 24);
     vec vup(0, 1, 0);
@@ -59,21 +59,21 @@ int main(int argc, char** argv)
     int nx = WIDTH;
     int ny = HEIGHT;
 
-    pinhole_camera<float_type> camera(e, g, vup, vw, vh, dist, nx, ny, interval<float_type>(0, 1));
+    pinhole_camera<float_type,color> camera(e, g, vup, vw, vh, dist, nx, ny, interval<float_type>(0, 1));
 
-    std::shared_ptr<shape<float_type>> sph_ptr1(new sphere<float_type>(point(-2, -2, 0), sqrt(2)));
+    std::shared_ptr<shape<float_type,color>> sph_ptr1(new sphere<float_type,color>(point(-2, -2, 0), sqrt(2)));
     sl.add(sph_ptr1);
-    std::shared_ptr<shape<float_type>> sph_ptr2(new dynamic_sphere<float_type>(point(2, -2, 0), 0.25,
+    std::shared_ptr<shape<float_type,color>> sph_ptr2(new dynamic_sphere<float_type,color>(point(2, -2, 0), 0.25,
                                                                                point(3, -3, 0), 1,
                                                                                sqrt(2), 0,
                                                                                sqrt(2), 1));
     sl.add(sph_ptr2);
-    std::shared_ptr<shape<float_type>> sph_ptr3(new dynamic_sphere<float_type>(point(2, 2, 0), 0.5,
+    std::shared_ptr<shape<float_type,color>> sph_ptr3(new dynamic_sphere<float_type,color>(point(2, 2, 0), 0.5,
                                                                                point(3, 3, 0), 1,
                                                                                sqrt(2), 0,
                                                                                sqrt(2), 1));
     sl.add(sph_ptr3);
-    std::shared_ptr<shape<float_type>> sph_ptr4(new dynamic_sphere<float_type>(point(-2, 2, 0), 0.66,
+    std::shared_ptr<shape<float_type,color>> sph_ptr4(new dynamic_sphere<float_type,color>(point(-2, 2, 0), 0.66,
                                                                                point(-3, 3, 0), 1,
                                                                                sqrt(2), 0,
                                                                                sqrt(2), 1));
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
     color light(0.7, 0.7, 0.7), dark(0.5, 0.5, 0.5), black(0, 0, 0);
 
     raster<color> image(WIDTH, HEIGHT);
-    intersection_info<float_type> stuff;
+    intersection_info<float_type,color> stuff;
 
     simple_texture_type texture = simple_texture_type(color(0.9, 0.1, 0.1));
     //  noisy_texture_type texture;
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
                 float_type a = x + samples[time_sample].x();
                 float_type b = y + samples[time_sample].y();
                 float_type c = time_samples[time_sample];
-                ray_parameters<float_type> r = camera.get_ray(a, b, c);
+                ray_parameters<float_type,color> r = camera.get_ray(a, b, c);
 
                 if (!sl.intersects_ray(r, stuff, requirements))
                 {

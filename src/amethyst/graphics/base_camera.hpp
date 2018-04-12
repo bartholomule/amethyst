@@ -14,7 +14,7 @@ namespace amethyst
      * @version $Revision: 1.4 $
      *
      */
-    template <class T>
+    template <typename T, typename color_type>
     class base_camera : public string_dumpable
     {
     public:
@@ -33,9 +33,9 @@ namespace amethyst
         void set_height(size_t h) { ny = h; }
 
         /* This sample point is in [0,1]^2 */
-        virtual ray_parameters<T> get_ray(const coord2<T>& sample_point, T time = 0) const = 0;
+        virtual ray_parameters<T,color_type> get_ray(const coord2<T>& sample_point, T time = 0) const = 0;
         /* px, py are the pixel positions. */
-        virtual ray_parameters<T> get_ray(const T& px, const T& py, T time = 0) const = 0;
+        virtual ray_parameters<T,color_type> get_ray(const T& px, const T& py, T time = 0) const = 0;
 
         std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
 
@@ -45,8 +45,8 @@ namespace amethyst
         size_t ny = 0;
     };
 
-    template <class T>
-    std::string base_camera<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    template <typename T, typename color_type>
+    std::string base_camera<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
     {
         std::string retval;
 
@@ -54,13 +54,13 @@ namespace amethyst
 
         if (prefix_with_classname)
         {
-            internal_tagging += base_camera<T>::name() + "::";
+            internal_tagging += base_camera<T,color_type>::name() + "::";
         }
         retval += internal_tagging + string_format("width=%1\n", nx);
         retval += internal_tagging + string_format("height=%1\n", ny);
         return retval;
     }
 
-    template <typename T>
-    using camera_ptr = std::shared_ptr<base_camera<T>>;
+    template <typename T, typename color_type>
+    using camera_ptr = std::shared_ptr<base_camera<T,color_type>>;
 }

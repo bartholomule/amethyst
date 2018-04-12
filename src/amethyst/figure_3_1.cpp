@@ -35,22 +35,22 @@ int main(int argc, char** argv)
     (void)argc;
     (void)argv;
 
-    shape_ptr<float_type> sph_ptr(new sphere<float_type>(point(250, 250, -1000), 150));
+    shape_ptr<float_type,color> sph_ptr(new sphere<float_type,color>(point(250, 250, -1000), 150));
 
     point p1(300, 600, -800);
     point p2(0, 100, -1000);
     point p3(450, 20, -1000);
-    shape_ptr<float_type> tri_ptr(new triangle<float_type>(p1, p2, p3));
+    shape_ptr<float_type,color> tri_ptr(new triangle<float_type, color>(p1, p2, p3));
 
 
-    aggregate<float_type> sl;
+    aggregate<float_type,color> sl;
     sl.add(sph_ptr);
     sl.add(tri_ptr);
 
     color light(0.7, 0.7, 0.7), dark(0.5, 0.5, 0.5), black(0, 0, 0);
     color red(0.7, 0.0, 0.0), blue(0.0, 0.0, 0.7);
 
-    intersection_info<float_type> stuff;
+    intersection_info<float_type,color> stuff;
 
     cout << "objects=" << sl << endl;
 
@@ -70,11 +70,11 @@ int main(int argc, char** argv)
             if (!sl.intersects_line(r, stuff))
                 return dark;
 
-            const shape<float_type>* hit_shape = stuff.get_shape();
+            const shape<float_type,color>* hit_shape = stuff.get_shape();
 
-            if (dynamic_cast<const sphere<float_type>*>(hit_shape) != NULL)
+            if (dynamic_cast<const sphere<float_type,color>*>(hit_shape) != NULL)
                 return blue;
-            else if (dynamic_cast<const triangle<float_type>*>(hit_shape) != NULL)
+            else if (dynamic_cast<const triangle<float_type,color>*>(hit_shape) != NULL)
                 return red;
             else
                 return black;

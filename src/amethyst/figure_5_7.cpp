@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 {
     (void)argc;
     (void)argv;
-    aggregate<float_type> sl;
+    aggregate<float_type, color> sl;
 
     point e(0, 0, 42);
     vec vup(0, 1, 0);
@@ -54,15 +54,15 @@ int main(int argc, char** argv)
     int nx = WIDTH;
     int ny = HEIGHT;
 
-    pinhole_camera<float_type> camera(e, g, vup, vw, vh, dist, nx, ny, interval<float_type>(0, 1));
+    pinhole_camera<float_type,color> camera(e, g, vup, vw, vh, dist, nx, ny, interval<float_type>(0, 1));
 
-    std::shared_ptr<shape<float_type>> sph_ptr1(new sphere<float_type>(point(0, 0, 0), 10));
+    std::shared_ptr<shape<float_type,color>> sph_ptr1(new sphere<float_type,color>(point(0, 0, 0), 10));
     sl.add(sph_ptr1);
 
     color light(0.7, 0.7, 0.7), dark(0.5, 0.5, 0.5), black(0, 0, 0);
 
     raster<color> image(WIDTH, HEIGHT);
-    intersection_info<float_type> stuff;
+    intersection_info<float_type,color> stuff;
 
     //	texture_type texture(6.67, 5); // I calculate in line width.  Pete does it in stripes/area  1/0.15 = 6.67
     texture_type texture(6.67, 10); // I calculate in line width.  Pete does it in stripes/area  1/0.15 = 6.67
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
             {
                 float_type a = x + samples[pixel_sample].x();
                 float_type b = y + samples[pixel_sample].y();
-                ray_parameters<float_type> r = camera.get_ray(a, b);
+                ray_parameters<float_type,color> r = camera.get_ray(a, b);
 
                 if (!sl.intersects_ray(r, stuff, requirements))
                 {

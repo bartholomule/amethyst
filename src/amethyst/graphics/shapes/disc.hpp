@@ -14,20 +14,20 @@ namespace amethyst
      * @version $Revision: 1.3 $
      *
      */
-    template <class T>
-    class disc : public plane<T>
+    template <typename T, typename color_type>
+    class disc : public plane<T,color_type>
     {
     public:
         disc() = default;
         disc(const point3<T>& point, T radius = 1, const vector3<T>& normal = vector3<T>(0, 0, 1))
-            : plane<T>(point, normal)
+            : plane<T,color_type>(point, normal)
             , m_radius(radius)
             , m_radius_squared(radius * radius)
         {
         }
 
         disc(const point3<T>& point, T radius, const vector3<T>& normal, const vector3<T>& u)
-            : plane<T>(point, normal, unit(u))
+            : plane<T,color_type>(point, normal, unit(u))
             , m_radius(radius)
             , m_radius_squared(radius * radius)
         {
@@ -41,14 +41,14 @@ namespace amethyst
         bool inside(const point3<T>& p) const override;
 
         /** Returns if the given sphere intersects the shape. */
-        bool intersects(const sphere<T>& s) const override;
+        bool intersects(const sphere<T,color_type>& s) const override;
 
         /** Returns if the given plane intersects the shape. */
-        bool intersects(const plane<T>& p) const override;
+        bool intersects(const plane<T,color_type>& p) const override;
 
         /** Returns if the given line intersects the plane. */
         bool intersects_line(const unit_line3<T>& line,
-            intersection_info<T>& intersection,
+            intersection_info<T,color_type>& intersection,
             const intersection_requirements& requirements) const override;
 
         /**
@@ -71,22 +71,22 @@ namespace amethyst
         T m_radius_squared = T(1);
     };
 
-    template <class T>
-    bool disc<T>::inside(const point3<T>& point) const
+    template <typename T, typename color_type>
+    bool disc<T,color_type>::inside(const point3<T>& point) const
     {
         coord2<T> uv;
-        if (plane<T>::extract_uv_for_point(point, uv))
+        if (plane<T,color_type>::extract_uv_for_point(point, uv))
         {
             return ((uv.x() * uv.x() + uv.y() * uv.y()) < m_radius_squared);
         }
         return false;
     }
 
-    template <class T>
-    bool disc<T>::intersects(const sphere<T>& s) const
+    template <typename T, typename color_type>
+    bool disc<T,color_type>::intersects(const sphere<T,color_type>& s) const
     {
-        vector3<T> sphere_vector = s.get_center() - plane<T>::get_origin();
-        T projected_n = dotprod(sphere_vector, plane<T>::get_normal());
+        vector3<T> sphere_vector = s.get_center() - plane<T,color_type>::get_origin();
+        T projected_n = dotprod(sphere_vector, plane<T,color_type>::get_normal());
         T projected_n_squared = projected_n * projected_n;
         T sphere_radius_squared = s.get_radius() * s.get_radius();
 
@@ -103,8 +103,8 @@ namespace amethyst
 
             // To intersect our disc, the projected disc's radius plus our radius
             // must be less than the distance to our projected center.
-            T projected_u = dotprod(sphere_vector, plane<T>::get_u_vector());
-            T projected_v = dotprod(sphere_vector, plane<T>::get_v_vector());
+            T projected_u = dotprod(sphere_vector, plane<T,color_type>::get_u_vector());
+            T projected_v = dotprod(sphere_vector, plane<T,color_type>::get_v_vector());
 
             T distance_to_projected_center = sqrt(projected_u * projected_u + projected_v * projected_v);
 
@@ -119,25 +119,25 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    bool disc<T>::intersects(const plane<T>& p) const
+    template <typename T, typename color_type>
+    bool disc<T,color_type>::intersects(const plane<T,color_type>& p) const
     {
         // FIXME!
 
         return false;
     }
 
-    template <class T>
-    bool disc<T>::intersects_line(const unit_line3<T>& line,
-                                  intersection_info<T>& intersection,
+    template <typename T, typename color_type>
+    bool disc<T,color_type>::intersects_line(const unit_line3<T>& line,
+                                  intersection_info<T,color_type>& intersection,
                                   const intersection_requirements& requirements) const
     {
-        intersection_info<T> temp_intersection;
+        intersection_info<T,color_type> temp_intersection;
 
         intersection_requirements temp_requirements = requirements;
         temp_requirements.force_uv(true);
 
-        if (plane<T>::intersects_line(line, temp_intersection, temp_requirements))
+        if (plane<T,color_type>::intersects_line(line, temp_intersection, temp_requirements))
         {
             if (temp_intersection.have_uv())
             {
@@ -157,14 +157,14 @@ namespace amethyst
     }
 
     // Returns if the given line intersects the plane.
-    template <class T>
-    inline bool disc<T>::quick_intersection(const unit_line3<T>& line,
+    template <typename T, typename color_type>
+    inline bool disc<T,color_type>::quick_intersection(const unit_line3<T>& line,
                                             T time, T& distance) const
     {
         T plane_dist;
-        if (plane<T>::quick_intersection(line, time, plane_dist))
+        if (plane<T,color_type>::quick_intersection(line, time, plane_dist))
         {
-            vector3<T> inter_v = plane<T>::get_origin() - (line.origin() + plane_dist * line.direction());
+            vector3<T> inter_v = plane<T,color_type>::get_origin() - (line.origin() + plane_dist * line.direction());
             if (dotprod(inter_v, inter_v) < (m_radius_squared + AMETHYST_EPSILON))
             {
                 distance = plane_dist;
@@ -175,15 +175,15 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    std::string disc<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    template <typename T, typename color_type>
+    std::string disc<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
     {
-        std::string retval = plane<T>::internal_members(indentation, true);
+        std::string retval = plane<T,color_type>::internal_members(indentation, true);
         std::string internal_tagging = indentation;
 
         if (prefix_with_classname)
         {
-            internal_tagging += disc<T>::name() + "::";
+            internal_tagging += disc<T,color_type>::name() + "::";
         }
 
         retval += internal_tagging + string_format("radius=%1\n", m_radius);
@@ -191,18 +191,18 @@ namespace amethyst
         return retval;
     }
 
-    template <class T>
-    intersection_capabilities disc<T>::get_intersection_capabilities() const
+    template <typename T, typename color_type>
+    intersection_capabilities disc<T,color_type>::get_intersection_capabilities() const
     {
-        intersection_capabilities caps = plane<T>::get_intersection_capabilities();
+        intersection_capabilities caps = plane<T,color_type>::get_intersection_capabilities();
 
         return caps;
     }
 
-    template <class T>
-    object_capabilities disc<T>::get_object_capabilities() const
+    template <typename T, typename color_type>
+    object_capabilities disc<T,color_type>::get_object_capabilities() const
     {
-        object_capabilities caps = plane<T>::get_object_capabilities();
+        object_capabilities caps = plane<T,color_type>::get_object_capabilities();
 
         caps &= ~object_capabilities::NOT_FINITE;
         caps |= object_capabilities::BOUNDABLE;

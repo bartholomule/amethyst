@@ -17,11 +17,11 @@ namespace amethyst
      * @version $Revision: 1.2 $
      *
      */
-    template <class T>
-    class dynamic_sphere : public shape<T>
+    template <typename T, typename color_type>
+    class dynamic_sphere : public shape<T,color_type>
     {
     public:
-        using parent = shape<T>;
+        using parent = shape<T,color_type>;
 
         dynamic_sphere() : dynamic_sphere(point3<T>(0, 0, 0), 1) { }
         dynamic_sphere(const point3<T>& c, T rad);
@@ -35,7 +35,7 @@ namespace amethyst
         dynamic_sphere(const dynamic_sphere& old) = default;
         dynamic_sphere& operator=(const dynamic_sphere& old) = default;
         dynamic_sphere(dynamic_sphere&& old)
-            : shape<T>(std::move(old))
+            : shape<T,color_type>(std::move(old))
             , center(std::move(old.center))
             , radius(std::move(old.radius))
         {
@@ -43,7 +43,7 @@ namespace amethyst
 
         dynamic_sphere& operator=(dynamic_sphere&& old)
         {
-            shape<T>::operator=(std::move(old));
+            shape<T,color_type>::operator=(std::move(old));
             center.swap(old.center);
             radius.swap(old.radius);
             return *this;
@@ -62,16 +62,16 @@ namespace amethyst
         bool inside(const point3<T>& p) const override;
 
         /** Returns if the given dynamic_sphere intersects the dynamic_sphere. */
-        bool intersects(const sphere<T>& s) const override;
+        bool intersects(const sphere<T,color_type>& s) const override;
 
         /** Returns if the given plane intersects the shape. */
-        bool intersects(const plane<T>& p) const override;
+        bool intersects(const plane<T,color_type>& p) const override;
 
 
         /** Returns if the given line intersects the dynamic_sphere. */
         using parent::intersects_line;
         bool intersects_line(const unit_line3<T>& line,
-            intersection_info<T>& intersection,
+            intersection_info<T,color_type>& intersection,
             const intersection_requirements& requirements) const override;
 
         /**
@@ -85,8 +85,8 @@ namespace amethyst
          * Returns if the given ray intersects the shape.
          *
          */
-        bool intersects_ray(const ray_parameters<T>& ray,
-            intersection_info<T>& intersection,
+        bool intersects_ray(const ray_parameters<T,color_type>& ray,
+            intersection_info<T,color_type>& intersection,
             const intersection_requirements& requirements = intersection_requirements()) const override;
 
         std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override;
@@ -106,15 +106,15 @@ namespace amethyst
         std::shared_ptr<interpolated_value<T, T>> radius;
     };
 
-    template <class T>
-    dynamic_sphere<T>::dynamic_sphere(const point3<T>& c, T rad)
+    template <typename T, typename color_type>
+    dynamic_sphere<T,color_type>::dynamic_sphere(const point3<T>& c, T rad)
         : center(create_interpolation<T, coord3<T>>(c, c))
         , radius(create_interpolation<T, T>(rad, rad))
     {
     }
 
-    template <class T>
-    dynamic_sphere<T>::dynamic_sphere(const point3<T>& c1, T t1,
+    template <typename T, typename color_type>
+    dynamic_sphere<T,color_type>::dynamic_sphere(const point3<T>& c1, T t1,
         const point3<T>& c2, T t2,
         T rad1, T tr1,
         T rad2, T tr2)
@@ -126,8 +126,8 @@ namespace amethyst
     }
 
     // Returns if the given point is inside the dynamic_sphere.
-    template <class T>
-    bool dynamic_sphere<T>::inside(const point3<T>& p) const
+    template <typename T, typename color_type>
+    bool dynamic_sphere<T,color_type>::inside(const point3<T>& p) const
     {
         // FIXME! Check the entire range
 
@@ -140,8 +140,8 @@ namespace amethyst
     }
 
     // Returns if the given dynamic_sphere intersects the dynamic_sphere.
-    template <class T>
-    bool dynamic_sphere<T>::intersects(const sphere<T>& s) const
+    template <typename T, typename color_type>
+    bool dynamic_sphere<T,color_type>::intersects(const sphere<T,color_type>& s) const
     {
         T my_radius = get_radius(T(0));
         point3<T> my_center = get_center(T(0));
@@ -152,20 +152,20 @@ namespace amethyst
     }
 
     // Returns if the given plane intersects the shape.
-    template <class T>
-    bool dynamic_sphere<T>::intersects(const plane<T>& p) const
+    template <typename T, typename color_type>
+    bool dynamic_sphere<T,color_type>::intersects(const plane<T,color_type>& p) const
     {
         // FIXME! Check the entire range, do something better.
-        sphere<T> s(get_center(T(0)),
+        sphere<T,color_type> s(get_center(T(0)),
                     get_radius(T(0)));
 
         return amethyst::intersects(s, p);
     }
 
     // Returns if the given line intersects the dynamic_sphere.
-    template <class T>
-    bool dynamic_sphere<T>::intersects_line(const unit_line3<T>& line,
-                                            intersection_info<T>& intersection,
+    template <typename T, typename color_type>
+    bool dynamic_sphere<T,color_type>::intersects_line(const unit_line3<T>& line,
+                                            intersection_info<T,color_type>& intersection,
                                             const intersection_requirements& requirements) const
     {
         // FIXME! Check the entire time range, not just 0....
@@ -200,8 +200,8 @@ namespace amethyst
      * distance. This is most useful for shadow tests, and other tests where no
      * textures will be applied.
      */
-    template <class T>
-    bool dynamic_sphere<T>::quick_intersection(const unit_line3<T>& line,
+    template <typename T, typename color_type>
+    bool dynamic_sphere<T,color_type>::quick_intersection(const unit_line3<T>& line,
                                                T time, T& distance) const
     {
         // FIXME! Check the entire range
@@ -211,9 +211,9 @@ namespace amethyst
         return quick_sphere_intersection_test(my_center, my_radius, my_radius * my_radius, line, distance);
     }
 
-    template <class T>
-    bool dynamic_sphere<T>::intersects_ray(const ray_parameters<T>& ray,
-                                           intersection_info<T>& intersection,
+    template <typename T, typename color_type>
+    bool dynamic_sphere<T,color_type>::intersects_ray(const ray_parameters<T,color_type>& ray,
+                                           intersection_info<T,color_type>& intersection,
                                            const intersection_requirements& requirements) const
     {
         T hit_distance;
@@ -242,15 +242,15 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    std::string dynamic_sphere<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    template <typename T, typename color_type>
+    std::string dynamic_sphere<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
     {
         std::string retval;
         std::string internal_tagging = indentation;
 
         if (prefix_with_classname)
         {
-            internal_tagging += dynamic_sphere<T>::name() + "::";
+            internal_tagging += dynamic_sphere<T,color_type>::name() + "::";
         }
 
         auto intc = inspect(get_intersection_capabilities());
@@ -263,10 +263,10 @@ namespace amethyst
         return retval;
     }
 
-    template <class T>
-    intersection_capabilities dynamic_sphere<T>::get_intersection_capabilities() const
+    template <typename T, typename color_type>
+    intersection_capabilities dynamic_sphere<T,color_type>::get_intersection_capabilities() const
     {
-        intersection_capabilities caps = shape<T>::get_intersection_capabilities();
+        intersection_capabilities caps = shape<T,color_type>::get_intersection_capabilities();
 
         caps |= intersection_capabilities::HIT_FIRST;
         caps |= intersection_capabilities::HIT_ALL;
@@ -276,10 +276,10 @@ namespace amethyst
         return caps;
     }
 
-    template <class T>
-    object_capabilities dynamic_sphere<T>::get_object_capabilities() const
+    template <typename T, typename color_type>
+    object_capabilities dynamic_sphere<T,color_type>::get_object_capabilities() const
     {
-        object_capabilities caps = shape<T>::get_object_capabilities();
+        object_capabilities caps = shape<T,color_type>::get_object_capabilities();
 
         caps |= object_capabilities::BOUNDABLE;
         caps |= object_capabilities::SIMPLE;
@@ -287,8 +287,8 @@ namespace amethyst
         return caps;
     }
 
-    template <class T>
-    coord2<T> dynamic_sphere<T>::get_uv(const point3<T>& location, T time) const
+    template <typename T, typename color_type>
+    coord2<T> dynamic_sphere<T,color_type>::get_uv(const point3<T>& location, T time) const
     {
         vector3<T> point_vector = location - get_center(time);
 

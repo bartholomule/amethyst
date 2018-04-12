@@ -18,7 +18,7 @@ using Color = rgbcolor<double>;
 using Vec = vector3<double>;
 using Image = image<double>;
 using Line = unit_line3<double>;
-using Info = intersection_info<double>;
+using Info = intersection_info<double, Color>;
 
 namespace
 {
@@ -50,10 +50,10 @@ class normal_scene_texture : public solid_texture<double, Color>
 public:
     Color get_color_at_point(const Point& location, const Vec& normal) const override
     {
-        return { 0.5, 0.5, 0.5 };
+        return { 0,0,0 };
     }
 
-    bool reflect_ray(const ray_parameters<double>& ray, const intersection_info<double>& intersection, ray_parameters<double>& reflected) const override
+    bool reflect_ray(const ray_parameters<double, Color>& ray, const intersection_info<double, Color>& intersection, ray_parameters<double, Color>& reflected, Color& attenuation) const override
     {
         if (ray.perfect_reflection(intersection, reflected))
         {
@@ -61,6 +61,7 @@ public:
             const auto& n = intersection.get_normal();
             Point target = p + n + random_vec_in_sphere();
             reflected.set_line(Line(p, target - p, reflected.get_line().limits()));
+            attenuation = { 0.5, 0.5, 0.5 };
             return true;
         }
         return false;
@@ -77,11 +78,11 @@ public:
     }
 };
 
-struct trivial_camera : public base_camera<double>
+struct trivial_camera : public base_camera<double, Color>
 {
 public:
     trivial_camera(size_t w, size_t h, Point ll, Vec horiz, Vec vert, Point orig)
-        : base_camera<double>(w, h)
+        : base_camera<double, Color>(w, h)
         , lower_left_corner(ll)
         , horizontal(horiz)
         , vertical(vert)
@@ -89,14 +90,14 @@ public:
     {
     }
 
-    ray_parameters<double> get_ray(const coord2<double>& sample, double time = 0) const override
+    ray_parameters<double, Color> get_ray(const coord2<double>& sample, double time = 0) const override
     {
-        ray_parameters<double> result;
+        ray_parameters<double, Color> result;
         result.set_line(Line(origin, lower_left_corner + sample.x() * horizontal + sample.y() * vertical));
         return result;
     }
 
-    ray_parameters<double> get_ray(const double& px, const double& py, double time = 0) const override
+    ray_parameters<double, Color> get_ray(const double& px, const double& py, double time = 0) const override
     {
         double u = px / width();
         double v = (double(height() - 1) - py) / double(height()); // flipped because render() does (0,0) as the top left.
@@ -126,9 +127,9 @@ int main(int argc, const char** argv)
 
     auto camera = std::make_shared<trivial_camera>(nx, ny, lower_left_corner, horizontal, vertical, origin);
     auto scene_texture = std::make_shared<normal_scene_texture>();
-    auto scene = std::make_shared<aggregate<double>>();
-    scene->add(std::make_shared<sphere<double>>(Point(0, 0, -1), 0.5));
-    scene->add(std::make_shared<sphere<double>>(Point(0, -100.5, -1), 100));
+    auto scene = std::make_shared<aggregate<double, Color>>();
+    scene->add(std::make_shared<sphere<double, Color>>(Point(0, 0, -1), 0.5));
+    scene->add(std::make_shared<sphere<double, Color>>(Point(0, -100.5, -1), 100));
 
     auto img = render<double, Color>(
         camera, scene, scene_texture, nx, ny,

@@ -13,11 +13,11 @@ using Color = rgbcolor<double>;
 using Vec = vector3<double>;
 using Image = image<double>;
 using Line = unit_line3<double>;
-using Info = intersection_info<double>;
+using Info = intersection_info<double,Color>;
 
 Color color(const unit_line3<double>& l)
 {
-    sphere<double> s(Point(0, 0, -1), 0.5);
+    sphere<double,Color> s(Point(0, 0, -1), 0.5);
     Info info;
     intersection_requirements requirements;
     requirements.force_first_only(true);

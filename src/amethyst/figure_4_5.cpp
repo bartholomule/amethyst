@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 {
     (void)argc;
     (void)argv;
-    aggregate<float_type> sl;
+    aggregate<float_type, color> sl;
 
     point e(0, 0, 2);
     vec vup(0, 1, 0);
@@ -48,15 +48,15 @@ int main(int argc, char** argv)
     int nx = WIDTH;
     int ny = HEIGHT;
 
-    pinhole_camera<float_type> camera(e, g, vup, vw, vh, dist, nx, ny);
+    pinhole_camera<float_type,color> camera(e, g, vup, vw, vh, dist, nx, ny);
 
-    std::shared_ptr<shape<float_type>> sph_ptr = std::make_shared<sphere<float_type>>(point(0, 0, 0), sqrt(2));
+    std::shared_ptr<shape<float_type,color>> sph_ptr = std::make_shared<sphere<float_type,color>>(point(0, 0, 0), sqrt(2));
     sl.add(sph_ptr);
 
     color light(0.7, 0.7, 0.7), dark(0.5, 0.5, 0.5), black(0, 0, 0);
 
     image<float_type> image(WIDTH, HEIGHT);
-    intersection_info<float_type> stuff;
+    intersection_info<float_type,color> stuff;
 
     cout << "objects=" << sl << endl;
     cout << "camera=" << camera << endl;
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
         {
             float_type a = (x + 0.5);
             float_type b = (y + 0.5);
-            ray_parameters<float_type> r = camera.get_ray(a, b);
+            ray_parameters<float_type,color> r = camera.get_ray(a, b);
 
             if (!sl.intersects_ray(r, stuff, requirements))
             {

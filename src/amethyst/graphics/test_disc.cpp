@@ -9,9 +9,9 @@ namespace
     typedef double base_type;
     typedef amethyst::vector3<base_type> vec3;
     typedef amethyst::point3<base_type> point3;
-    typedef amethyst::disc<base_type> disc;
-    typedef amethyst::sphere<base_type> sphere;
-    typedef amethyst::plane<base_type> plane;
+    typedef amethyst::disc<base_type,vec3> disc;
+    typedef amethyst::sphere<base_type,vec3> sphere;
+    typedef amethyst::plane<base_type,vec3> plane;
 }
 
 // Sanity checks

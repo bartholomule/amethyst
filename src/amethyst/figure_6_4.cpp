@@ -39,9 +39,9 @@ try
     constexpr size_t ny = HEIGHT;
     constexpr size_t spp = SAMPLES_PER_PIXEL;
 
-    auto camera = std::make_shared<pinhole_camera<float_type>>(e, g, vup, vw, vh, dist, nx, ny, interval<float_type>(0, 1));
-    auto scene = std::make_shared<aggregate<float_type>>();
-    scene->add(std::make_shared<sphere<float_type>>(point(0, 0, 0), 10));
+    auto camera = std::make_shared<pinhole_camera<float_type,color>>(e, g, vup, vw, vh, dist, nx, ny, interval<float_type>(0, 1));
+    auto scene = std::make_shared<aggregate<float_type, color>>();
+    scene->add(std::make_shared<sphere<float_type, color>>(point(0, 0, 0), 10));
 
     std::cout << "objects=" << scene << std::endl;
     std::cout << "camera=" << camera << std::endl;

@@ -16,13 +16,13 @@ namespace amethyst
      * @version $Revision: 1.11 $
      *
      */
-    template <class T>
-    class aggregate : public shape<T>
+    template <typename T, typename color_type>
+    class aggregate : public shape<T, color_type>
     {
     public:
-        using parent = shape<T>;
-        using shape_ptr = std::shared_ptr<shape<T>>;
-        using shape_list = std::vector<shape_ptr>;
+        using parent = shape<T, color_type>;
+        using shape_type = shape_ptr<T, color_type>;
+        using shape_list = std::vector<shape_type>;
 
         aggregate() = default;
         virtual ~aggregate() = default;
@@ -44,20 +44,20 @@ namespace amethyst
         bool inside(const point3<T>& p) const override;
 
         /** Returns if the given sphere intersects the shape. */
-        bool intersects(const sphere<T>& s) const override;
+        bool intersects(const sphere<T,color_type>& s) const override;
 
         /** Returns if the given plane intersects the shape. */
-        bool intersects(const plane<T>& p) const override;
+        bool intersects(const plane<T,color_type>& p) const override;
 
         /** Returns if the given line intersects the shape. */
         using parent::intersects_line;
 
         bool intersects_line(const unit_line3<T>& line,
-            intersection_info<T>& intersection,
+            intersection_info<T,color_type>& intersection,
             const intersection_requirements& requirements = intersection_requirements()) const override;
 
-        bool intersects_ray(const ray_parameters<T>& ray,
-            intersection_info<T>& intersection,
+        bool intersects_ray(const ray_parameters<T,color_type>& ray,
+            intersection_info<T,color_type>& intersection,
             const intersection_requirements& requirements = intersection_requirements()) const override;
 
         /**
@@ -84,17 +84,17 @@ namespace amethyst
         }
         object_capabilities get_object_capabilities() const override;
 
-        void add(shape_ptr sp) { m_shape_list.emplace_back(std::move(sp)); }
+        void add(shape_type sp) { m_shape_list.emplace_back(std::move(sp)); }
         size_t size() const { return m_shape_list.size(); }
-        shape_ptr& operator[](size_t index) { return m_shape_list[index]; }
-        const shape_ptr& operator[](size_t index) const { return m_shape_list[index]; }
+        shape_type& operator[](size_t index) { return m_shape_list[index]; }
+        const shape_type& operator[](size_t index) const { return m_shape_list[index]; }
 
     private:
         shape_list m_shape_list;
     };
 
-    template <class T>
-    bool aggregate<T>::inside(const point3<T>& p) const
+    template <typename T, typename color_type>
+    bool aggregate<T,color_type>::inside(const point3<T>& p) const
     {
         for (const auto& s : m_shape_list)
         {
@@ -106,8 +106,8 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    bool aggregate<T>::intersects(const sphere<T>& s) const
+    template <typename T, typename color_type>
+    bool aggregate<T,color_type>::intersects(const sphere<T,color_type>& s) const
     {
         for(const auto& p : m_shape_list)
         {
@@ -119,8 +119,8 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    bool aggregate<T>::intersects(const plane<T>& p) const
+    template <typename T, typename color_type>
+    bool aggregate<T,color_type>::intersects(const plane<T,color_type>& p) const
     {
         for (const auto& s : m_shape_list)
         {
@@ -132,8 +132,8 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    bool aggregate<T>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
+    template <typename T, typename color_type>
+    bool aggregate<T,color_type>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
     {
         bool hit_something = false;
         T closest = line.limits().end() + 1;
@@ -161,19 +161,19 @@ namespace amethyst
         return hit_something;
     }
 
-    template <class T>
-    bool aggregate<T>::intersects_line(const unit_line3<T>& line,
-                                       intersection_info<T>& intersection,
+    template <typename T, typename color_type>
+    bool aggregate<T,color_type>::intersects_line(const unit_line3<T>& line,
+                                       intersection_info<T,color_type>& intersection,
                                        const intersection_requirements& requirements) const
     {
         bool intersects_something = false;
 
         // Clear it out...
-        intersection = intersection_info<T>();
+        intersection = intersection_info<T,color_type>();
 
         for(const auto& obj : m_shape_list)
         {
-            intersection_info<T> temp_intersection;
+            intersection_info<T,color_type> temp_intersection;
             if (obj->intersects_line(line, temp_intersection, requirements))
             {
 
@@ -244,19 +244,19 @@ namespace amethyst
     }
 
 
-    template <class T>
-    bool aggregate<T>::intersects_ray(const ray_parameters<T>& ray,
-                                      intersection_info<T>& intersection,
+    template <typename T, typename color_type>
+    bool aggregate<T,color_type>::intersects_ray(const ray_parameters<T,color_type>& ray,
+                                      intersection_info<T,color_type>& intersection,
                                       const intersection_requirements& requirements) const
     {
         bool intersects_something = false;
 
         // Clear it out...
-        intersection = intersection_info<T>();
+        intersection = intersection_info<T,color_type>();
 
         for (const auto& obj : m_shape_list)
         {
-            intersection_info<T> temp_intersection;
+            intersection_info<T,color_type> temp_intersection;
             if (obj->intersects_ray(ray, temp_intersection, requirements))
             {
 
@@ -327,15 +327,15 @@ namespace amethyst
     }
 
 
-    template <class T>
-    std::string aggregate<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    template <typename T, typename color_type>
+    std::string aggregate<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
     {
         std::string retval;
         std::string internal_tagging = indentation;
 
         if (prefix_with_classname)
         {
-            internal_tagging += aggregate<T>::name() + "::";
+            internal_tagging += aggregate<T,color_type>::name() + "::";
         }
 
         retval += indentation + string_format("intersection_capabilities=%1\n", ::to_string(get_intersection_capabilities()));
@@ -351,8 +351,8 @@ namespace amethyst
         return retval;
     }
 
-    template <class T>
-    object_capabilities aggregate<T>::get_object_capabilities() const
+    template <typename T, typename color_type>
+    object_capabilities aggregate<T,color_type>::get_object_capabilities() const
     {
         object_capabilities caps = object_capabilities::ALL;
         caps &= ~object_capabilities::MOVABLE;

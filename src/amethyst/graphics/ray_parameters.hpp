@@ -18,7 +18,7 @@ namespace amethyst
      * @version $Revision: 1.2 $
      *
      */
-    template <class T>
+    template <class T, typename color_type>
     class ray_parameters
     {
     public:
@@ -47,8 +47,14 @@ namespace amethyst
         T get_ior() const { return current_ior; }
         void set_ior(T ior) { current_ior = ior; }
 
-        T get_contribution() const { return effective_contribution; }
-        void set_contribution(T value) { effective_contribution = value; }
+        T get_scalar_contribution() const
+        {
+            // FIXME! Not functional with other color types.
+            const auto& e = effective_contribution;
+            return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+        }
+        color_type get_contribution() const { return effective_contribution; }
+        void set_contribution(color_type value) { effective_contribution = value; }
 
         long get_max_depth() const { return depth_max; }
         void set_max_depth(long val) { depth_max = val; }
@@ -57,16 +63,17 @@ namespace amethyst
         void set_current_depth(long val) { depth = val; }
 
         // Perform a perfect reflection.
-        bool perfect_reflection(const intersection_info<T>& info, ray_parameters<T>& results) const;
+        bool perfect_reflection(const intersection_info<T,color_type>& info, ray_parameters<T,color_type>& results) const;
         // Perform a perfect refraction
-        bool perfect_refraction(const intersection_info<T>& info, T ior, ray_parameters<T>& results) const;
+        bool perfect_refraction(const intersection_info<T,color_type>& info, T ior, ray_parameters<T,color_type>& results) const;
+        // Do a random scattering.
 
         std::string to_string() const;
 
     private:
         // Makes sure a normal is available, calculates (or just sets) the distance
         // and intersection point.
-        bool get_parameters_for_next_ray(const intersection_info<T>& info, T& distance, point3<T>& point) const;
+        bool get_parameters_for_next_ray(const intersection_info<T,color_type>& info, T& distance, point3<T>& point) const;
 
         //
         // Items that shapes may care about.
@@ -85,7 +92,7 @@ namespace amethyst
         T current_ior = 1;
         // used in determining how far a ray should go (starts out as T(1),
         // decreases with each transmission/reflection)
-        T effective_contribution = 1;
+        color_type effective_contribution = { 1, 1, 1 };
         // Specifies hwo deep a ray is allowed to go.
         long depth_max = AMETHYST_DEPTH_MAX;
         // The current depth of the ray
@@ -99,8 +106,8 @@ namespace amethyst
         // Lighting method enums, etc.
     };
 
-    template <class T>
-    bool ray_parameters<T>::get_parameters_for_next_ray(const intersection_info<T>& info,
+    template <typename T, typename color_type>
+    bool ray_parameters<T,color_type>::get_parameters_for_next_ray(const intersection_info<T,color_type>& info,
                                                         T& distance, point3<T>& point) const
     {
         if (depth >= depth_max)
@@ -139,8 +146,8 @@ namespace amethyst
     }
 
     // Perform a perfect reflection.
-    template <class T>
-    bool ray_parameters<T>::perfect_reflection(const intersection_info<T>& info, ray_parameters<T>& results) const
+    template <typename T, typename color_type>
+    bool ray_parameters<T,color_type>::perfect_reflection(const intersection_info<T,color_type>& info, ray_parameters<T,color_type>& results) const
     {
         T distance;
         point3<T> point;
@@ -171,8 +178,8 @@ namespace amethyst
     }
 
     // Perform a perfect refraction
-    template <class T>
-    bool ray_parameters<T>::perfect_refraction(const intersection_info<T>& info, T ior, ray_parameters<T>& results) const
+    template <typename T, typename color_type>
+    bool ray_parameters<T,color_type>::perfect_refraction(const intersection_info<T,color_type>& info, T ior, ray_parameters<T,color_type>& results) const
     {
         T distance;
         point3<T> point;
@@ -206,8 +213,8 @@ namespace amethyst
         }
     }
 
-    template <class T>
-    std::string ray_parameters<T>::to_string() const
+    template <typename T, typename color_type>
+    std::string ray_parameters<T,color_type>::to_string() const
     {
         std::string indentation = "  ";
         return "ray\n{\n" +
@@ -220,8 +227,8 @@ namespace amethyst
                "}\n";
     }
 
-    template <class T>
-    std::ostream& operator<<(std::ostream& o, const ray_parameters<T>& p)
+    template <typename T, typename color_type>
+    std::ostream& operator<<(std::ostream& o, const ray_parameters<T,color_type>& p)
     {
         return o << p.to_string();
     }

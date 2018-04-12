@@ -15,8 +15,8 @@ namespace amethyst
      * @version $Revision: 1.3 $
      *
      */
-    template <class T>
-    class pinhole_camera : public base_camera<T>
+    template <typename T, typename color_type>
+    class pinhole_camera : public base_camera<T,color_type>
     {
     public:
         pinhole_camera();
@@ -37,10 +37,10 @@ namespace amethyst
         /* FIXME! At some point in the future, these will need to have a more
            complete ray, which includes time, etc. */
         /* This one uses sample positions */
-        virtual ray_parameters<T> get_ray(const coord2<T>& sample_point, T time = 0) const;
+        virtual ray_parameters<T,color_type> get_ray(const coord2<T>& sample_point, T time = 0) const;
 
         /* This one uses pixel positions */
-        virtual ray_parameters<T> get_ray(const T& px, const T& py, T time = 0) const;
+        virtual ray_parameters<T,color_type> get_ray(const T& px, const T& py, T time = 0) const;
 
         virtual std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const;
 
@@ -60,9 +60,9 @@ namespace amethyst
     //---------------------------------------------
     // Default constructor for class pinhole_camera
     //---------------------------------------------
-    template <class T>
-    pinhole_camera<T>::pinhole_camera() :
-        base_camera<T>(100, 100),
+    template <typename T, typename color_type>
+    pinhole_camera<T,color_type>::pinhole_camera() :
+        base_camera<T,color_type>(100, 100),
         viewing_frame(point3<T>(0, 0, 0),
                       vector3<T>(1, 0, 0), vector3<T>(0, 1, 0), vector3<T>(0, 0, 1)),
         ll_corner(-0.5, -0.5),
@@ -76,8 +76,8 @@ namespace amethyst
     //-------------------------------------------------------
     // fully-specified  constructor for class pinhole_camera
     //-------------------------------------------------------
-    template <class T>
-    pinhole_camera<T>::pinhole_camera(const point3<T>& eye,
+    template <typename T, typename color_type>
+    pinhole_camera<T,color_type>::pinhole_camera(const point3<T>& eye,
                                       const vector3<T>& gaze,
                                       const vector3<T>& up,
                                       T virtual_screen_width,
@@ -86,7 +86,7 @@ namespace amethyst
                                       size_t w,
                                       size_t h,
                                       const interval<T>& shutter_open_time) :
-        base_camera<T>(w, h),
+        base_camera<T,color_type>(w, h),
         viewing_frame(eye, gaze, up),
         ll_corner(-virtual_screen_width / 2.0, -virtual_screen_height / 2.0),
         ur_corner( virtual_screen_width / 2.0, virtual_screen_height / 2.0),
@@ -96,8 +96,8 @@ namespace amethyst
     {
     } // pinhole_camera()
 
-    template <class T>
-    ray_parameters<T> pinhole_camera<T>::get_ray(const coord2<T>& sample_point, T time) const
+    template <typename T, typename color_type>
+    ray_parameters<T,color_type> pinhole_camera<T,color_type>::get_ray(const coord2<T>& sample_point, T time) const
     {
         // Note: this flips both x and y, so that it looks like y increases as you
         // move up the screen, and x increases towards the right.  This conversion
@@ -115,22 +115,22 @@ namespace amethyst
             T adjusted_time = shutter.begin() + time * (shutter.end() - shutter.begin());
             //      std::cout << "Adjusted_time(" << time << ")=" << adjusted_time << std::endl;
 
-            return ray_parameters<T>( line, adjusted_time );
+            return ray_parameters<T,color_type>( line, adjusted_time );
         }
         else
         {
             //      std::cout << "time=" << time << std::endl;
-            return ray_parameters<T>( line, time );
+            return ray_parameters<T,color_type>( line, time );
         }
     }
 
-    template <class T>
-    ray_parameters<T> pinhole_camera<T>::get_ray(const T& px, const T& py, T time) const
+    template <typename T, typename color_type>
+    ray_parameters<T,color_type> pinhole_camera<T,color_type>::get_ray(const T& px, const T& py, T time) const
     {
         // Flip x, so that it appears as though x increases to the right.
-        T sx = (base_camera<T>::width() - px) / T(base_camera<T>::width() - 1);
+        T sx = (base_camera<T,color_type>::width() - px) / T(base_camera<T,color_type>::width() - 1);
         // Flip y, so that it appears as though y increases upwards.
-        T sy = (base_camera<T>::height() - py) / T(base_camera<T>::height() - 1);
+        T sy = (base_camera<T,color_type>::height() - py) / T(base_camera<T,color_type>::height() - 1);
 
         point3<T> view_point((ll_corner.x() + vscreen_size.x() * sx),
                              (ll_corner.y() + vscreen_size.y() * sy),
@@ -145,23 +145,23 @@ namespace amethyst
         {
             T adjusted_time = shutter.begin() + time * (shutter.end() - shutter.begin());
 
-            return ray_parameters<T>( line, adjusted_time );
+            return ray_parameters<T,color_type>( line, adjusted_time );
         }
         else
         {
-            return ray_parameters<T>( line, time );
+            return ray_parameters<T,color_type>( line, time );
         }
     }
 
-    template <class T>
-    std::string pinhole_camera<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    template <typename T, typename color_type>
+    std::string pinhole_camera<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
     {
-        std::string retval = base_camera<T>::internal_members(indentation, prefix_with_classname);
+        std::string retval = base_camera<T,color_type>::internal_members(indentation, prefix_with_classname);
 
         std::string internal_tagging = indentation;
         if (prefix_with_classname)
         {
-            internal_tagging += pinhole_camera<T>::name() + "::";
+            internal_tagging += pinhole_camera<T,color_type>::name() + "::";
         }
 
         retval += internal_tagging + string_format("frame=%1\n", viewing_frame);

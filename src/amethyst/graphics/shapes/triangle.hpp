@@ -12,8 +12,8 @@ namespace amethyst
      * @version $Revision: 1.10 $
      *
      */
-    template <class T>
-    class triangle : public plane<T>
+    template <typename T, typename color_type>
+    class triangle : public plane<T,color_type>
     {
     public:
         triangle() = default;
@@ -21,7 +21,7 @@ namespace amethyst
         triangle(const point3<T>& corner1 = point3<T>(0, 0, 0),
             const point3<T>& corner2 = point3<T>(1, 0, 0),
             const point3<T>& corner3 = point3<T>(0, 1, 0))
-            : plane<T>(corner1, corner2, corner3)
+            : plane<T,color_type>(corner1, corner2, corner3)
         {
         }
         virtual ~triangle() = default;
@@ -29,9 +29,9 @@ namespace amethyst
         triangle& operator=(const triangle&) = default;
 
         bool inside(const point3<T>& p) const override;
-        bool intersects(const sphere<T>& s) const override;
-        bool intersects(const plane<T>& p) const override;
-        bool intersects_line(const unit_line3<T>& line, intersection_info<T>& intersection,
+        bool intersects(const sphere<T,color_type>& s) const override;
+        bool intersects(const plane<T,color_type>& p) const override;
+        bool intersects_line(const unit_line3<T>& line, intersection_info<T,color_type>& intersection,
             const intersection_requirements& requirements) const override;
         bool quick_intersection(const unit_line3<T>& line, T time, T& distance) const override;
 
@@ -43,11 +43,11 @@ namespace amethyst
     };
 
 
-    template <class T>
-    bool triangle<T>::inside(const point3<T>& point) const
+    template <typename T, typename color_type>
+    bool triangle<T,color_type>::inside(const point3<T>& point) const
     {
         coord2<T> uv;
-        if (plane<T>::extract_uv_for_point(point, uv))
+        if (plane<T,color_type>::extract_uv_for_point(point, uv))
         {
             if ((uv.x() > 0 && uv.y() > 0) &&
                 (uv.x() + uv.y() < 1))
@@ -58,26 +58,26 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    bool triangle<T>::intersects(const sphere<T>& s) const
+    template <typename T, typename color_type>
+    bool triangle<T,color_type>::intersects(const sphere<T,color_type>& s) const
     {
         // If any of the 3 corners is inside the sphere, the triangle intersects.
-        if (s.inside( plane<T>::get_origin()) ||
-            s.inside( plane<T>::get_origin() + plane<T>::get_u_vector()) ||
-            s.inside( plane<T>::get_origin() + plane<T>::get_v_vector()))
+        if (s.inside( plane<T,color_type>::get_origin()) ||
+            s.inside( plane<T,color_type>::get_origin() + plane<T,color_type>::get_u_vector()) ||
+            s.inside( plane<T,color_type>::get_origin() + plane<T,color_type>::get_v_vector()))
         {
             return true;
         }
         return false;
     }
 
-    template <class T>
-    bool triangle<T>::intersects(const plane<T>& p) const
+    template <typename T, typename color_type>
+    bool triangle<T,color_type>::intersects(const plane<T,color_type>& p) const
     {
         T unused;
-        const point3<T>& pp = plane<T>::get_origin();
-        point3<T> pu = plane<T>::get_origin() + plane<T>::get_u_vector();
-        point3<T> pv = plane<T>::get_origin() + plane<T>::get_v_vector();
+        const point3<T>& pp = plane<T,color_type>::get_origin();
+        point3<T> pu = plane<T,color_type>::get_origin() + plane<T,color_type>::get_u_vector();
+        point3<T> pv = plane<T,color_type>::get_origin() + plane<T,color_type>::get_v_vector();
 
         if (p.quick_intersection( unit_line3<T>(pp, pu), 0, unused ) ||
             p.quick_intersection( unit_line3<T>(pp, pv), 0, unused ) ||
@@ -89,16 +89,16 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    bool triangle<T>::intersects_line(const unit_line3<T>& line, intersection_info<T>& intersection,
+    template <typename T, typename color_type>
+    bool triangle<T,color_type>::intersects_line(const unit_line3<T>& line, intersection_info<T,color_type>& intersection,
         const intersection_requirements& requirements) const
     {
-        intersection_info<T> temp_intersection;
+        intersection_info<T,color_type> temp_intersection;
 
         intersection_requirements temp_requirements = requirements;
         temp_requirements.force_uv(true);
 
-        if (plane<T>::intersects_line(line, temp_intersection, temp_requirements))
+        if (plane<T,color_type>::intersects_line(line, temp_intersection, temp_requirements))
         {
 
             if (temp_intersection.have_uv())
@@ -123,32 +123,32 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    std::string triangle<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    template <typename T, typename color_type>
+    std::string triangle<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
     {
-        std::string retval = plane<T>::internal_members(indentation, prefix_with_classname);
+        std::string retval = plane<T,color_type>::internal_members(indentation, prefix_with_classname);
         std::string internal_tagging = indentation;
 
         if (prefix_with_classname)
         {
-            internal_tagging += triangle<T>::name() + "::";
+            internal_tagging += triangle<T,color_type>::name() + "::";
         }
 
         return retval;
     }
 
-    template <class T>
-    intersection_capabilities triangle<T>::get_intersection_capabilities() const
+    template <typename T, typename color_type>
+    intersection_capabilities triangle<T,color_type>::get_intersection_capabilities() const
     {
-        intersection_capabilities caps = plane<T>::get_intersection_capabilities();
+        intersection_capabilities caps = plane<T,color_type>::get_intersection_capabilities();
 
         return caps;
     }
 
-    template <class T>
-    object_capabilities triangle<T>::get_object_capabilities() const
+    template <typename T, typename color_type>
+    object_capabilities triangle<T,color_type>::get_object_capabilities() const
     {
-        object_capabilities caps = plane<T>::get_object_capabilities();
+        object_capabilities caps = plane<T,color_type>::get_object_capabilities();
 
         caps &= ~object_capabilities::NOT_FINITE;
         caps |= object_capabilities::BOUNDABLE;
@@ -157,12 +157,12 @@ namespace amethyst
         return caps;
     }
 
-    template <class T>
-    bool triangle<T>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
+    template <typename T, typename color_type>
+    bool triangle<T,color_type>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
     {
         T temp_distance;
 
-        if (plane<T>::quick_intersection(line, time, temp_distance))
+        if (plane<T,color_type>::quick_intersection(line, time, temp_distance))
         {
             point3<T> p = (temp_distance * line.direction() + line.origin());
             coord2<T> uv;
@@ -172,7 +172,7 @@ namespace amethyst
             // speed, and reduces artifacts with expanded error (a point that is on
             // the plane would sometimes not show as being on the plane -- this is
             // the case when a small epsilon and single-precision floats are used.
-            plane<T>::extract_uv_for_point_nonchecked(p, uv);
+            plane<T,color_type>::extract_uv_for_point_nonchecked(p, uv);
 
             if ((uv.x() > 0 && uv.y() > 0) &&
                 (uv.x() + uv.y() < 1))

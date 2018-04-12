@@ -16,8 +16,8 @@ namespace amethyst
      * @version $Revision: 1.16 $
      *
      */
-    template <class T>
-    class plane : public shape<T>
+    template <typename T, typename color_type>
+    class plane : public shape<T,color_type>
     {
     public:
         plane() = default;
@@ -41,10 +41,10 @@ namespace amethyst
         const vector3<T>& get_v_vector() const { return v_vector; }
 
         bool inside(const point3<T>& p) const override;
-        bool intersects(const sphere<T>& s) const override;
-        bool intersects(const plane<T>& p) const override;
+        bool intersects(const sphere<T,color_type>& s) const override;
+        bool intersects(const plane<T,color_type>& p) const override;
 
-        bool intersects_line(const unit_line3<T>& line, intersection_info<T>& intersection,
+        bool intersects_line(const unit_line3<T>& line, intersection_info<T,color_type>& intersection,
             const intersection_requirements& requirements) const override;
 
         /**
@@ -83,8 +83,8 @@ namespace amethyst
         int non_zero_v_index = 0;
     };
 
-    template <class T>
-    plane<T>::plane(const point3<T>& p, const vector3<T>& n)
+    template <typename T, typename color_type>
+    plane<T,color_type>::plane(const point3<T>& p, const vector3<T>& n)
         : defining_point(p)
         , normal(unit(n))
     {
@@ -93,8 +93,8 @@ namespace amethyst
         setup_non_zero_indices();
     }
 
-    template <class T>
-    plane<T>::plane(const point3<T>& p, const vector3<T>& n, const vector3<T>& vec_u)
+    template <typename T, typename color_type>
+    plane<T,color_type>::plane(const point3<T>& p, const vector3<T>& n, const vector3<T>& vec_u)
         : defining_point(p)
         , normal(unit(n))
         , v_vector(crossprod(normal, vec_u))
@@ -103,8 +103,8 @@ namespace amethyst
         setup_non_zero_indices();
     }
 
-    template <class T>
-    plane<T>::plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v)
+    template <typename T, typename color_type>
+    plane<T,color_type>::plane(const point3<T>& p, const point3<T>& plus_u, const point3<T>& plus_v)
         : defining_point(p)
         , v_vector(plus_v - p)
         , u_vector(plus_u - p)
@@ -113,8 +113,8 @@ namespace amethyst
         setup_non_zero_indices();
     }
 
-    template <class T>
-    plane<T>::plane(const point3<T>& p, const vector3<T>& normal, const vector3<T>& vec_u, const vector3<T>& vec_v)
+    template <typename T, typename color_type>
+    plane<T,color_type>::plane(const point3<T>& p, const vector3<T>& normal, const vector3<T>& vec_u, const vector3<T>& vec_v)
         : defining_point(p)
         , normal(unit(crossprod(vec_u, vec_v)))
         , v_vector(vec_v)
@@ -124,16 +124,16 @@ namespace amethyst
     }
 
     // Returns if the given point is inside the shape.
-    template <class T>
-    inline bool plane<T>::inside(const point3<T>& p) const
+    template <typename T, typename color_type>
+    inline bool plane<T,color_type>::inside(const point3<T>& p) const
     {
         T dist = dotprod(p - defining_point, normal);
         return (dist < AMETHYST_EPSILON) && (dist > -AMETHYST_EPSILON);
     }
 
     // Returns if the given sphere intersects the shape.
-    template <class T>
-    inline bool plane<T>::intersects(const sphere<T>& s) const
+    template <typename T, typename color_type>
+    inline bool plane<T,color_type>::intersects(const sphere<T,color_type>& s) const
     {
         T dist = dotprod(s.get_center() - defining_point, normal);
         T max_dist = s.get_radius() + AMETHYST_EPSILON;
@@ -141,8 +141,8 @@ namespace amethyst
     }
 
     // Returns if the given plane intersects the shape.
-    template <class T>
-    inline bool plane<T>::intersects(const plane<T>& p) const
+    template <typename T, typename color_type>
+    inline bool plane<T,color_type>::intersects(const plane<T,color_type>& p) const
     {
         T normal_proj = dotprod(normal, p.normal);
 
@@ -169,9 +169,9 @@ namespace amethyst
 
 
     // Returns if the given line intersects the plane.
-    template <class T>
-    inline bool plane<T>::intersects_line(const unit_line3<T>& line,
-        intersection_info<T>& intersection, const intersection_requirements& requirements) const
+    template <typename T, typename color_type>
+    inline bool plane<T,color_type>::intersects_line(const unit_line3<T>& line,
+        intersection_info<T,color_type>& intersection, const intersection_requirements& requirements) const
     {
         T t;
         T time = 0; // not used
@@ -212,8 +212,8 @@ namespace amethyst
     }
 
     // Returns if the given line intersects the plane.
-    template <class T>
-    inline bool plane<T>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
+    template <typename T, typename color_type>
+    inline bool plane<T,color_type>::quick_intersection(const unit_line3<T>& line, T time, T& distance) const
     {
         (void)time;  // This plane doesn't move.
         T ctheta = dotprod(line.direction(), normal);
@@ -246,15 +246,15 @@ namespace amethyst
         return false;
     }
 
-    template <class T>
-    std::string plane<T>::internal_members(const std::string& indentation, bool prefix_with_classname) const
+    template <typename T, typename color_type>
+    std::string plane<T,color_type>::internal_members(const std::string& indentation, bool prefix_with_classname) const
     {
         std::string retval;
         std::string internal_tagging = indentation;
 
         if (prefix_with_classname)
         {
-            internal_tagging += plane<T>::name() + "::";
+            internal_tagging += plane<T,color_type>::name() + "::";
         }
 
         retval += indentation + string_format("intersection_capabilities=%1\n", inspect(get_intersection_capabilities()));
@@ -269,8 +269,8 @@ namespace amethyst
         return retval;
     }
 
-    template <class T>
-    void plane<T>::setup_non_zero_indices()
+    template <typename T, typename color_type>
+    void plane<T,color_type>::setup_non_zero_indices()
     {
         for (non_zero_u_index = 0; non_zero_u_index < 3; ++non_zero_u_index)
         {
@@ -287,11 +287,11 @@ namespace amethyst
         }
     }
 
-    template <class T>
-    inline bool plane<T>::extract_uv_for_point(const point3<T>& point,
+    template <typename T, typename color_type>
+    inline bool plane<T,color_type>::extract_uv_for_point(const point3<T>& point,
                                                coord2<T>& uv) const
     {
-        if (plane<T>::inside(point))
+        if (plane<T,color_type>::inside(point))
         {
             T u;
             T v;
@@ -313,8 +313,8 @@ namespace amethyst
     }
 
 
-    template <class T>
-    inline void plane<T>::extract_uv_for_point_nonchecked(const point3<T>& point,
+    template <typename T, typename color_type>
+    inline void plane<T,color_type>::extract_uv_for_point_nonchecked(const point3<T>& point,
                                                           coord2<T>& uv) const
     {
         T u;
@@ -333,17 +333,17 @@ namespace amethyst
     }
 
 
-    template <class T>
-    bool intersects(const sphere<T>& s, const plane<T>& p)
+    template <typename T, typename color_type>
+    bool intersects(const sphere<T,color_type>& s, const plane<T,color_type>& p)
     {
         return p.intersects(s);
     }
 
 
-    template <class T>
-    intersection_capabilities plane<T>::get_intersection_capabilities() const
+    template <typename T, typename color_type>
+    intersection_capabilities plane<T,color_type>::get_intersection_capabilities() const
     {
-        intersection_capabilities caps = shape<T>::get_intersection_capabilities();
+        intersection_capabilities caps = shape<T,color_type>::get_intersection_capabilities();
 
         caps |= intersection_capabilities::HIT_FIRST;
         caps |= intersection_capabilities::NORMAL_CALCULATION;
@@ -352,10 +352,10 @@ namespace amethyst
         return caps;
     }
 
-    template <class T>
-    object_capabilities plane<T>::get_object_capabilities() const
+    template <typename T, typename color_type>
+    object_capabilities plane<T,color_type>::get_object_capabilities() const
     {
-        object_capabilities caps = shape<T>::get_object_capabilities();
+        object_capabilities caps = shape<T,color_type>::get_object_capabilities();
 
         caps |= object_capabilities::NOT_FINITE;
         caps |= object_capabilities::SIMPLE;

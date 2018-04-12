@@ -1,5 +1,6 @@
 #pragma once
 
+#include "amethyst/graphics/shapes/shape_fwd.hpp"
 #include "amethyst/math/point3.hpp"
 #include "amethyst/math/line3.hpp"
 #include "amethyst/math/unit_line3.hpp"
@@ -8,12 +9,10 @@
 #include "amethyst/graphics/requirements.hpp"
 #include "amethyst/graphics/ray_parameters.hpp"
 #include "amethyst/general/string_dumpable.hpp"
+#include "amethyst/graphics/texture/texture.hpp"
 
 namespace amethyst
 {
-    template <class T> class sphere;
-    template <class T> class plane;
-
     /**
      *
      * The base class for a shape.
@@ -22,13 +21,14 @@ namespace amethyst
      * @version $Revision: 1.12 $
      *
      */
-    template <class T>
+    template <typename T, typename color_type>
     class shape : public string_dumpable
     {
     public:
         using base_type = T;
 
         shape() = default;
+        shape(texture_ptr<T, color_type> tex) : m_texture(tex) { }
         virtual ~shape() = default;
         shape(const shape& old) = default;
         shape& operator= (const shape& old) = default;
@@ -37,10 +37,10 @@ namespace amethyst
         virtual bool inside(const point3<T>& p) const = 0;
 
         /** Returns if the given sphere intersects the shape. */
-        virtual bool intersects(const sphere<T>& s) const = 0;
+        virtual bool intersects(const sphere<T,color_type>& s) const = 0;
 
         /** Returns if the given plane intersects the shape. */
-        virtual bool intersects(const plane<T>& p) const = 0;
+        virtual bool intersects(const plane<T,color_type>& p) const = 0;
 
         /**
          * Returns if the given line intersects the shape.  For performance
@@ -49,13 +49,13 @@ namespace amethyst
          * scaling.
          */
         virtual bool intersects_line(const line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements = intersection_requirements()) const;
+            intersection_info<T,color_type>& intersection,
+            const intersection_requirements& requirements = intersection_requirements()) const;
 
         /** Returns if the given line intersects the shape. */
         virtual bool intersects_line(const unit_line3<T>& line,
-                                     intersection_info<T>& intersection,
-                                     const intersection_requirements& requirements = intersection_requirements()) const = 0;
+            intersection_info<T,color_type>& intersection,
+            const intersection_requirements& requirements = intersection_requirements()) const = 0;
 
         /**
          * Returns if the given ray intersects the shape.
@@ -69,9 +69,9 @@ namespace amethyst
          * objects).
          *
          */
-        virtual bool intersects_ray(const ray_parameters<T>& ray,
-                                    intersection_info<T>& intersection,
-                                    const intersection_requirements& requirements = intersection_requirements()) const;
+        virtual bool intersects_ray(const ray_parameters<T,color_type>& ray,
+            intersection_info<T,color_type>& intersection,
+            const intersection_requirements& requirements = intersection_requirements()) const;
 
         /**
          * A quick intersection test.  This will calculate nothing but the
@@ -94,39 +94,43 @@ namespace amethyst
         {
             return object_capabilities::NONE;
         }
+
+        texture_ptr<T, color_type> texture() const
+        {
+            return m_texture;
+        }
+
+    protected:
+        texture_ptr<T, color_type> m_texture;
     };
 
 
-    template <class T>
-    bool shape<T>::intersects_line(const line3<T>& line,
-                                   intersection_info<T>& intersection,
-                                   const intersection_requirements& requirements) const
+    template <typename T, typename color_type>
+    bool shape<T, color_type>::intersects_line(const line3<T>& line,
+        intersection_info<T,color_type>& intersection,
+        const intersection_requirements& requirements) const
     {
         unit_line3<T> ul(line);
 
         if (intersects_line(ul, intersection, requirements))
         {
             intersection.set_first_distance(intersection.get_first_distance() /
-                                            ul.normal_length());
+                ul.normal_length());
             return true;
         }
         return false;
-    } // shape::intersects_line(line3<T>,T)
+    }
 
 
-    template <class T>
-    bool shape<T>::intersects_ray(const ray_parameters<T>& ray,
-                                  intersection_info<T>& intersection,
-                                  const intersection_requirements& requirements) const
+    template <typename T, typename color_type>
+    bool shape<T, color_type>::intersects_ray(const ray_parameters<T,color_type>& ray,
+        intersection_info<T,color_type>& intersection,
+        const intersection_requirements& requirements) const
     {
         if (intersects_line(ray.get_line(), intersection, requirements))
         {
             return true;
         }
         return false;
-    } // shape::intersects_ray(line3<T>,T)
-
-
-    template <typename T>
-    using shape_ptr = std::shared_ptr<shape<T>>;
+    }
 }

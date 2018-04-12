@@ -27,7 +27,7 @@ namespace amethyst
 
         virtual color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const = 0;
 
-        virtual bool reflect_ray(const ray_parameters<T>& ray, const intersection_info<T>& intersection, ray_parameters<T>& reflected) const
+        virtual bool reflect_ray(const ray_parameters<T,color_type>& ray, const intersection_info<T,color_type>& intersection, ray_parameters<T,color_type>& reflected, color_type& attenuation) const
         {
             return false;
         }

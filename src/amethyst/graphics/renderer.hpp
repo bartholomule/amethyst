@@ -60,8 +60,8 @@ namespace amethyst
     template <typename T, typename color_type = rgbcolor<T>>
     color_type sample_scene(
         T x, T y,
-        const ray_parameters<T>& ray,
-        const shape_ptr<T>& scene,
+        const ray_parameters<T,color_type>& ray,
+        const shape_ptr<T, color_type>& scene,
         const texture_ptr<T, color_type> scene_texture,
         const intersection_requirements& requirements,
         const lighting_function<T, color_type>& brightness,
@@ -69,7 +69,7 @@ namespace amethyst
     {
         constexpr color_type black = { 0, 0, 0 };
 
-        intersection_info<T> intersection;
+        intersection_info<T,color_type> intersection;
         if (scene->intersects_ray(ray, intersection, requirements))
         {
             color_type light = brightness(intersection.get_first_point(), intersection.get_normal());
@@ -86,13 +86,23 @@ namespace amethyst
                 normal = intersection.get_normal();
             }
 
-            color_type local_color = scene_texture->get_color(intersection.get_first_point(), uv, normal);
-            color_type reflected_color = black;
-            ray_parameters<T> next_ray;
-            if (scene_texture->reflect_ray(ray, intersection, next_ray))
+            auto tex = intersection.get_shape()->texture();
+            if (!tex)
             {
-                // FIXME! Separate reflectance vs color.
-                reflected_color = local_color * sample_scene(x, y, next_ray, scene, scene_texture, requirements, brightness, background);
+                tex = scene_texture;
+            }
+
+            color_type local_color = tex->get_color(intersection.get_first_point(), uv, normal);
+            color_type reflected_color = black;
+            ray_parameters<T,color_type> next_ray;
+            color_type attenuation;
+            if (tex->reflect_ray(ray, intersection, next_ray, attenuation))
+            {
+                // Only send another ray if the contribution large enough to do something.
+                if (next_ray.get_scalar_contribution() > AMETHYST_EPSILON)
+                {
+                    reflected_color = attenuation * sample_scene(x, y, next_ray, scene, scene_texture, requirements, brightness, background);
+                }
             }
 
             return light * local_color + reflected_color;
@@ -107,8 +117,8 @@ namespace amethyst
     // duplicated code in the samples that are being written.
     template <typename T, typename color_type = rgbcolor<T>>
     raster<color_type> render(
-        camera_ptr<T> camera,
-        shape_ptr<T> scene,
+        camera_ptr<T, color_type> camera,
+        shape_ptr<T, color_type> scene,
         texture_ptr<T, color_type> scene_texture, // Not sufficient for general use.
         size_t width,
         size_t height,
@@ -131,7 +141,7 @@ namespace amethyst
 
         auto color = [&](T x, T y)
         {
-            ray_parameters<T> r = camera->get_ray(x, y);
+            ray_parameters<T,color_type> r = camera->get_ray(x, y);
             return sample_scene(x, y, r, scene, scene_texture, requirements, brightness, background);
         };
 

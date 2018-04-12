@@ -8,25 +8,25 @@ namespace
 {
     using point = point3<double>;
     using vec = vector3<double>;
-    using info = intersection_info<double>;
+    using info = intersection_info<double,vec>;
 }
 
 AUTO_UNIT_TEST(sphere_construction)
 {
-    sphere<double> s1;
+    sphere<double,vec> s1;
     TEST_XYZ_CLOSE(s1.get_center(), 0, 0, 0);
     TEST_CLOSE(s1.get_radius(), 0);
 
-    sphere<double> s2({ 1,2,3 }, 4);
+    sphere<double,vec> s2({ 1,2,3 }, 4);
     TEST_XYZ_CLOSE(s2.get_center(), 1, 2, 3);
     TEST_CLOSE(s2.get_radius(), 4);
 }
 
 AUTO_UNIT_TEST(sphere_intersection)
 {
-    sphere<double> s1({ 0,0,0 }, 1.00001);
-    sphere<double> s2({ 2,0,0 }, 1);
-    sphere<double> s3({ -1,0,0 }, 1);
+    sphere<double,vec> s1({ 0,0,0 }, 1.00001);
+    sphere<double,vec> s2({ 2,0,0 }, 1);
+    sphere<double,vec> s3({ -1,0,0 }, 1);
     TEST_BOOLEAN(s1.intersects(s2));
     TEST_BOOLEAN(s1.intersects(s3));
     TEST_BOOLEAN(!s2.intersects(s3));
