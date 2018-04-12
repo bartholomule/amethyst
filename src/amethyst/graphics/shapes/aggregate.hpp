@@ -338,8 +338,8 @@ namespace amethyst
             internal_tagging += aggregate<T>::name() + "::";
         }
 
-        retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
-        retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());
+        retval += indentation + string_format("intersection_capabilities=%1\n", ::to_string(get_intersection_capabilities()));
+        retval += indentation + string_format("object_capabilities=%1\n", ::to_string(get_object_capabilities()));
 
         std::string level_indent = "  ";
 
@@ -364,15 +364,15 @@ namespace amethyst
         {
             object_capabilities obj_caps = obj->get_object_capabilities();
 
-            if (obj_caps & object_capabilities::NOT_FINITE)
+            if (!!(obj_caps & object_capabilities::NOT_FINITE))
             {
                 caps &= ~object_capabilities::BOUNDABLE;
             }
-            if (obj_caps & object_capabilities::BOUNDABLE)
+            if (!!(obj_caps & object_capabilities::BOUNDABLE))
             {
                 caps &= ~object_capabilities::NOT_FINITE;
             }
-            if (obj_caps & object_capabilities::MOVABLE)
+            if (!!(obj_caps & object_capabilities::MOVABLE))
             {
                 caps |= object_capabilities::MOVABLE;
             }
@@ -380,7 +380,7 @@ namespace amethyst
             {
                 caps &= ~object_capabilities::POLYGONIZATION;
             }
-            if (obj_caps & object_capabilities::IMPLICIT)
+            if (!!(obj_caps & object_capabilities::IMPLICIT))
             {
                 caps |= object_capabilities::IMPLICIT;
             }

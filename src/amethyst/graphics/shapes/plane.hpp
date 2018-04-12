@@ -257,8 +257,8 @@ namespace amethyst
             internal_tagging += plane<T>::name() + "::";
         }
 
-        retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
-        retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());
+        retval += indentation + string_format("intersection_capabilities=%1\n", inspect(get_intersection_capabilities()));
+        retval += indentation + string_format("object_capabilities=%1\n", inspect(get_object_capabilities()));
         retval += internal_tagging + string_format("point=%1\n", defining_point);
         retval += internal_tagging + string_format("normal=%1\n", normal);
         retval += internal_tagging + string_format("u=%1\n", u_vector);

@@ -253,8 +253,10 @@ namespace amethyst
             internal_tagging += dynamic_sphere<T>::name() + "::";
         }
 
-        retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
-        retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());
+        auto intc = inspect(get_intersection_capabilities());
+        auto objc = inspect(get_object_capabilities());
+        retval += indentation + string_format("intersection_capabilities=%1\n", intc);
+        retval += indentation + string_format("object_capabilities=%1\n", objc);
         retval += internal_tagging + string_format("center=%1\n", center->to_string(indentation));
         retval += internal_tagging + string_format("radius=%1\n", radius->to_string(indentation));
 

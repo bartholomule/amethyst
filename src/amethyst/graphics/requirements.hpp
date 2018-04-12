@@ -22,36 +22,36 @@ namespace amethyst
         // need only find the first hit, and not search for the closest.
         bool needs_first_only() const
         {
-            return my_requirements & intersection_capabilities::HIT_FIRST;
+            return !!(my_requirements & intersection_capabilities::HIT_FIRST);
         }
 
         // Specifies if all hit points on the object are required, if set to false,
         // only the closest is required.
         bool needs_all_hits() const
         {
-            return my_requirements & intersection_capabilities::HIT_ALL;
+            return !!(my_requirements & intersection_capabilities::HIT_ALL);
         }
         // Specifies if the normal at the point of intersection is required.
         bool needs_normal() const
         {
-            return my_requirements & intersection_capabilities::NORMAL_CALCULATION;
+            return !!(my_requirements & intersection_capabilities::NORMAL_CALCULATION);
         }
         // Specifies if all object pointers, including that of the containing
         // objects are required.
         bool needs_containers() const
         {
-            return my_requirements & intersection_capabilities::HIT_CONTAINERS;
+            return !!(my_requirements & intersection_capabilities::HIT_CONTAINERS);
         }
         // Specifies if a uv coordinate on the surface is required.
         bool needs_uv() const
         {
-            return my_requirements & intersection_capabilities::UV_CALCULATION;
+            return !!(my_requirements & intersection_capabilities::UV_CALCULATION);
         }
         // Specifies if a local coordinate system (at the point of the hit) is
         // required.
         bool needs_local_coord_system() const
         {
-            return my_requirements & intersection_capabilities::LOCAL_SYSTEM_CALCULATION;
+            return !!(my_requirements & intersection_capabilities::LOCAL_SYSTEM_CALCULATION);
         }
 
         void force_first_only(bool val)

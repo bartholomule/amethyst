@@ -185,8 +185,8 @@ namespace amethyst
             internal_tagging += sphere<T>::name() + "::";
         }
 
-        retval += indentation + string_format("intersection_capabilities=%1\n", get_intersection_capabilities().to_string());
-        retval += indentation + string_format("object_capabilities=%1\n", get_object_capabilities().to_string());
+        retval += indentation + string_format("intersection_capabilities=%1\n", amethyst::to_string(get_intersection_capabilities()));
+        retval += indentation + string_format("object_capabilities=%1\n", amethyst::to_string(get_object_capabilities()));
         retval += internal_tagging + string_format("center=%1\n", m_center);
         retval += internal_tagging + string_format("radius=%1\n", m_radius);
 

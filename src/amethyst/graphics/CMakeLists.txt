@@ -1,12 +1,9 @@
 add_library(amethyst_graphics
-	aggregate.hpp
 	alpha_triangle_2d.hpp
 	base_camera.hpp
 	capabilities.hpp
 	capabilities.cpp
 	conditional_value.hpp
-	disc.hpp
-	dynamic_sphere.hpp
 	filter3d.hpp
 	image.hpp
 	image_converter.hpp
@@ -17,35 +14,23 @@ add_library(amethyst_graphics
 	interpolated_value.hpp
 	interpolated_value.cpp
 	intersection_info.hpp
-	marble_texture.hpp
-	material.hpp
 	noise.hpp
-	noise_texture.hpp
 	pinhole_camera.hpp
-	plane.hpp
 	png_io.hpp
 	png_io.cpp
 	ppm_io.hpp
 	raster.hpp
 	ray_parameters.hpp
-	rectangle.hpp
 	requirements.hpp
 	requirements.cpp
 	rgbcolor.hpp
 	samplegen1d.hpp
 	samplegen2d.hpp
-	shape.hpp
-	simple_texture.hpp
-	solid_texture.hpp
-	sphere.hpp
 	stb_image.h
 	stb_image_helper.cpp
 	stb_image_helper.hpp
 	stb_image_write.h
-	surface_texture.hpp
-	texture.hpp
 	tga_io.hpp
-	triangle.hpp
 )
 
 function(graphics_test name)

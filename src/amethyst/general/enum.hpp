@@ -10,9 +10,9 @@
     enum_name operator|(enum_name v1, enum_name v2); \
     enum_name operator&(enum_name v1, enum_name v2); \
     enum_name operator^(enum_name v1, enum_name v2); \
-    enum_name& operator|=(enum_name & v1, enum_name v2); \
-    enum_name& operator&=(enum_name & v1, enum_name v2); \
-    enum_name& operator^=(enum_name & v1, enum_name v2);
+    enum_name& operator|=(enum_name& v1, enum_name v2); \
+    enum_name& operator&=(enum_name& v1, enum_name v2); \
+    enum_name& operator^=(enum_name& v1, enum_name v2);
 
 #define BITWISE_ENUM_DEF_HELPER_UNARY(enum_name, op) \
     enum_name operator op(enum_name v1) \
@@ -25,7 +25,7 @@
         return enum_name(std::underlying_type_t<enum_name>(v1) op std::underlying_type_t<enum_name>(v2)); \
     }
 #define BITWISE_ENUM_DEF_HELPER_ASSIGN(enum_name, op) \
-    enum_name & operator op = (enum_name & v1, enum_name v2) \
+    enum_name& operator op##= (enum_name& v1, enum_name v2) \
     { \
         v1 = enum_name(std::underlying_type_t<enum_name>(v1) op std::underlying_type_t<enum_name>(v2)); \
         return v1; \
@@ -42,6 +42,9 @@
 
 namespace amethyst
 {
+    /* forward decl for a class that will only be specialized */
+    template <typename T> struct enum_flag_mapping_impl;
+
     template <typename enum_type>
     struct enum_mapping
     {
@@ -145,7 +148,12 @@ namespace amethyst
                 const auto& v = *iter;
 
                 using T = std::underlying_type_t<enum_type>;
-                if (T(v.value) & T(e) == T(v.value))
+                if ((T(v.value) == T(0)) && !nothing_matched)
+                {
+                    // Avoid displaying values for "NONE" in the case where something else already matched.
+                    break;
+                }
+                if ((T(v.value) & T(e)) == T(v.value))
                 {
                     if (!result.empty())
                     {
@@ -155,7 +163,7 @@ namespace amethyst
                     nothing_matched = false;
 
                     // Clear the bits so duplicates arent printed in the case of ALL-style flags.
-                    e = enum_type(T(e) ^ T(e.value));
+                    e = enum_type(T(e) ^ T(v.value));
                 }
             }
 
@@ -163,6 +171,7 @@ namespace amethyst
             {
                 return unmatched_text(e);
             }
+            return result;
         }
 
         std::string orable_enum_to_string(enum_type e) const
@@ -177,25 +186,26 @@ namespace amethyst
 }
 
 #define MAKE_ENUM_CONVERTABLE_DECLARATIONS(enum_type) \
+    enum class enum_type; \
     template <typename T> T enum_from_string(const std::string& text); \
     template <> enum_type enum_from_string<enum_type>(const std::string& text); \
     std::string to_string(enum_type); \
     std::string to_compact_string(enum_type); \
     std::string inspect(enum_type); \
-    std::ostream& operator<<(std::ostream&, enum_type);
+    std::ostream& operator<<(std::ostream&, enum_type); \
+    enum class enum_type
 
 #define MAKE_ORABLE_ENUM_CONVERTABLE_DECLARATIONS(enum_type) \
+    enum class enum_type; \
+    MAKE_BITWISE_ENUM_DECLARATIONS(enum_type); \
     MAKE_ENUM_CONVERTABLE_DECLARATIONS(enum_type)
 
 #define MAKE_ENUM_CONVERTABLE_DEFINITIONS_BASE(enum_type, unmatched, ...) \
-    MAKE_ENUM_CONVERTABLE_DECLARATIONS(enum_type) \
-    /* forward decl for a class that will only be specialized */ \
-    template <typename T> struct enum_flag_mapping_impl; \
     template <> struct enum_flag_mapping_impl<enum_type> \
     { \
         static amethyst::enum_mapping<enum_type>& get_mapping() \
         { \
-            static amethyst::enum_mapping<enum_type> mapping { unmatched, __VA_ARGS__ }; \
+            static amethyst::enum_mapping<enum_type> mapping { unmatched, { __VA_ARGS__ } }; \
             return mapping; \
         } \
     }; \
@@ -224,7 +234,8 @@ namespace amethyst
     }
 
 #define MAKE_ORABLE_ENUM_CONVERTABLE_DEFINITIONS(enum_type, unmatched, ...) \
-    MAKE_ENUM_CONVERTABLE_DEFINITIONS_BASE(enum_type, unmatched, __VA_ARGS__) \
+    MAKE_ENUM_CONVERTABLE_DEFINITIONS_BASE(enum_type, unmatched, __VA_ARGS__); \
+    MAKE_BITWISE_ENUM_DEFINITIONS(enum_type); \
     std::string to_string(enum_type e) \
     { \
         return enum_flag_mapping_impl<enum_type>::get_mapping().orable_enum_to_string(e); \
