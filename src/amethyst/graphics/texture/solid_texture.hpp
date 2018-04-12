@@ -29,9 +29,15 @@ namespace amethyst
 
         virtual color_type get_color_at_point(const point3<T>& location, const vector3<T>& normal) const = 0;
 
-        virtual std::string name() const
+        std::string name() const override
         {
-            return "texture";
+            return "solid_texture";
         }
+
+        material_capabilities get_material_capabilties() const override
+        {
+            return material_capabilities::DIFFUSE;
+        }
+
     };
 }

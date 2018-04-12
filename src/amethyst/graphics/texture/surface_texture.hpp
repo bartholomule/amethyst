@@ -26,5 +26,16 @@ namespace amethyst
         }
 
         virtual color_type get_color_at_location(const coord2<T>& location, const vector3<T>& normal) const = 0;
+
+
+        std::string name() const override
+        {
+            return "surface_texture";
+        }
+
+        material_capabilities get_material_capabilties() const override
+        {
+            return material_capabilities::DIFFUSE;
+        }
     };
 }

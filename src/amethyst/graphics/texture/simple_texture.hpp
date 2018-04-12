@@ -40,6 +40,11 @@ namespace amethyst
         }
         std::string name() const override { return "simple_texture"; }
 
+        material_capabilities get_material_capabilties() const override
+        {
+            return material_capabilities::DIFFUSE;
+        }
+
     private:
         color_type m_color;
     };

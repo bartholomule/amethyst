@@ -4,6 +4,7 @@
 #include "amethyst/math/coord2.hpp"
 #include "amethyst/general/string_dumpable.hpp"
 #include "amethyst/graphics/ray_parameters.hpp"
+#include "amethyst/graphics/capabilities.hpp"
 
 namespace amethyst
 {
@@ -35,6 +36,8 @@ namespace amethyst
         {
             return "texture";
         }
+
+        virtual material_capabilities get_material_capabilties() const = 0;
     };
 
     template <typename T, typename color_type>

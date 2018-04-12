@@ -70,6 +70,11 @@ public:
     {
         return {};
     }
+
+    material_capabilities get_material_capabilties() const override
+    {
+        return material_capabilities::DIFFUSE | material_capabilities::REFLECTIVE;
+    }
 };
 
 struct trivial_camera : public base_camera<double>
