@@ -4,7 +4,7 @@
 #include "graphics/rgbcolor.hpp"
 #include "graphics/image_loader.hpp"
 #include "graphics/image.hpp"
-#include "graphics/sphere.hpp"
+#include "graphics/shapes/sphere.hpp"
 #include "graphics/renderer.hpp"
 
 using namespace amethyst;

@@ -4,10 +4,9 @@
  */
 
 #include "amethyst/math/frame.hpp"
-#include "amethyst/graphics/sphere.hpp"
-#include "amethyst/graphics/dynamic_sphere.hpp"
-#include "amethyst/graphics/triangle.hpp"
-#include "amethyst/graphics/aggregate.hpp"
+#include "amethyst/graphics/shapes/sphere.hpp"
+#include "amethyst/graphics/shapes/triangle.hpp"
+#include "amethyst/graphics/shapes/aggregate.hpp"
 #include "amethyst/graphics/raster.hpp"
 #include "amethyst/graphics/rgbcolor.hpp"
 #include "amethyst/graphics/image_loader.hpp"

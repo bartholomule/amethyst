@@ -2,7 +2,7 @@
 
 #include "amethyst/graphics/conditional_value.hpp"
 #include "amethyst/general/defaulted_value.hpp"
-#include "amethyst/graphics/shape_fwd.hpp"
+#include "amethyst/graphics/shapes/shape_fwd.hpp"
 #include <vector>
 #include "amethyst/math/vector3.hpp"
 #include "amethyst/math/coord2.hpp"

@@ -5,7 +5,7 @@
 #include "raster.hpp"
 #include "texture/texture.hpp"
 #include "samplegen2d.hpp"
-#include "shape.hpp"
+#include "graphics/shapes/shape.hpp"
 #include "intersection_info.hpp"
 #include "requirements.hpp"
 #include "samplegen2d.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "amethyst/graphics/plane.hpp"
+#include "amethyst/graphics/shapes/plane.hpp"
 
 namespace amethyst
 {

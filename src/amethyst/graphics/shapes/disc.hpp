@@ -1,6 +1,6 @@
 #pragma once
 
-#include "amethyst/graphics/plane.hpp"
+#include "amethyst/graphics/shapes/plane.hpp"
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/math/template_math.hpp"
 

@@ -4,16 +4,13 @@
 #include "graphics/rgbcolor.hpp"
 #include "graphics/image_loader.hpp"
 #include "graphics/image.hpp"
-#include "graphics/sphere.hpp"
 #include "graphics/renderer.hpp"
-#include "graphics/aggregate.hpp"
+#include "graphics/shapes/aggregate.hpp"
+#include "graphics/shapes/sphere.hpp"
 #include "graphics/texture/solid_texture.hpp"
 #include "graphics/pinhole_camera.hpp"
-#include "graphics/aggregate.hpp"
 #include "graphics/interpolated_value.hpp"
 #include "graphics/samplegen3d.hpp"
-
-#include "math/ct_math.hpp"
 
 using namespace amethyst;
 using Point = point3<double>;

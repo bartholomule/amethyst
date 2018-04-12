@@ -1,6 +1,7 @@
 #pragma once
 
-#include "amethyst/graphics/shape.hpp"
+#include "amethyst/graphics/shapes/shape.hpp"
+#include "amethyst/graphics/shapes/plane.hpp"
 #include "amethyst/graphics/interpolated_value.hpp"
 #include "amethyst/general/defines.hpp"
 #include <memory>

@@ -1,6 +1,6 @@
 #define auto_unit_test_main main
 #include "test_framework/unit_test_auto.hpp"
-#include "graphics/disc.hpp"
+#include "graphics/shapes/disc.hpp"
 #include <cmath>
 #include <iostream>
 

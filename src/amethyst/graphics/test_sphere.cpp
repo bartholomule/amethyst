@@ -1,6 +1,6 @@
 #define auto_unit_test_main main
 #include "test_framework/unit_test_auto.hpp"
-#include "sphere.hpp"
+#include "graphics/shapes/sphere.hpp"
 
 using namespace amethyst;
 

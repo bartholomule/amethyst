@@ -5,9 +5,9 @@
  * edition.
  */
 
-#include "graphics/sphere.hpp"
-#include "graphics/triangle.hpp"
-#include "graphics/aggregate.hpp"
+#include "graphics/shapes/sphere.hpp"
+#include "graphics/shapes/triangle.hpp"
+#include "graphics/shapes/aggregate.hpp"
 #include "graphics/raster.hpp"
 #include "graphics/image_loader.hpp"
 #include "graphics/rgbcolor.hpp"

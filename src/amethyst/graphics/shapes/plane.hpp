@@ -1,8 +1,8 @@
 #pragma once
 
 #include "amethyst/general/string_format.hpp"
-#include "amethyst/graphics/shape.hpp"
-#include "amethyst/graphics/sphere.hpp"
+#include "amethyst/graphics/shapes/shape.hpp"
+#include "amethyst/graphics/shapes/sphere.hpp"
 #include "amethyst/math/coord2.hpp"
 
 namespace amethyst

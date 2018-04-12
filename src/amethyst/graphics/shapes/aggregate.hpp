@@ -1,6 +1,6 @@
 #pragma once
 
-#include "amethyst/graphics/shape.hpp"
+#include "amethyst/graphics/shapes/shape.hpp"
 #include "amethyst/graphics/capabilities.hpp"
 #include <vector>
 #include <memory>
