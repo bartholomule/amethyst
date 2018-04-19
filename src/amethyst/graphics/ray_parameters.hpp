@@ -66,7 +66,6 @@ namespace amethyst
         bool perfect_reflection(const intersection_info<T,color_type>& info, ray_parameters<T,color_type>& results) const;
         // Perform a perfect refraction
         bool perfect_refraction(const intersection_info<T,color_type>& info, T ior, ray_parameters<T,color_type>& results) const;
-        // Do a random scattering.
 
         std::string to_string() const;
 
@@ -90,6 +89,7 @@ namespace amethyst
 
         // The IOR of the current medium.
         T current_ior = 1;
+        T cumulative_ior = 1;
         // used in determining how far a ray should go (starts out as T(1),
         // decreases with each transmission/reflection)
         color_type effective_contribution = { 1, 1, 1 };
@@ -195,6 +195,14 @@ namespace amethyst
 
         T cos = dotprod(line.direction(), normal);
         T ratio = current_ior / ior;
+        T next_ior = ior;
+        if (cos > 0)
+        {
+            // Leaving the object.  Flip the ratio.
+            ratio = 1 / ratio;
+            next_ior = cumulative_ior * ratio;
+        }
+
         T rad = 1 - (ratio * ratio) * (1 - cos * cos);
 
         if (rad >= 0)
@@ -202,9 +210,12 @@ namespace amethyst
             vector3<T> new_direction = unit(ratio * (line.direction() - cos * normal) -
                                             (normal * sqrt(rad)));
 
-            // Checkme! Should the range be limited like this?
-            results.set_line(unit_line3<T>(point, new_direction, interval<T>(line.limits.begin() + distance,
-                                                                             line.limits.end() - distance)));
+            auto limits = line.limits();
+            limits.set(std::max(AMETHYST_EPSILON, limits.begin()), limits.end());
+            results.set_line(unit_line3<T>(point, new_direction, limits));
+            results.cumulative_ior = cumulative_ior * ratio;
+            results.set_ior(next_ior);
+
             return true;
         }
         else
