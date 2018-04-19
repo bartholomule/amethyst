@@ -31,6 +31,11 @@ namespace
 }
 
 
+void progress(double percentage)
+{
+    std::cout << "\r" << percentage << "% complete" << std::flush;
+}
+
 Vec random_vec_in_sphere()
 {
     return Vec(g_sampler.next_sample());
@@ -104,12 +109,14 @@ int main(int argc, const char** argv)
     scene->add(std::make_shared<sphere<double, Color>>(Point(0, -100.5, -1), 100, std::make_shared<Lambertian>(Color{ 0.8,0.8,0.0 })));
     scene->add(std::make_shared<sphere<double, Color>>(Point(1, 0, -1), 0.5, std::make_shared<Metal>(Color{0.8,0.6,0.2}, 1.0)));
     scene->add(std::make_shared<sphere<double, Color>>(Point(-1, 0, -1), 0.5, std::make_shared<Metal>(Color{ 0.8,0.8,0.8 }, 0.3)));
+    auto sampler = std::make_shared<regular_sample_2d<double>>();
 
     std::cout << "Scene: " << scene << std::endl;
 
     auto img = render<double, Color>(
         camera, scene, scene_texture, nx, ny,
-        requirements, lighting, background_color, spp
+        requirements, lighting, background_color, spp,
+        sampler, progress
         );
 
     save_image("rtiow_06_metal.png", img);

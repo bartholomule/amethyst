@@ -23,23 +23,37 @@ namespace amethyst
     template <typename T, typename color_type>
     using background_function = std::function<color_type(T x, T y, const unit_line3<T>& l)>;
 
+    template <typename T>
+    using progress_function = std::function<void(T percentage)>;
+
     template <typename T, typename color_type = rgbcolor<T>>
     raster<color_type> render(
         size_t width,
         size_t height,
-        color_function<T,color_type> color,
+        color_function<T, color_type> color,
         size_t samples_per_pixel = 1,
-        sample_generator_2d_ptr<T> sampler = std::make_shared<regular_sample_2d<T>>()
+        sample_generator_2d_ptr<T> sampler = std::make_shared<regular_sample_2d<T>>(),
+        progress_function<T> progress = nullptr
     )
     {
         raster<color_type> result(width, height);
 
         constexpr color_type black = { 0, 0, 0 };
 
+        uint64_t last_percentage_x10 = -1;
+        uint64_t total_pixels = width * height;
+
         for (size_t y = 0; y < height; ++y)
         {
             for (size_t x = 0; x < width; ++x)
             {
+                uint64_t current_percentage_x10 = 1000 * (y * width + x) / total_pixels;
+                if (current_percentage_x10 != last_percentage_x10 && progress)
+                {
+                    progress(current_percentage_x10 / 10.0);
+                }
+                last_percentage_x10 = current_percentage_x10;
+
                 color_type current_color = black;
                 std::vector<coord2<T>> samples = sampler->get_samples(samples_per_pixel);
 
@@ -126,7 +140,8 @@ namespace amethyst
         lighting_function<T, color_type> brightness = [](const point3<T>&, const vector3<T>&) { return color_type{ 1,1,1 }},
         background_function<T, color_type> background = nullptr,
         size_t samples_per_pixel = 1,
-        sample_generator_2d_ptr<T> sampler = std::make_shared<regular_sample_2d<T>>()
+        sample_generator_2d_ptr<T> sampler = std::make_shared<regular_sample_2d<T>>(),
+        progress_function<T> progress = nullptr
     )
     {
         // If no background function was give, apply a gradient.
@@ -145,6 +160,6 @@ namespace amethyst
             return sample_scene(x, y, r, scene, scene_texture, requirements, brightness, background);
         };
 
-        return render<T, color_type>(width, height, color, samples_per_pixel, sampler);
+        return render<T, color_type>(width, height, color, samples_per_pixel, sampler, progress);
     }
 }
