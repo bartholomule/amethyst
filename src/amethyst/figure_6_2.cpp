@@ -34,8 +34,7 @@ try
     auto image = render<double, rgbcolor<double>>(WIDTH, HEIGHT,
         [&](double x, double y) {
             coord2<double> c = { x * xfactor, y * yfactor + yoffset };
-            auto pix = mytexture.get_color({}, c, normal);
-            return pix;
+            return mytexture.get_color({}, c, normal);
         }, 16
     );
 

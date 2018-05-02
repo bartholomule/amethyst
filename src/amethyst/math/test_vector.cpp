@@ -2,6 +2,7 @@
 #include "test_framework/unit_test_auto.hpp"
 #include "math/coord3.hpp"
 #include "math/vector3.hpp"
+#include "math/vector_utils.hpp"
 
 namespace
 {
@@ -133,4 +134,55 @@ AUTO_UNIT_TEST(coord_functions)
 {
     test_coord_functions<coord3<double>>();
     test_coord_functions<vector3<double>>();
+}
+
+
+AUTO_UNIT_TEST(abs_index)
+{
+    using c = coord3<double>;
+    TEST_COMPARE_EQUAL(min_abs_index(c(1, 0, 0)), 1);
+    TEST_COMPARE_EQUAL(min_abs_index(c(1, 1, 0)), 2);
+    TEST_COMPARE_EQUAL(min_abs_index(c(1, 1, -1)), 0);
+    TEST_COMPARE_EQUAL(min_abs_index(c(0, 1, -1)), 0);
+}
+
+AUTO_UNIT_TEST(test_perp_vector)
+{
+    vector3<double> x = { 1,0,0 };
+    vector3<double> y = { 0,1,0 };
+    vector3<double> z = { 0,0,1 };
+
+    auto px = perp_vector(x);
+    TEST_XYZ_CLOSE(px, 0, 0, -1);
+    TEST_CLOSE(dotprod(x, px), 0);
+
+    auto py = perp_vector(y);
+    TEST_XYZ_CLOSE(py, 0, 0, -1);
+    TEST_CLOSE(dotprod(y, py), 0);
+
+    auto pz = perp_vector(z);
+    TEST_XYZ_CLOSE(pz, 0, 1, 0);
+    TEST_CLOSE(dotprod(z, pz), 0);
+}
+
+#define CHECK_ANGLE(a, b, theta) TEST_CLOSE(acos(sqrt(dotprod(unit(a),unit(b)))), theta)
+
+AUTO_UNIT_TEST(test_vector_angle)
+{
+    using vec = vector3<double>;
+    CHECK_ANGLE(vec(1, 0, 0), vec(0, 1, 0), M_PI / 2);
+    CHECK_ANGLE(vec(1, 0, 0), vec(0, 0, 1), M_PI / 2);
+    CHECK_ANGLE(vec(0, 1, 0), vec(1, 0, 0), M_PI / 2);
+    CHECK_ANGLE(vec(0, 1, 0), vec(0, 0, 1), M_PI / 2);
+    CHECK_ANGLE(vec(0, 0, 1), vec(1, 0, 0), M_PI / 2);
+    CHECK_ANGLE(vec(0, 0, 1), vec(0, 1, 0), M_PI / 2);
+
+    CHECK_ANGLE(vec(1, 0, 0), vec(0, 1, 1), M_PI / 2);
+    CHECK_ANGLE(vec(1, 1, 0), vec(0, 0, 1), M_PI / 2);
+    CHECK_ANGLE(vec(0, 1, 0), vec(1, 0, 1), M_PI / 2);
+    CHECK_ANGLE(vec(0, 1, 1), vec(1, 0, 0), M_PI / 2);
+    CHECK_ANGLE(vec(0, 0, 1), vec(1, 1, 0), M_PI / 2);
+
+}
+
 }

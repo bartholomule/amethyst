@@ -174,8 +174,6 @@ namespace amethyst
         }
     }
 
-
-
     /**
      * Functions to allow sorting of containers even when the stl algorithm does
      * not provide this equally for all types (namely lists).
@@ -194,5 +192,12 @@ namespace amethyst
     {
         /// An external sort function does not exist.  Call the member sort function.
         l.sort();
+    }
+
+    template <typename Container, typename T>
+    Container append_copy(Container c, T&& t)
+    {
+        c.emplace_back(std::forward<T>(t));
+        return c;
     }
 }

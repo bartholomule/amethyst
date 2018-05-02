@@ -26,6 +26,10 @@ namespace amethyst
         {
             return interval<T>{ std::numeric_limits<T>::lowest(), std::numeric_limits<T>::max() };
         }
+        static constexpr interval<T> nonnegative_interval()
+        {
+            return interval<T>{ AMETHYST_EPSILON, std::numeric_limits<T>::max() };
+        }
         // 0 -> 1
         static constexpr interval<T> segment_one()
         {

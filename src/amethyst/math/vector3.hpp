@@ -22,11 +22,10 @@
  */
 
 #include "coord3.hpp"
-#include "vector_utils.hpp"
 
 namespace amethyst
 {
-    template <class T>
+    template <typename T>
     class vector3 : private coord3<T>
     {
     private:
@@ -56,43 +55,43 @@ namespace amethyst
 
     };
 
-    template <class T>
+    template <typename T>
     inline constexpr vector3<T> operator-(const vector3<T>& v1)
     {
         return { -v1.x(), -v1.y(), -v1.z() };
     }
 
-    template <class T, typename U>
+    template <typename T, typename U>
     inline constexpr vector3<T> operator*(const vector3<T>& v, U factor)
     {
         return { v.x() * factor, v.y() * factor, v.z() * factor };
     }
 
-    template <class T, typename U>
+    template <typename T, typename U>
     inline constexpr vector3<T> operator*(U factor, const vector3<T>& v)
     {
         return { v.x() * factor, v.y() * factor, v.z() * factor };
     }
 
-    template <class T, typename U>
+    template <typename T, typename U>
     inline constexpr vector3<T> operator/(const vector3<T>& v, U factor)
     {
         return { v.x() / factor, v.y() / factor, v.z() / factor };
     }
 
-    template <class T>
+    template <typename T>
     inline constexpr vector3<T> operator-(const vector3<T>& v1, const vector3<T>& v2)
     {
         return { v1.x() - v2.x(), v1.y() - v2.y(), v1.z() - v2.z() };
     }
 
-    template <class T>
+    template <typename T>
     inline constexpr vector3<T> operator+(vector3<T> v1, const vector3<T>& v2)
     {
         return { v1.x() + v2.x(), v1.y() + v2.y(), v1.z() + v2.z() };
     }
 
-    template <class T>
+    template <typename T>
     inline constexpr vector3<T> crossprod(const vector3<T>& l, const vector3<T>& r)
     {
         return {
@@ -109,26 +108,32 @@ namespace amethyst
     }
 
     // Can't be constexpr because std::sqrt isn't constexpr, and I can't select my version at compile time.
-    template <class T>
+    template <typename T>
     inline T length(const vector3<T>& v)
     {
         return sqrt(dotprod(v, v));
     }
 
-    template <class T>
+    template <typename T>
     inline constexpr T squared_length(const vector3<T>& v)
     {
         return dotprod(v, v);
     }
 
     // Also can't be constexpr.
-    template <class T>
+    template <typename T>
     inline vector3<T> unit(const vector3<T>& v)
     {
         return v / length(v);
     }
 
-    template <class T>
+    template <typename T>
+    inline vector3<T> unit(T x, T y, T z)
+    {
+        return unit(vector3<T>(x, y, z));
+    }
+
+    template <typename T>
     std::ostream& operator<< (std::ostream& o, const vector3<T>& v)
     {
         o << "<" << v.x() << "," << v.y() << "," << v.z() << ">";

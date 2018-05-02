@@ -122,7 +122,7 @@ namespace amethyst
     template <typename vector_type> \
     inline auto NAME(const vector_type& v) -> decltype(vector_ops<traits::vector_size<vector_type>::value>::NAME(v)) \
     { \
-        return vector_ops<traits::vector_size<vector_type>>::NAME(v); \
+        return vector_ops<traits::vector_size<vector_type>::value>::NAME(v); \
     }
 
     FORWARD_VECTOR_FUNCTION(invert);
@@ -132,23 +132,33 @@ namespace amethyst
     FORWARD_VECTOR_FUNCTION(min_abs_index);
 
     // Return a vector perpendicular to the one supplied.
-    // CHECKME! Is this correct at all?
+    // CHECKME! Is this correct at all?  It seems to work in simple cases.
     template <typename vector_type>
     inline vector_type perp_vector(const vector_type& v)
     {
-        vector_type temp = unit(v);
-        unsigned zero_index = min_abs_index(temp);
-        if (zero_index == 0)
+        constexpr size_t s = traits::vector_size<vector_type>::value;
+        static_assert(s == 2 || s == 3, "Not implemented for vectors of this size");
+
+        if constexpr(s == 2)
         {
-            return unit(vector_type(0, v.z(), -v.y()));
-        }
-        else if (zero_index == 1)
-        {
-            return unit(vector_type(v.z(), 0, -v.x()));
+            return { v.y(), -v.x() };
         }
         else
         {
-            return unit(vector_type(v.y(), -v.x(), 0));
+            vector_type temp = unit(v);
+            unsigned zero_index = min_abs_index(temp);
+            if (zero_index == 0)
+            {
+                return unit(vector_type(0, v.z(), -v.y()));
+            }
+            else if (zero_index == 1)
+            {
+                return unit(vector_type(v.z(), 0, -v.x()));
+            }
+            else
+            {
+                return unit(vector_type(v.y(), -v.x(), 0));
+            }
         }
     }
 
