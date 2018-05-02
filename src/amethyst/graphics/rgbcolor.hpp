@@ -1,5 +1,6 @@
 #pragma once
 #include "math/coord3.hpp"
+#include "general/template_functions.hpp"
 #include <iostream>
 
 namespace amethyst
@@ -128,5 +129,16 @@ namespace amethyst
     std::string inspect(const rgbcolor<T>& c)
     {
         return "[- " + inspect(c.r()) + "," + inspect(c.g()) + "," + inspect(c.b()) + " -]";
+    }
+
+    template <typename T>
+    constexpr rgbcolor<T> clamp(const rgbcolor<T>& v, const rgbcolor<T>& tmin, const rgbcolor<T>& tmax)
+    {
+        return
+        {
+            std::max(std::min(v.r(), tmax.r()), tmin.r()),
+            std::max(std::min(v.g(), tmax.g()), tmin.g()),
+            std::max(std::min(v.b(), tmax.b()), tmin.b())
+        };
     }
 }
