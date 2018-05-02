@@ -8,24 +8,24 @@ namespace amethyst
     class dielectric : public texture<T, color_type>
     {
     public:
-        dielectric(T ior = 1.0)
+        dielectric(T ior = 1.0, color_type attenuation = { 0.9, 0.9, 0.9 })
             : m_ior(ior)
+            , m_attenuation(attenuation)
         {
         }
         virtual ~dielectric() = default;
 
-        color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const override
-        {
-            return { 0, 0, 0 };
-        }
 
-
-        bool reflect_ray(const ray_parameters<T, color_type>& ray, const intersection_info<T, color_type>& intersection, ray_parameters<T, color_type>& reflected, color_type& attenuation) const override
+        bool scatter_ray(const ray_parameters<T, color_type>& ray, const intersection_info<T, color_type>& intersection, ray_parameters<T, color_type>& refracted, color_type& attenuation) const override
         {
-            if (ray.perfect_refraction(intersection, m_ior, reflected))
+            if (ray.perfect_refraction(intersection, m_ior, refracted))
             {
-                attenuation = { 1,1,0 };
-                reflected.set_contribution(reflected.get_contribution() * attenuation);
+                attenuation = m_attenuation;
+                return true;
+            }
+            else if (ray.perfect_reflection(intersection, refracted))
+            {
+                attenuation = m_attenuation;
                 return true;
             }
             return false;
@@ -42,6 +42,7 @@ namespace amethyst
             }
 
             retval += internal_tagging + string_format("ior=%1\n", m_ior);
+            retval += internal_tagging + string_format("attenuation=%1\n", m_attenuation);
             retval += internal_tagging + string_format("capabilities=%1\n", get_material_capabilties());
 
             return retval;
@@ -55,5 +56,6 @@ namespace amethyst
 
     private:
         T m_ior;
+        color_type m_attenuation = {};
     };
 }

@@ -11,13 +11,14 @@ namespace amethyst
         lambertian(const color_type& albedo) : m_albedo(albedo) { }
         virtual ~lambertian() = default;
 
-        color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const override
+        bool get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal, color_type& color) const override
         {
-            return { 0, 0, 0 };
+            color = { 0,0,0 };
+            return true;
         }
 
 
-        bool reflect_ray(const ray_parameters<T,color_type>& ray, const intersection_info<T,color_type>& intersection, ray_parameters<T,color_type>& reflected, color_type& attenuation) const override
+        bool scatter_ray(const ray_parameters<T,color_type>& ray, const intersection_info<T,color_type>& intersection, ray_parameters<T,color_type>& reflected, color_type& attenuation) const override
         {
             if (ray.perfect_reflection(intersection, reflected))
             {
@@ -26,7 +27,6 @@ namespace amethyst
                 auto target = p + n + vector3<T>(m_sampler.next_sample());
                 reflected.set_line({ p, target - p, reflected.get_line().limits() });
                 attenuation = m_albedo;
-                reflected.set_contribution(reflected.get_contribution() * m_albedo);
                 return true;
             }
             return false;

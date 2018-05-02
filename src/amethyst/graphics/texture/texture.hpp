@@ -25,9 +25,22 @@ namespace amethyst
         texture() = default;
         virtual ~texture() = default;
 
-        virtual color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const = 0;
+        virtual bool get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal, color_type& color) const
+        {
+            return false;
+        }
 
-        virtual bool reflect_ray(const ray_parameters<T,color_type>& ray, const intersection_info<T,color_type>& intersection, ray_parameters<T,color_type>& reflected, color_type& attenuation) const
+        color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const
+        {
+            color_type result;
+            if (!get_color(location, coord, normal, result))
+            {
+                result = { 0, 0, 0 };
+            }
+            return result;
+        }
+
+        virtual bool scatter_ray(const ray_parameters<T,color_type>& ray, const intersection_info<T,color_type>& intersection, ray_parameters<T,color_type>& reflected, color_type& attenuation) const
         {
             return false;
         }

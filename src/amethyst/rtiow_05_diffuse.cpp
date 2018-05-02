@@ -53,7 +53,7 @@ public:
         return { 0,0,0 };
     }
 
-    bool reflect_ray(const ray_parameters<double, Color>& ray, const intersection_info<double, Color>& intersection, ray_parameters<double, Color>& reflected, Color& attenuation) const override
+    bool scatter_ray(const ray_parameters<double, Color>& ray, const intersection_info<double, Color>& intersection, ray_parameters<double, Color>& reflected, Color& attenuation) const override
     {
         if (ray.perfect_reflection(intersection, reflected))
         {

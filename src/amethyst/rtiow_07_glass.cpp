@@ -1,7 +1,7 @@
 // This the the basic gradient + sphere +normal from Peter Shirley's Ray Tracing In One Weekend.
 
 #include "math/unit_line3.hpp"
-#include "graphics/rgbcolor.hpp"
+#include "graphics/colors.hpp"
 #include "graphics/image_loader.hpp"
 #include "graphics/image.hpp"
 #include "graphics/renderer.hpp"
@@ -25,6 +25,8 @@ using Info = intersection_info<double, Color>;
 using Lambertian = lambertian<double, Color>;
 using Metal = metal<double, Color>;
 using Glass = dielectric<double, Color>;
+
+using Colors = colors<Color>;
 
 namespace
 {
@@ -71,8 +73,10 @@ public:
     ray_parameters<double, Color> get_ray(const coord2<double>& sample, double time = 0) const override
     {
         ray_parameters<double, Color> result;
-        result.set_line(Line(origin, lower_left_corner + sample.x() * horizontal + sample.y() * vertical));
-        result.set_max_depth(4);
+        auto p = lower_left_corner + sample.x() * horizontal + sample.y() * vertical;
+        Line l(origin, p - origin, { AMETHYST_EPSILON, std::numeric_limits<double>::max() });
+        result.set_line(l);
+        result.set_max_depth(10);
         return result;
     }
 

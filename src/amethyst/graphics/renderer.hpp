@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base_camera.hpp"
-#include "rgbcolor.hpp"
+#include "colors.hpp"
 #include "raster.hpp"
 #include "texture/texture.hpp"
 #include "samplegen2d.hpp"
@@ -10,6 +10,7 @@
 #include "requirements.hpp"
 #include "samplegen2d.hpp"
 #include "ray_parameters.hpp"
+#include "general/template_functions.hpp"
 #include <functional>
 
 namespace amethyst
@@ -71,23 +72,11 @@ namespace amethyst
         return result;
     }
 
-    template <typename T, typename color_type = rgbcolor<T>>
-    color_type sample_scene(
-        T x, T y,
-        const ray_parameters<T,color_type>& ray,
-        const shape_ptr<T, color_type>& scene,
-        const texture_ptr<T, color_type> scene_texture,
-        const intersection_requirements& requirements,
-        const lighting_function<T, color_type>& brightness,
-        const background_function<T, color_type>& background)
+    namespace impl
     {
-        constexpr color_type black = { 0, 0, 0 };
-
-        intersection_info<T,color_type> intersection;
-        if (scene->intersects_ray(ray, intersection, requirements))
+        template <typename T, typename color_type>
+        bool get_local_color(const intersection_info<T, color_type>& intersection, const texture_ptr<T,color_type>& tex, color_type& color)
         {
-            color_type light = brightness(intersection.get_first_point(), intersection.get_normal());
-
             coord2<T> uv{};
             if (intersection.have_uv())
             {
@@ -100,26 +89,63 @@ namespace amethyst
                 normal = intersection.get_normal();
             }
 
+            if (!tex->get_color(intersection.get_first_point(), uv, normal, color))
+            {
+                color = colors<color_type>::black;
+                return false;
+            }
+            return true;
+        }
+    }
+
+    template <typename T, typename color_type = rgbcolor<T>>
+    color_type sample_scene(
+        T x, T y,
+        const ray_parameters<T,color_type>& ray,
+        const shape_ptr<T, color_type>& scene,
+        const texture_ptr<T, color_type> scene_texture,
+        const intersection_requirements& requirements,
+        const lighting_function<T, color_type>& brightness,
+        const background_function<T, color_type>& background)
+    {
+        intersection_info<T,color_type> intersection;
+        if (scene->intersects_ray(ray, intersection, requirements))
+        {
+            color_type light = brightness(intersection.get_first_point(), intersection.get_normal());
+
             auto tex = intersection.get_shape()->texture();
             if (!tex)
             {
                 tex = scene_texture;
             }
 
-            color_type local_color = tex->get_color(intersection.get_first_point(), uv, normal);
-            color_type reflected_color = black;
-            ray_parameters<T,color_type> next_ray;
+            bool scattered = false;
+
+            color_type local_color;
+            bool local = impl::get_local_color(intersection, tex, local_color);
+
+            color_type scattered_color = colors<color_type>::black;
+            ray_parameters<T,color_type> scattered_ray;
             color_type attenuation;
-            if (tex->reflect_ray(ray, intersection, next_ray, attenuation))
+            if (tex->scatter_ray(ray, intersection, scattered_ray, attenuation))
             {
+                scattered_ray.set_contribution(attenuation * scattered_ray.get_contribution());
                 // Only send another ray if the contribution large enough to do something.
-                if (next_ray.get_scalar_contribution() > AMETHYST_EPSILON)
+                if (scattered_ray.get_scalar_contribution() > AMETHYST_EPSILON)
                 {
-                    reflected_color = attenuation * sample_scene(x, y, next_ray, scene, scene_texture, requirements, brightness, background);
+                    scattered_color = attenuation * sample_scene(x, y, scattered_ray, scene, scene_texture, requirements, brightness, background);
+                    scattered = true;
                 }
             }
 
-            return light * local_color + reflected_color;
+            if (!scattered && !local)
+            {
+                // A potential point to hit a debugger.  Could mean total internal reflection, border case, etc. that will be fixed by supersampling.
+
+                // std::cout << "scattered nothing, refracted nothing, local texture has no value." << std::endl;
+            }
+
+            return clamp_visible(light * local_color + scattered_color);
         }
         else
         {

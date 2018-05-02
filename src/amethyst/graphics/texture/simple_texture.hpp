@@ -19,9 +19,11 @@ namespace amethyst
         simple_texture(const color_type& color) : m_color(color) { }
         virtual ~simple_texture() = default;
 
-        color_type get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal) const override
+        using texture<T, color_type>::get_color;
+        bool get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal, color_type& color) const override
         {
-            return m_color;
+            color = m_color;
+            return true;
         }
 
         std::string internal_members(const std::string& indentation, bool prefix_with_classname = false) const override
