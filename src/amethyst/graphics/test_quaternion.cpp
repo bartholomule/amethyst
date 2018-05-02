@@ -37,7 +37,7 @@ AUTO_UNIT_TEST(quaternion_norm)
 
 AUTO_UNIT_TEST(quaternion_rotate)
 {
-    quat q = makeUnitQuaternion<base_type>(45, coord(0, 0, 1));
+    quat q = makeUnitQuaternionDegrees<base_type>(45, coord(0, 0, 1));
     coord v(1, 0, 0);
     // 45 degrees around z.  Rotating twice should be y==1
     coord v2(quat::rotate(quat::rotate(v, q), q));
