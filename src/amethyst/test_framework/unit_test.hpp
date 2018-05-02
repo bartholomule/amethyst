@@ -102,7 +102,7 @@ namespace amethyst
         } \
     } while (0)
 
-#define TEST_CLOSE(a,b) TEST_COMPARE_CLOSE(a,b,AMETHYST_EPSILON)
+#define TEST_CLOSE(a,b) TEST_COMPARE_CLOSE(a,b, (std::is_same<decltype((a)+(b)), float>::value ? AMETHYST_EPSILON_FLOAT : AMETHYST_EPSILON))
 #define TEST_XY_EQUALS(a, p, q) TEST_COMPARE_EQUAL((a).x(), p); TEST_COMPARE_EQUAL((a).y(), q);
 #define TEST_XY_CLOSE(a, p, q) TEST_CLOSE((a).x(), p); TEST_CLOSE((a).y(), q);
 #define TEST_XYZ_EQUALS(a, p, q, r) TEST_COMPARE_EQUAL((a).x(), p); TEST_COMPARE_EQUAL((a).y(), q); TEST_COMPARE_EQUAL((a).z(), r);
