@@ -84,7 +84,15 @@ namespace amethyst
         ::amethyst::test::current_test()->test_started(local_info); \
         const auto aaaa = (a); \
         const auto bbbb = (b); \
-        if ((bbbb - aaaa) < epsilon && (aaaa - bbbb) < epsilon) \
+        bool equal_inf = false; \
+		if constexpr(std::numeric_limits<decltype(aaaa)>::has_infinity) \
+		{ \
+			if (isinf(aaaa) && (bbbb == aaaa)) \
+			{ \
+				equal_inf = true; \
+			} \
+		} \
+        if (equal_inf || ((bbbb - aaaa) < epsilon && (aaaa - bbbb) < epsilon)) \
         { \
             ::amethyst::test::current_test()->test_passed(local_info); \
         } \
