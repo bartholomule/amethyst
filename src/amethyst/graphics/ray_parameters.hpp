@@ -2,6 +2,7 @@
 
 #include "amethyst/general/string_format.hpp"
 #include "amethyst/general/defines.hpp"
+#include "amethyst/general/reversable.hpp"
 #include "amethyst/math/point3.hpp"
 #include "amethyst/math/unit_line3.hpp"
 #include "amethyst/graphics/intersection_info.hpp"
@@ -9,6 +10,81 @@
 
 namespace amethyst
 {
+    // Given a unit vector, reflect it over a unit vector normal.
+    template <typename T>
+    bool reflect(const vector3<T>& line, const vector3<T>& normal, vector3<T>& result)
+    {
+        T cos = dotprod(line, normal);
+        result = unit(line - 2 * cos * normal);
+        return true;
+    }
+
+    template <typename T>
+    bool critical_angle(T ni, T nt, T& result)
+    {
+        // sin(theta_t) = ni / nt * sin(theta_i)
+        // The critical angle happens where (ni/nt) * sin(theta_i) > 1
+        // So, theta_i is > asin(nt / ni)
+
+        if (ni <= nt)
+        {
+            return false;
+        }
+
+        result = asin(nt / ni);
+        if (result < 0)
+        {
+            result += 2 * M_PI;
+        }
+        return true;
+    }
+
+    template <typename T>
+    T critical_angle(T ni, T nt)
+    {
+        T result;
+        if (critical_angle(ni, nt, result))
+        {
+            return result;
+        }
+        if constexpr(std::numeric_limits<T>::has_infinity)
+        {
+            return std::numeric_limits<T>::infinity();
+        }
+        else
+        {
+            return std::numeric_limits<T>::max();
+        }
+    }
+
+
+    // Given a unit vector and current/entering IORs, refract over a unit vector normal.
+    template <typename T>
+    bool refract(const vector3<T>& line, vector3<T> normal, T current_ior, T ior, vector3<T>& result, bool& entering)
+    {
+        T cos = dotprod(line, normal);
+        T ni_over_nt = current_ior / ior;
+
+        entering = cos <= 0;
+
+        if (!entering)
+        {
+            // Leaving the object.  Flip the ratio.
+            ni_over_nt = 1 / ni_over_nt;
+            normal = -normal;
+        }
+
+        T radical = 1 - (ni_over_nt * ni_over_nt) * (1 - cos * cos);
+
+        if (radical < 0)
+        {
+            return false;
+        }
+
+        result = unit(ni_over_nt * (line - cos * normal) - (normal * sqrt(radical)));
+        return true;
+    }
+
     /**
      *
      * A full set of parameters required for a ray.  This is used for
@@ -27,7 +103,6 @@ namespace amethyst
         ray_parameters(unit_line3<T>& l, T time = 0, T ior = 1, T contribution = 1, long max_depth = AMETHYST_DEPTH_MAX, long current_depth = 0)
             : line(l)
             , time_ray_was_fired(time)
-            , current_ior(ior)
             , effective_contribution(1)
             , depth_max(max_depth)
             , depth(current_depth)
@@ -44,8 +119,7 @@ namespace amethyst
         T get_time() const { return time_ray_was_fired; }
         void set_time(T t) { time_ray_was_fired = t; }
 
-        T get_ior() const { return current_ior; }
-        void set_ior(T ior) { current_ior = ior; }
+        T get_ior() const { return current_ior().second; }
 
         T get_scalar_contribution() const
         {
@@ -69,6 +143,20 @@ namespace amethyst
 
         std::string to_string() const;
 
+        using ior_type = std::pair<const shape<T, color_type>*, T>;
+        ior_type current_ior() const
+        {
+            if (!active_iors.empty())
+            {
+                return active_iors.back();
+            }
+            return { nullptr, T(1.0) };
+        }
+        const std::vector<ior_type>& all_iors() const { return active_iors; }
+
+        bool reflected = false;
+        bool refracted = false;
+
     private:
         // Makes sure a normal is available, calculates (or just sets) the distance
         // and intersection point.
@@ -88,8 +176,7 @@ namespace amethyst
         //
 
         // The IOR of the current medium.
-        T current_ior = 1;
-        T cumulative_ior = 1;
+        std::vector<ior_type> active_iors;
         // used in determining how far a ray should go (starts out as T(1),
         // decreases with each transmission/reflection)
         color_type effective_contribution = { 1, 1, 1 };
@@ -97,6 +184,48 @@ namespace amethyst
         long depth_max = AMETHYST_DEPTH_MAX;
         // The current depth of the ray
         long depth = 0;
+
+        bool entered(const shape<T, color_type>* s) const
+        {
+            for (const auto& e : reverse(active_iors))
+            {
+                if (e.first == s)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void enter_object(const shape<T, color_type>* obj, T ior)
+        {
+            // std::cout << "Entering object with ior " << ior << std::endl;
+            active_iors.emplace_back(obj, ior);
+        }
+
+        void leave_object(const shape<T,color_type>* obj, T ior)
+        {
+            auto iter = active_iors.begin();
+            for (; iter != active_iors.end(); ++iter)
+            {
+                if (iter->first == obj)
+                {
+                    break;
+                }
+            }
+            if (iter != active_iors.end())
+            {
+                // std::cout << "Leaving object with ior " << ior << std::endl;
+                active_iors.erase(iter);
+            }
+            else
+            {
+                // The object has its normal reversed, or we entered from the wrong side.
+                // CHECKME! Do we really want this?
+                enter_object(obj, ior);
+            }
+        }
+
 
         // Future additions:
         // vector3<T> polarization_direction; // full vector
@@ -142,6 +271,7 @@ namespace amethyst
         {
             point = line.point_at(distance);
         }
+
         return true;
     }
 
@@ -160,26 +290,23 @@ namespace amethyst
         results.set_current_depth(depth + 1);
 
         vector3<T> normal = info.get_normal();
+        vector3<T> new_direction;
 
-        T cos = dotprod(line.direction(), normal);
-        // If the ray is going the same direction as the normal for the object which
-        // was just hit, flip the cosine, so that the reflected ray will not travel
-        // through the object, rather, it should be reflected backwards.
-        if (cos > 0)
+        if (!reflect(line.direction(), normal, new_direction))
         {
-            cos = -cos;
+            return false;
         }
-        vector3<T> new_direction = unit(line.direction() - 2 * cos * normal);
 
         auto limits = line.limits();
         limits.set(std::max(AMETHYST_EPSILON, limits.begin()), limits.end());
         results.set_line(unit_line3<T>(point, new_direction, limits));
+        results.reflected = true;
         return true;
     }
 
     // Perform a perfect refraction
     template <typename T, typename color_type>
-    bool ray_parameters<T,color_type>::perfect_refraction(const intersection_info<T,color_type>& info, T ior, ray_parameters<T,color_type>& results) const
+    bool ray_parameters<T, color_type>::perfect_refraction(const intersection_info<T, color_type>& info, T ior, ray_parameters<T, color_type>& results) const
     {
         T distance;
         point3<T> point;
@@ -192,36 +319,28 @@ namespace amethyst
         results.set_current_depth(depth + 1);
 
         vector3<T> normal = info.get_normal();
-
-        T cos = dotprod(line.direction(), normal);
-        T ratio = current_ior / ior;
-        T next_ior = ior;
-        if (cos > 0)
-        {
-            // Leaving the object.  Flip the ratio.
-            ratio = 1 / ratio;
-            next_ior = cumulative_ior * ratio;
-        }
-
-        T rad = 1 - (ratio * ratio) * (1 - cos * cos);
-
-        if (rad >= 0)
-        {
-            vector3<T> new_direction = unit(ratio * (line.direction() - cos * normal) -
-                                            (normal * sqrt(rad)));
-
-            auto limits = line.limits();
-            limits.set(std::max(AMETHYST_EPSILON, limits.begin()), limits.end());
-            results.set_line(unit_line3<T>(point, new_direction, limits));
-            results.cumulative_ior = cumulative_ior * ratio;
-            results.set_ior(next_ior);
-
-            return true;
-        }
-        else
+        vector3<T> new_direction;
+        bool entering = false;
+        if (!refract(line.direction(), normal, get_ior(), ior, new_direction, entering))
         {
             return false;
         }
+
+        auto limits = line.limits();
+        limits.set(std::max(AMETHYST_EPSILON, limits.begin()), limits.end());
+        results.set_line(unit_line3<T>(point, new_direction, limits));
+
+        if (entering)
+        {
+            results.enter_object(info.get_shape(), ior);
+        }
+        else
+        {
+            results.leave_object(info.get_shape(), ior);
+        }
+
+        results.refracted = true;
+        return true;
     }
 
     template <typename T, typename color_type>

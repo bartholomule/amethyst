@@ -43,5 +43,6 @@ graphics_test(test_raster)
 graphics_test(test_rgbcolor)
 graphics_test(test_triangle)
 graphics_test(test_sphere)
+graphics_test(test_ray)
 
 graphics_test(test_fd_stream LIBS amethyst_general)
