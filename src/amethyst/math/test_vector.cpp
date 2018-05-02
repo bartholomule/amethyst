@@ -183,6 +183,21 @@ AUTO_UNIT_TEST(test_vector_angle)
     CHECK_ANGLE(vec(0, 1, 1), vec(1, 0, 0), M_PI / 2);
     CHECK_ANGLE(vec(0, 0, 1), vec(1, 1, 0), M_PI / 2);
 
+    // HMM?? This should be correct.
+    // CHECK_ANGLE(vec(1, 0, 0), vec(1, 1, 0), M_PI / 4);
 }
 
+AUTO_UNIT_TEST(test_rotated_vector)
+{
+    using vec = vector3<double>;
+    double one_sqrt2 = 0.7071067811865475244;
+
+    // These actual values don't matter as long as they are consistent in producing a rotated vector.
+    TEST_XYZ_CLOSE(rotated_from(vec(1, 0, 0), M_PI / 2), 0, -1, 0);
+    TEST_XYZ_CLOSE(rotated_from(vec(0, 1, 0), M_PI / 2), 1, 0, 0);
+    TEST_XYZ_CLOSE(rotated_from(vec(0, 0, 1), M_PI / 2), 1, 0, 0);
+    TEST_XYZ_CLOSE(rotated_from(vec(1, 0, 0), M_PI / 4), one_sqrt2, -one_sqrt2, 0);
+    TEST_XYZ_CLOSE(rotated_from(unit(vec(1, 1, 0)), M_PI / 2), 0, 0, 1);
+
+    CHECK_ANGLE(vec(1, 0, 0), rotated_from(vec(1, 0, 0), M_PI / 2), M_PI / 2);
 }

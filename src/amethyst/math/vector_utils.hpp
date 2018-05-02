@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "../general/template_functions.hpp"
 #include "../general/traits.hpp"
+#include "quaternion.hpp"
 
 /*
  * The functions in this file take any kind of 3d vector, providing that it supplies 3 things:
@@ -212,5 +213,19 @@ namespace amethyst
 
         v = unit(crossprod(normal, vn));
         u = unit(crossprod(v, normal));
+    }
+
+    template <typename vector_type, typename T>
+    vector_type rotated_from(const vector_type& v, T angle)
+    {
+        auto p = perp_vector(v);
+        auto v2 = quaternion<typename vector_type::base>::rotate(v, angle, p);
+        return { v2.x(), v2.y(), v2.z() };
+    }
+
+    template <typename vector_type, typename T>
+    vector_type rotated_from_degrees(const vector_type& v, T angle)
+    {
+        return rotated_from(v, angle * M_PI / 180);
     }
 }
