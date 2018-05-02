@@ -25,7 +25,7 @@ namespace amethyst
         using texture<T, color_type>::get_color;
         bool get_color(const point3<T>& location, const coord2<T>& coord, const vector3<T>& normal, color_type& color) const override
         {
-            get_color_at_point(location, normal);
+            color = get_color_at_point(location, normal);
             return true;
         }
 
