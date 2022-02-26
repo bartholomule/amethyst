@@ -35,14 +35,14 @@ namespace amethyst
     template <typename ColorType>
     bool save_image(const std::string& filename, const raster<ColorType>& image)
     {
-        auto loader = getImageLoader<ColorType::number_type, ColorType>(filename);
+        auto loader = getImageLoader<typename ColorType::number_type, ColorType>(filename);
         return loader->output(filename, image);
     }
 
     template <typename ColorType>
     bool save_image(const std::string& filename, const raster<ColorType>& image, double gamma)
     {
-        auto loader = getImageLoader<ColorType::number_type, ColorType>(filename);
+        auto loader = getImageLoader<typename ColorType::number_type, ColorType>(filename);
         return loader->output(filename, image, gamma);
     }
 }

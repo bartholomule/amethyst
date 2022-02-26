@@ -460,8 +460,6 @@ namespace amethyst
 
         virtual interpolation_type interpolate(parametric_type parameter) const
         {
-            using std::cout;
-            using std::endl;
             if (iv.size() >= 2)
             {
                 size_t i = 0;

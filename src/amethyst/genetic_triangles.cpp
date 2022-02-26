@@ -71,7 +71,7 @@ void rasterize_triangles(std::vector<alpha_triangle> triangles, image<number_typ
 }
 
 void generate_random_triangles(std::vector<alpha_triangle>& triangles,
-                               size_t count, int width, int height, random<number_type>& r)
+                               size_t count, int width, int height, amethyst::random<number_type>& r)
 {
     triangles.clear();
     for (size_t i = 0; i < count; ++i)
@@ -241,7 +241,7 @@ void convert_to_triangles(pleb& p, std::vector<alpha_triangle>& output, size_t i
 }
 
 
-void shuffle_range(std::vector<pleb>& data, size_t index1, size_t index2, random<number_type>& rnd)
+void shuffle_range(std::vector<pleb>& data, size_t index1, size_t index2, amethyst::random<number_type>& rnd)
 {
     if (!data.empty())
     {
@@ -261,7 +261,7 @@ void shuffle_range(std::vector<pleb>& data, size_t index1, size_t index2, random
     }
 }
 
-void unique_random_list(std::vector<size_t>& output, size_t min_value, size_t max_value, size_t count, random<number_type>& rnd)
+void unique_random_list(std::vector<size_t>& output, size_t min_value, size_t max_value, size_t count, amethyst::random<number_type>& rnd)
 {
     output.clear();
     output.reserve(count);
@@ -283,7 +283,7 @@ void unique_random_list(std::vector<size_t>& output, size_t min_value, size_t ma
     }
 }
 
-void random_cross(const pleb& p1, const pleb& p2, size_t points, size_t count, std::vector<pleb>& output, random<number_type>& rnd)
+void random_cross(const pleb& p1, const pleb& p2, size_t points, size_t count, std::vector<pleb>& output, amethyst::random<number_type>& rnd)
 {
     //	std::cout << "Generating random cross..." << std::endl;
     output.clear();
@@ -319,7 +319,7 @@ void random_cross(const pleb& p1, const pleb& p2, size_t points, size_t count, s
     shuffle_range(output, last_index, num_data_points, rnd);
 }
 
-pleb::pleb_data_entry create_random_triangle(random<number_type>& rnd)
+pleb::pleb_data_entry create_random_triangle(amethyst::random<number_type>& rnd)
 {
     pleb::pleb_data_entry e;
     for (size_t t = 0; t < 3; ++t)
@@ -334,7 +334,7 @@ pleb::pleb_data_entry create_random_triangle(random<number_type>& rnd)
     return e;
 }
 
-void random_pleb(size_t count, random<number_type>& rnd, pleb& retval)
+void random_pleb(size_t count, amethyst::random<number_type>& rnd, pleb& retval)
 {
     retval.pleb_data.resize(count);
     for (size_t i = 0; i < count; ++i)
@@ -343,7 +343,7 @@ void random_pleb(size_t count, random<number_type>& rnd, pleb& retval)
     }
 }
 
-void generate_random_population(size_t width, size_t height, random<number_type>& rnd, size_t count, size_t triangles, population& output)
+void generate_random_population(size_t width, size_t height, amethyst::random<number_type>& rnd, size_t count, size_t triangles, population& output)
 {
     output.clear();
     output.resize(count);
@@ -549,7 +549,7 @@ bool read_population(const std::string& filename, population& populous, size_t& 
     return true;
 }
 
-void mutate_plebs(population& populous, number_type mutation_rate, random<number_type>& rnd, size_t max_width, size_t max_height)
+void mutate_plebs(population& populous, number_type mutation_rate, amethyst::random<number_type>& rnd, size_t max_width, size_t max_height)
 {
     std::cout << "Mutating children... ";
     for (size_t i = 0; i < populous.size(); ++i)
@@ -579,14 +579,14 @@ void mutate_plebs(population& populous, number_type mutation_rate, random<number
     std::cout << std::endl;
 }
 
-typedef void (*generation_tweaker)(population& populous, size_t generation, size_t width, size_t height, random<number_type>& rnd);
-typedef void (*generation_crosser)(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, random<number_type>& rnd);
+typedef void (*generation_tweaker)(population& populous, size_t generation, size_t width, size_t height, amethyst::random<number_type>& rnd);
+typedef void (*generation_crosser)(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, amethyst::random<number_type>& rnd);
 
 void run_for_generations(population& populous, const image<number_type>& reference,
                          size_t starting_generation,
                          size_t generations,
                          number_type gamma,
-                         random<number_type>& rnd,
+                         amethyst::random<number_type>& rnd,
                          image_io<number_type>& io,
                          generation_crosser cross_generation,
                          generation_tweaker modify_generation)
@@ -627,7 +627,7 @@ void run_for_generations(population& populous, const image<number_type>& referen
     }
 }
 
-void cross_best_replace_worst(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t crossover_points, number_type mutation_rate, size_t width, size_t height, random<number_type>& rnd)
+void cross_best_replace_worst(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t crossover_points, number_type mutation_rate, size_t width, size_t height, amethyst::random<number_type>& rnd)
 {
     population crossed;
     std::cout << "Crossing " << best[0].pleb_index << " with " << best[1].pleb_index << std::endl;
@@ -654,7 +654,7 @@ size_t triangles_at_generation(size_t generation)
     return std::min<size_t>(GLOBALS.max_triangles, size_t(expected));
 }
 
-void cross_best_with_random(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, random<number_type>& rnd)
+void cross_best_with_random(population& populous, size_t generation, const std::vector<pleb_data>& best, const std::vector<pleb_data>& worst, size_t width, size_t height, amethyst::random<number_type>& rnd)
 {
     population crossed;
     const pleb best_pleb = populous[best[0].pleb_index];
@@ -728,12 +728,12 @@ void cross_best_with_random(population& populous, size_t generation, const std::
     }
 }
 
-void leave_alone(population& populous, size_t generation, size_t width, size_t height, random<number_type>& rnd)
+void leave_alone(population& populous, size_t generation, size_t width, size_t height, amethyst::random<number_type>& rnd)
 {
     // Do nothing
 }
 
-void add_occasional_triangles(population& populous, size_t generation, size_t width, size_t height, random<number_type>& rnd)
+void add_occasional_triangles(population& populous, size_t generation, size_t width, size_t height, amethyst::random<number_type>& rnd)
 {
     size_t triangles = triangles_at_generation(generation);
 

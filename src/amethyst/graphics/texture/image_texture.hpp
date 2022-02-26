@@ -39,7 +39,7 @@ namespace amethyst
 
         void load_image(const std::string& filename)
         {
-            m_image = std::make_shared<image_type>(convert_image<color_type::number_type>(load_image_with_stb(filename)));
+            m_image = std::make_shared<image_type>(convert_image<typename color_type::number_type>(load_image_with_stb(filename)));
             // auto loader = getImageLoader<T, color_type>(filename);
             // m_image = std::make_shared<image_type>(loader->input(filename));
         }

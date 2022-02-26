@@ -59,6 +59,8 @@ namespace amethyst
     class sphere : public shape<T, color_type>
     {
     public:
+        using parent = shape<T, color_type>;
+
         sphere() = default;
         sphere(const sphere& old) = default;
         sphere(const point3<T>& c, T rad, texture_ptr<T,color_type> tex = nullptr)
@@ -190,7 +192,7 @@ namespace amethyst
         retval += indentation + string_format("object_capabilities=%1\n", amethyst::to_string(get_object_capabilities()));
         retval += internal_tagging + string_format("center=%1\n", m_center);
         retval += internal_tagging + string_format("radius=%1\n", m_radius);
-        retval += internal_tagging + string_format("texture=%1\n", m_texture);
+        retval += internal_tagging + string_format("texture=%1\n", parent::m_texture);
 
         return retval;
     }

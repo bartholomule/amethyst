@@ -48,7 +48,7 @@ namespace amethyst
 
         raster<ColorType> input(const std::string& filename) const override
         {
-            return convert_image<ColorType::number_type>(load_image_with_stb(filename));
+            return convert_image<typename ColorType::number_type>(load_image_with_stb(filename));
         }
     };
 }

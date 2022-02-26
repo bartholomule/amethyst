@@ -14,6 +14,8 @@
 
 #include "coord2.hpp"
 #include "vector_utils.hpp"
+#include "../general/inspect.hpp"
+#include <ostream>
 
 namespace amethyst
 {
@@ -119,7 +121,5 @@ namespace amethyst
         return "<" + inspect(v.x()) + "," + inspect(v.y()) + ">";
     }
 }
-
-
 
 

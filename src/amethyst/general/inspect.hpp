@@ -8,6 +8,7 @@
 #include <list>
 #include <memory>
 #include <functional>
+#include <ostream>
 
 namespace amethyst
 {
@@ -62,7 +63,7 @@ namespace std // for ADL.
     template <typename K, typename V, typename S>
     std::string inspect(const std::map<K, V, S>& m)
     {
-        using ::pod_inspector::inspect;
+        using ::amethyst::pod::inspect;
         std::string result;
         result += "{ ";
 

@@ -26,6 +26,7 @@ namespace amethyst
         }
 
         using image_io<T>::output;
+        using image_io<T>::output_byte;
         using image_io<T>::input;
 
         std::string default_extension() const override {

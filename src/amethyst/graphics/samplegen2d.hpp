@@ -35,6 +35,7 @@ namespace amethyst
         using parent = sample_generator_base<T, 2>;
 
         using parent::parent;
+
         sample_generator_2d(const sample_generator_2d<T>&) = default;
         virtual ~sample_generator_2d() = default;
         virtual std::unique_ptr<sample_generator_2d<T>> clone_new() const = 0;
@@ -52,7 +53,7 @@ namespace amethyst
     public:
         using parent = sample_generator_2d<T>;
 
-        random_sample_2d(const random_type& r = default_random<T>()) : parent(r) {}
+        random_sample_2d(const typename parent::random_type& r = default_random<T>()) : parent(r) {}
         virtual ~random_sample_2d() = default;
 
         std::vector<coord2<T>> get_samples(size_t num_samples) override
@@ -67,7 +68,7 @@ namespace amethyst
             return v;
         }
 
-        void get_samples(size_t num_samples, sample_output_fn pf) override
+        void get_samples(size_t num_samples, typename parent::sample_output_fn pf) override
         {
             for (size_t i = 0; i < num_samples; ++i)
             {
@@ -87,7 +88,7 @@ namespace amethyst
     public:
         using parent = sample_generator_2d<T>;
 
-        regular_sample_2d(const random_type& r = default_random<T>())
+        regular_sample_2d(const typename parent::random_type& r = default_random<T>())
             : parent(r)
         {
         }
@@ -137,7 +138,7 @@ namespace amethyst
     public:
         using parent = sample_generator_2d<T>;
 
-        nrooks_sample_2d(const random_type& r = default_random<T>())
+        nrooks_sample_2d(const typename parent::random_type& r = default_random<T>())
             : parent(r)
         {
         }
@@ -179,7 +180,7 @@ namespace amethyst
     {
     public:
         using parent = sample_generator_2d<T>;
-        jitter_sample_2d(const random_type& r = default_random<T>())
+        jitter_sample_2d(const typename parent::random_type& r = default_random<T>())
             : parent(r)
         {
         }
@@ -220,7 +221,7 @@ namespace amethyst
     public:
         using parent = sample_generator_2d<T>;
 
-        multi_jitter_sample_2d(const random_type& r = default_random<T>())
+        multi_jitter_sample_2d(const typename parent::random_type& r = default_random<T>())
             : parent(r)
         {
         }
@@ -292,7 +293,7 @@ namespace amethyst
     {
     public:
         using parent = sample_generator_2d<T>;
-        poisson_sample_2d(const random_type& r = default_random<T>(), T distance = 0.1)
+        poisson_sample_2d(const typename parent::random_type& r = default_random<T>(), T distance = 0.1)
             : parent(r)
             , distance_between_samples(distance)
         {

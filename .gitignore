@@ -1,1 +1,9 @@
 .vs
+CMakeFiles
+CMakeCache.txt
+**/CTestTestfile.cmake
+**/cmake_install.cmake
+**/Makefile
+**/*.o
+**/lib*.a
+Testing

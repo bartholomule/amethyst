@@ -12,13 +12,10 @@ namespace amethyst
     class ppm_io : public image_io<T, ColorType>
     {
     public:
-        using Parent = image_io<T, ColorType>;
+        using parent = image_io<T, ColorType>;
 
         ppm_io() = default;
         ~ppm_io() = default;
-
-        using Parent::output;
-        using Parent::input;
 
         std::string default_extension() const override {
             return "ppm";
@@ -47,16 +44,16 @@ namespace amethyst
     {
         std::string header = string_format("P6 %1 %2 255\n", int(source.get_width()), int(source.get_height()));
 
-        output_string(o, header);
+        parent::output_string(o, header);
 
         for (size_t y = 0; y < source.get_height(); ++y)
         {
             for (size_t x = 0; x < source.get_width(); ++x)
             {
                 auto c = convert_color<uint8_t>(source(x, y));
-                output_byte(o, c.r());
-                output_byte(o, c.g());
-                output_byte(o, c.b());
+                parent::output_byte(o, c.r());
+                parent::output_byte(o, c.g());
+                parent::output_byte(o, c.b());
             }
         }
         return true;
@@ -205,7 +202,7 @@ namespace amethyst
         auto rgb_p6_byte = [&input, this](int& r, int& g, int& b) -> bool
         {
             char rv, gv, bv;
-            if (input_byte(input, rv) && input_byte(input, gv) && input_byte(input, bv))
+            if (parent::input_byte(input, rv) && parent::input_byte(input, gv) && parent::input_byte(input, bv))
             {
                 r = int(rv) & 0xff;
                 g = int(gv) & 0xff;
@@ -217,7 +214,7 @@ namespace amethyst
         auto rgb_p6_word = [&input, this](int& r, int& g, int& b) -> bool
         {
             int16_t rv, gv, bv;
-            if (input_word_be(input, rv) && input_word_be(input, gv) && input_word_be(input, bv))
+            if (parent::input_word_be(input, rv) && parent::input_word_be(input, gv) && parent::input_word_be(input, bv))
             {
                 r = rv;
                 g = gv;
@@ -240,7 +237,7 @@ namespace amethyst
             read_rgb = rgb_p6_byte;
         }
 
-        ColorType* data = result.reinterpret<ColorType*>();
+        ColorType* data = result.template reinterpret<ColorType*>();
 
         for (size_t y = 0; y < height; ++y)
         {
@@ -255,13 +252,13 @@ namespace amethyst
                 }
                 if (max_pixel_value > 255) {
                     rgbcolor<uint16_t> source(r, g, b);
-                    line[x] = convert_color<ColorType::number_type>(source);
+                    line[x] = convert_color<typename ColorType::number_type>(source);
                     //std::cout << string_format("pixel(%1,%2)=%3  (from word source %4)", x, y, inspect(line[x]), inspect(source)) << std::endl;
                 }
                 else
                 {
                     rgbcolor<uint8_t> source(r, g, b);
-                    line[x] = convert_color<ColorType::number_type>(source);
+                    line[x] = convert_color<typename ColorType::number_type>(source);
                     //std::cout << string_format("pixel(%1,%2)=%3  (from byte source %4)", x, y, inspect(line[x]), inspect(source)) << std::endl;
                 }
             }

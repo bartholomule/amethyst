@@ -163,7 +163,7 @@ namespace amethyst
         size_t width,
         size_t height,
         intersection_requirements requirements,
-        lighting_function<T, color_type> brightness = [](const point3<T>&, const vector3<T>&) { return color_type{ 1,1,1 }},
+        lighting_function<T, color_type> brightness = [](const point3<T>&, const vector3<T>&) { return color_type{ 1,1,1 }; },
         background_function<T, color_type> background = nullptr,
         size_t samples_per_pixel = 1,
         sample_generator_2d_ptr<T> sampler = std::make_shared<regular_sample_2d<T>>(),

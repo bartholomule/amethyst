@@ -27,6 +27,7 @@
 
 
 #include <ostream>
+#include <cmath>
 
 namespace amethyst
 {
@@ -78,7 +79,7 @@ namespace amethyst
 
         inline T length() const
         {
-            return T(sqrt(double((x() * x()) + (y() * y()) + (z() * z()))));
+            return T(std::sqrt(double((x() * x()) + (y() * y()) + (z() * z()))));
         }
 
     private:

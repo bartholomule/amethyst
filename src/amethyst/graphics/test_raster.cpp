@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& o, const amethyst::raster<T>& r)
         for (unsigned x = 0; x < r.get_width(); ++x)
         {
             const auto& v = r[y][x];
-            o << " " << setw(3) << (isprint(v) ? v : '#');
+            o << " " << std::setw(3) << (isprint(v) ? v : '#');
         }
         o << " |" << std::endl;
     }

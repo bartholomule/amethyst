@@ -20,6 +20,7 @@
 
 #include <ostream>
 #include <algorithm>
+#include <cmath>
 #include "../general/template_functions.hpp"
 
 namespace amethyst

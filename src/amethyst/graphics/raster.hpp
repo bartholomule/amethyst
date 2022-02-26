@@ -107,7 +107,12 @@ namespace amethyst
          *
          */
         template <class U>
-        U reinterpret() const
+        const U reinterpret() const
+        {
+            return reinterpret_cast<U>(raster_data);
+        }
+        template <class U>
+        U reinterpret()
         {
             return reinterpret_cast<U>(raster_data);
         }

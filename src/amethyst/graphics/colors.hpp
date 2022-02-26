@@ -21,7 +21,7 @@ namespace amethyst
             {
                 return { uint8_t(r), uint8_t(g), uint8_t(b) };
             }
-            else constexpr
+            else
             {
                 return convert_color<typename color_type::number_type>(rgbcolor<double>(r / 255.0, g / 255.0, b / 255.0));
             }

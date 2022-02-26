@@ -165,7 +165,10 @@ AUTO_UNIT_TEST(test_perp_vector)
     TEST_CLOSE(dotprod(z, pz), 0);
 }
 
-#define CHECK_ANGLE(a, b, theta) TEST_CLOSE(acos(sqrt(dotprod(unit(a),unit(b)))), theta)
+
+#define CHECK_ANGLE2(a, b, theta, epsilon) TEST_COMPARE_CLOSE(acos(sqrt(dotprod(unit(a),unit(b)))), theta, epsilon)
+#define CHECK_ANGLE(a, b, theta) CHECK_ANGLE2(a,b,theta,AMETHYST_EPSILON)
+
 
 AUTO_UNIT_TEST(test_vector_angle)
 {
@@ -199,5 +202,6 @@ AUTO_UNIT_TEST(test_rotated_vector)
     TEST_XYZ_CLOSE(rotated_from(vec(1, 0, 0), M_PI / 4), one_sqrt2, -one_sqrt2, 0);
     TEST_XYZ_CLOSE(rotated_from(unit(vec(1, 1, 0)), M_PI / 2), 0, 0, 1);
 
-    CHECK_ANGLE(vec(1, 0, 0), rotated_from(vec(1, 0, 0), M_PI / 2), M_PI / 2);
+    // The chain of acos, sqrt, etc. is too imprecise to have this get a full double's worth of precision out.
+    CHECK_ANGLE2(vec(1, 0, 0), rotated_from(vec(1, 0, 0), M_PI / 2), M_PI / 2, AMETHYST_EPSILON_FLOAT);
 }

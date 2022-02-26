@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 
 #ifdef _WIN32
 #ifndef WINDOWS
@@ -81,6 +82,10 @@
 #if defined(WINDOWS)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#endif
+
+#if defined(LINUX)
+#include <unistd.h>
 #endif
 
 //

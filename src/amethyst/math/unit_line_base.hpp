@@ -69,6 +69,9 @@ namespace amethyst
         using line_type::limits;
         using line_type::inside;
     protected:
+        using line_type::line_origin;
+        using line_type::line_limits;
+
         T non_unit_length = 1;
     };
 

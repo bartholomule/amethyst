@@ -2,7 +2,7 @@
 
 namespace amethyst
 {
-    namespace pod_inspector
+    namespace pod
     {
         std::string inspect(bool b)
         {

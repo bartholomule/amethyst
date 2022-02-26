@@ -68,7 +68,7 @@ namespace amethyst
         {
             for (; first != last; ++first)
             {
-                if constexpr(sizeof(IntType <= 8))
+                if constexpr(sizeof(IntType) <= 8)
                     *first = IntType(next_int(maxval));
                 else
                     *first = IntType(next_long(maxval));
@@ -131,7 +131,7 @@ namespace amethyst
         standard_random(const standard_random&) = default;
         virtual ~standard_random() = default;
 
-        using random::next_int;
+        using random<T>::next_int;
         uint32_t next_int() override { return m_rand(); }
         void set_seed(uint32_t seed) override { m_rand.seed(seed); }
         std::unique_ptr<random<T>> clone_new() const

@@ -338,8 +338,8 @@ namespace amethyst
             internal_tagging += aggregate<T,color_type>::name() + "::";
         }
 
-        retval += indentation + string_format("intersection_capabilities=%1\n", ::to_string(get_intersection_capabilities()));
-        retval += indentation + string_format("object_capabilities=%1\n", ::to_string(get_object_capabilities()));
+        retval += indentation + string_format("intersection_capabilities=%1\n", to_string(get_intersection_capabilities()));
+        retval += indentation + string_format("object_capabilities=%1\n", to_string(get_object_capabilities()));
 
         std::string level_indent = "  ";
 

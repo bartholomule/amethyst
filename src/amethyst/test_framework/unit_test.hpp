@@ -6,6 +6,7 @@
 #include "general/defines.hpp"
 #include <string>
 #include <iosfwd>
+#include <cmath>
 
 namespace amethyst
 {
@@ -87,10 +88,17 @@ namespace amethyst
         bool equal_inf = false; \
 		if constexpr(std::numeric_limits<decltype(aaaa)>::has_infinity) \
 		{ \
-			if (isinf(aaaa) && (bbbb == aaaa)) \
-			{ \
-				equal_inf = true; \
-			} \
+            if constexpr(std::numeric_limits<decltype(bbbb)>::has_infinity) \
+            { \
+			    if (std::isinf(aaaa) && std::isinf(bbbb)) \
+			    { \
+				    equal_inf = true; \
+			    } \
+            } \
+            else \
+            { \
+                equal_inf = (std::isinf(aaaa) && (aaaa == bbbb)); \
+            } \
 		} \
         if (equal_inf || ((bbbb - aaaa) < epsilon && (aaaa - bbbb) < epsilon)) \
         { \
@@ -98,7 +106,7 @@ namespace amethyst
         } \
         else \
         { \
-            ::amethyst::test::current_test()->test_failed(local_info, ::amethyst::string_format(" test failed for " #a "~=" #b ": (%1 != %2)", aaaa, bbbb)); \
+            ::amethyst::test::current_test()->test_failed(local_info, ::amethyst::string_format(" test failed for " #a "~=" #b ": (%1 != %2)", amethyst::convert_to_string(aaaa,0,0,12), amethyst::convert_to_string(bbbb,0,0,12))); \
         } \
     } while (0)
 
