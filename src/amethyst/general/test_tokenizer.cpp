@@ -48,7 +48,7 @@ int main(int argc, const char** argv)
         const string junk2 = "A B C D";
         const string foo2[] = { "A", " ", "B", " ", "C", " ", "D" };
         std::vector<string> foo2_vec(foo2, foo2 + sizeof(foo2) / sizeof(*foo2));
-        std::vector<string> result2_vec = tokenize(junk2, " ", tokenizer::RETURN_DELIMITERS);
+        std::vector<string> result2_vec = tokenize(junk2, " ", tokenizer::delimiter_action_types::RETURN_DELIMITERS);
         TEST_RESULT_NAMED(
             "if tokenization successfully returns delimiters",
             result2_vec == foo2_vec,
@@ -58,7 +58,7 @@ int main(int argc, const char** argv)
         const string junk3 = "A  B  C  D";
         const string foo3[] = { "A", " ", "", " ", "B", " ", "", " ", "C", " ", "", " ", "D" };
         std::vector<string> foo3_vec(foo3, foo3 + sizeof(foo3) / sizeof(*foo3));
-        std::vector<string> result3_vec = tokenize(junk3, " ", tokenizer::RETURN_DELIMITERS, tokenizer::RETURN_EMPTY_TOKENS);
+        std::vector<string> result3_vec = tokenize(junk3, " ", tokenizer::delimiter_action_types::RETURN_DELIMITERS, tokenizer::token_action_flags::RETURN_EMPTY_TOKENS);
         TEST_RESULT_NAMED(
             "if tokenization successfully returns empty tokens and delimiters",
             result3_vec == foo3_vec,
@@ -68,7 +68,7 @@ int main(int argc, const char** argv)
         const string junk4 = "A  B  C  D";
         const string foo4[] = { "A", "", "B", "", "C", "", "D" };
         std::vector<string> foo4_vec(foo4, foo4 + sizeof(foo4) / sizeof(*foo4));
-        std::vector<string> result4_vec = tokenize(junk4, " ", tokenizer::IGNORE_DELIMITERS, tokenizer::RETURN_EMPTY_TOKENS);
+        std::vector<string> result4_vec = tokenize(junk4, " ", tokenizer::delimiter_action_types::IGNORE_DELIMITERS, tokenizer::token_action_flags::RETURN_EMPTY_TOKENS);
         TEST_RESULT_NAMED(
             "if tokenization successfully returns empty tokens (without delimiters)",
             result4_vec == foo4_vec,
@@ -78,7 +78,7 @@ int main(int argc, const char** argv)
         const string junk5 = "A  B  C  D  ";
         const string foo5[] = { "A", "", "B", "", "C", "", "D", "" };
         std::vector<string> foo5_vec(foo5, foo5 + sizeof(foo5) / sizeof(*foo5));
-        std::vector<string> result5_vec = tokenize(junk5, " ", tokenizer::IGNORE_DELIMITERS, tokenizer::RETURN_EMPTY_TOKENS);
+        std::vector<string> result5_vec = tokenize(junk5, " ", tokenizer::delimiter_action_types::IGNORE_DELIMITERS, tokenizer::token_action_flags::RETURN_EMPTY_TOKENS);
         TEST_RESULT_NAMED(
             "if tokenization successfully returns empty tokens (without delimiters) at end of string",
             result5_vec == foo5_vec,

@@ -80,17 +80,17 @@ namespace amethyst
         return *this;
     } // logger::operator=(logger)
 
-    logger::log_levels logger::get_log_level() const
+    log_levels logger::get_log_level() const
     {
         return my_level;
     }
 
-    void logger::set_log_level(logger::log_levels level)
+    void logger::set_log_level(log_levels level)
     {
         my_level = level;
     }
 
-    bool logger::level_enabled(logger::log_levels level)
+    bool logger::level_enabled(log_levels level)
     {
         return level <= my_level;
     }
@@ -100,7 +100,7 @@ namespace amethyst
         return log(my_level, message);
     }
 
-    void logger::log(logger::log_levels level, const std::string& message)
+    void logger::log(log_levels level, const std::string& message)
     {
         if (level_enabled(level))
         {

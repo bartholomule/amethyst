@@ -38,7 +38,7 @@ namespace amethyst
 
     namespace conversion
     {
-        enum format_entry_type
+        enum class format_entry_type
         {
             FORMATTER_STRING,
             FORMATTER_MESSAGE,      // %m
@@ -55,7 +55,7 @@ namespace amethyst
             // strftime formatting junk in the data field...
             FORMATTER_DATETIME
         };
-        enum format_justification
+        enum class format_justification
         {
             FORMAT_JUSTIFY_LEFT,
             FORMAT_JUSTIFY_RIGHT,
@@ -63,11 +63,11 @@ namespace amethyst
         };
         struct formatter_conversion_entry
         {
-            format_entry_type type = FORMATTER_STRING;
+            format_entry_type type = format_entry_type::FORMATTER_STRING;
             std::vector<char> data; // Only used if the type is FORMATTER_STRING
             int field_width_minimum = 0;
             int field_width_maximum = 0;
-            format_justification justification = FORMAT_JUSTIFY_LEFT;
+            format_justification justification = format_justification::FORMAT_JUSTIFY_LEFT;
 
             formatter_conversion_entry() = default;
         };
@@ -139,13 +139,13 @@ namespace amethyst
             std::vector<char> formatted_entry;
             switch (iter->type)
             {
-            case conversion::FORMATTER_STRING:
+            case conversion::format_entry_type::FORMATTER_STRING:
                 formatted_entry.insert(formatted_entry.end(), iter->data.begin(), iter->data.end());
                 break;
-            case conversion::FORMATTER_MESSAGE:
+            case conversion::format_entry_type::FORMATTER_MESSAGE:
                 formatted_entry.insert(formatted_entry.end(), m.message.begin(), m.message.end());
                 break;
-            case conversion::FORMATTER_FILENAME:
+            case conversion::format_entry_type::FORMATTER_FILENAME:
                 if (m.filename)
                 {
                     formatted_entry.insert(formatted_entry.end(), m.filename, m.filename + strlen(m.filename));
@@ -155,10 +155,10 @@ namespace amethyst
                     append_text(formatted_entry, "<NULL>");
                 }
                 break;
-            case conversion::FORMATTER_FILELINE:
+            case conversion::format_entry_type::FORMATTER_FILELINE:
                 append_text(formatted_entry, string_format("%1", m.line_number));
                 break;
-            case conversion::FORMATTER_FUNCTION:
+            case conversion::format_entry_type::FORMATTER_FUNCTION:
                 if (m.function_name)
                 {
                     append_text(formatted_entry, m.function_name);
@@ -168,21 +168,21 @@ namespace amethyst
                     append_text(formatted_entry, "<NULL>");
                 }
                 break;
-            case conversion::FORMATTER_BACKTRACE:
+            case conversion::format_entry_type::FORMATTER_BACKTRACE:
                 append_text(formatted_entry, m.backtrace);
                 break;
-            case conversion::FORMATTER_PID:
+            case conversion::format_entry_type::FORMATTER_PID:
 #if defined(WINDOWS)
                 append_text(formatted_entry, "<NOT IMPLEMENTED>");
 #else
                 append_text(formatted_entry, string_format("%1", ::getpid()));
 #endif
                 break;
-            case conversion::FORMATTER_THREADID:
-            case conversion::FORMATTER_RUNTIME:
+            case conversion::format_entry_type::FORMATTER_THREADID:
+            case conversion::format_entry_type::FORMATTER_RUNTIME:
                 append_text(formatted_entry, "<NOT IMPLEMENTED>");
                 break;
-            case conversion::FORMATTER_DATETIME:
+            case conversion::format_entry_type::FORMATTER_DATETIME:
             {
                 time_t t = time(NULL);
                 struct tm tmstruct;
@@ -218,12 +218,12 @@ namespace amethyst
             if (min_difference > 0)
             {
                 std::vector<char> foo(min_difference, ' ');
-                if (iter->justification == conversion::FORMAT_JUSTIFY_RIGHT)
+                if (iter->justification == conversion::format_justification::FORMAT_JUSTIFY_RIGHT)
                 {
                     // Insert items to the left...
                     formatted_entry.insert(formatted_entry.begin(), foo.begin(), foo.end());
                 }
-                else if (iter->justification == conversion::FORMAT_JUSTIFY_CENTER)
+                else if (iter->justification == conversion::format_justification::FORMAT_JUSTIFY_CENTER)
                 {
                     // Insert half on each side...
                     formatted_entry.insert(formatted_entry.begin(), foo.begin(), foo.begin() + min_difference / 2);
@@ -239,12 +239,12 @@ namespace amethyst
             if ((iter->field_width_maximum > 0) && (max_difference > 0))
             {
                 // erase anything that's too large.
-                if (iter->justification == conversion::FORMAT_JUSTIFY_RIGHT)
+                if (iter->justification == conversion::format_justification::FORMAT_JUSTIFY_RIGHT)
                 {
                     // Delete items from the left...
                     formatted_entry.erase(formatted_entry.begin(), formatted_entry.begin() + max_difference);
                 }
-                else if (iter->justification == conversion::FORMAT_JUSTIFY_CENTER)
+                else if (iter->justification == conversion::format_justification::FORMAT_JUSTIFY_CENTER)
                 {
                     // Delete half on each side...
                     formatted_entry.erase(formatted_entry.begin() + formatted_entry.size() - max_difference / 2, formatted_entry.end());
@@ -318,7 +318,7 @@ namespace amethyst
         conversion::formatter_conversion_entry parse_percent_region(std::string::const_iterator& p, std::string::const_iterator end)
         {
             conversion::formatter_conversion_entry retval;
-            retval.justification = conversion::FORMAT_JUSTIFY_RIGHT;
+            retval.justification = conversion::format_justification::FORMAT_JUSTIFY_RIGHT;
             retval.field_width_minimum = 0;
             retval.field_width_maximum = 0;
             ++p;
@@ -327,17 +327,17 @@ namespace amethyst
             {
                 if (*p == '-')
                 {
-                    retval.justification = conversion::FORMAT_JUSTIFY_LEFT;
+                    retval.justification = conversion::format_justification::FORMAT_JUSTIFY_LEFT;
                     ++p;
                 }
                 else if (*p == '+')
                 {
-                    retval.justification = conversion::FORMAT_JUSTIFY_RIGHT;
+                    retval.justification = conversion::format_justification::FORMAT_JUSTIFY_RIGHT;
                     ++p;
                 }
                 else if (*p == '/')
                 {
-                    retval.justification = conversion::FORMAT_JUSTIFY_CENTER;
+                    retval.justification = conversion::format_justification::FORMAT_JUSTIFY_CENTER;
                     ++p;
                 }
                 for (; (p != end) && isdigit(*p); ++p)
@@ -359,19 +359,19 @@ namespace amethyst
                 switch (*p)
                 {
                 case 'm':
-                    retval.type = conversion::FORMATTER_MESSAGE;
+                    retval.type = conversion::format_entry_type::FORMATTER_MESSAGE;
                     break;
                 case 'F':
-                    retval.type = conversion::FORMATTER_FILENAME;
+                    retval.type = conversion::format_entry_type::FORMATTER_FILENAME;
                     break;
                 case 'L':
-                    retval.type = conversion::FORMATTER_FILELINE;
+                    retval.type = conversion::format_entry_type::FORMATTER_FILELINE;
                     break;
                 case 'M':
-                    retval.type = conversion::FORMATTER_FUNCTION;
+                    retval.type = conversion::format_entry_type::FORMATTER_FUNCTION;
                     break;
                 case 't':
-                    retval.type = conversion::FORMATTER_THREADID;
+                    retval.type = conversion::format_entry_type::FORMATTER_THREADID;
                     break;
                 case 'd':
                 {
@@ -385,7 +385,7 @@ namespace amethyst
                         }
                         if (i != end)
                         {
-                            retval.type = conversion::FORMATTER_DATETIME;
+                            retval.type = conversion::format_entry_type::FORMATTER_DATETIME;
                             retval.data = buffer;
                             ++i;
                             p = i;
@@ -393,7 +393,7 @@ namespace amethyst
                         else
                         {
                             // It's actually an error, but for now, we'll just copy the string across as text.
-                            retval.type = conversion::FORMATTER_STRING;
+                            retval.type = conversion::format_entry_type::FORMATTER_STRING;
                             retval.data.clear();
                             retval.data.push_back('%');
                             retval.data.insert(retval.data.end(), p, end);
@@ -401,21 +401,21 @@ namespace amethyst
                     }
                     else
                     {
-                        retval.type = conversion::FORMATTER_DATETIME;
+                        retval.type = conversion::format_entry_type::FORMATTER_DATETIME;
                         retval.data.clear();
                     }
                 }
                 break;
                 case 'P':
-                    retval.type = conversion::FORMATTER_PID;
+                    retval.type = conversion::format_entry_type::FORMATTER_PID;
                     break;
                 case '%':
-                    retval.type = conversion::FORMATTER_STRING;
+                    retval.type = conversion::format_entry_type::FORMATTER_STRING;
                     retval.data = std::vector<char>(1, '%');
                     break;
                 default:
                     // format string ERROR.
-                    retval.type = conversion::FORMATTER_STRING;
+                    retval.type = conversion::format_entry_type::FORMATTER_STRING;
                     retval.data = std::vector<char>(1, '%');
                     retval.data.push_back(*p);
                     break;
@@ -494,7 +494,7 @@ namespace amethyst
         conversion::formatter_conversion_entry create_solid_entry(const std::vector<char>& vec)
         {
             conversion::formatter_conversion_entry last_solid_message;
-            last_solid_message.type = conversion::FORMATTER_STRING;
+            last_solid_message.type = conversion::format_entry_type::FORMATTER_STRING;
             last_solid_message.data = vec;
             last_solid_message.field_width_minimum = int(vec.size());
             last_solid_message.field_width_maximum = int(vec.size());
@@ -514,7 +514,7 @@ namespace amethyst
                 case '%':
                 {
                     conversion::formatter_conversion_entry entry = parse_percent_region(current, format_string.end());
-                    if (entry.type == conversion::FORMATTER_STRING)
+                    if (entry.type == conversion::format_entry_type::FORMATTER_STRING)
                     {
                         current_message.insert(current_message.end(), entry.data.begin(), entry.data.end());
                     }

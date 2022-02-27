@@ -49,7 +49,7 @@ namespace amethyst
         virtual void get_samples(size_t num_samples, sample_output_fn pf)
         {
             std::vector<sample_type> v = get_samples(num_samples);
-            for (auto s : v)
+            for (const auto& s : v)
             {
                 pf(s);
             }

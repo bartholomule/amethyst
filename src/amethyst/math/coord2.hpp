@@ -53,10 +53,13 @@ namespace amethyst
         /* Accessors */
         T& operator[](unsigned i) { return (i == X) ? m_x : m_y; }
         constexpr T operator[](unsigned i) const { return (i == X) ? m_x : m_y; }
-        T& x() { return m_x; }
-        T x() const { return m_x; }
-        T& y() { return m_y; }
-        T y() const { return m_y; }
+        constexpr T x() const { return m_x; }
+        constexpr T y() const { return m_y; }
+        inline void set_x(T x) { m_x = x; }
+        inline void set_y(T y) { m_y = y; }
+
+        void swap_x(coord2<T>& other) { std::swap(m_x, other.m_x); }
+        void swap_y(coord2<T>& other) { std::swap(m_y, other.m_y); }
 
         coord2& operator=(const coord2& old) = default;
         coord2& operator+=(const coord2& p2)

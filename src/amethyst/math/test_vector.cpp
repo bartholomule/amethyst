@@ -29,11 +29,11 @@ void test_coord_accessors()
     c1.set(2, 3, 4);
     TEST_XYZ_EQUALS(c1, 2, 3, 4);
 
-    c1.x() = -1;
+    c1.set_x(-1);
     TEST_XYZ_EQUALS(c1, -1, 3, 4);
-    c1.y() = -2;
+    c1.set_y(-2);
     TEST_XYZ_EQUALS(c1, -1, -2, 4);
-    c1.z() = -3;
+    c1.set_z(-3);
     TEST_XYZ_EQUALS(c1, -1, -2, -3);
 
     c1[0] = c1[1] = c1[2] = 99;

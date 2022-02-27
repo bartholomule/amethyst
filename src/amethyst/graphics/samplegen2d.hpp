@@ -161,8 +161,8 @@ namespace amethyst
                 {
                     // Question: What is slower, a FP mul + integer convert, or a integer
                     // mod?  Some places say that the FP mul gives better uniformity.
-                    int target = int(sample_generator_2d<T>::next_fp_rand() * i);
-                    std::swap(vec[i].x(), vec[target].x());
+                    size_t target = int(sample_generator_2d<T>::next_fp_rand() * i);
+                    vec[i].swap_x(vec[target]);
                 }
             }
             return vec;
@@ -230,8 +230,8 @@ namespace amethyst
         using parent::get_samples;
         std::vector<coord2<T>> get_samples(size_t num_samples) override
         {
-            int sqrt_samples = int(sqrt(num_samples));
-            int adjusted_samples = sqrt_samples * sqrt_samples;
+            size_t sqrt_samples = size_t(sqrt(num_samples));
+            size_t adjusted_samples = sqrt_samples * sqrt_samples;
             // Force it to be a perfect square.
             if (adjusted_samples != num_samples)
             {
@@ -244,10 +244,10 @@ namespace amethyst
             T subcell_width = T(1.0) / T(num_samples);
 
             // Initialize points to the "canonical" multi-jittered pattern
-            for (int y = 0; y < sqrt_samples; ++y)
+            for (size_t y = 0; y < sqrt_samples; ++y)
             {
-                int linear_y = y * sqrt_samples;
-                for (int x = 0; x < sqrt_samples; ++x)
+                size_t linear_y = y * sqrt_samples;
+                for (size_t x = 0; x < sqrt_samples; ++x)
                 {
                     coord2<T> p = sample_generator_2d<T>::next_rand();
                     vec[linear_y + x].set(subcell_width * (x + p.x() + linear_y),
@@ -257,25 +257,23 @@ namespace amethyst
 
             // Shuffle x coords within each column (x) and y coords within each row (y).
             // Note: This shares a loop, to avoid doubling the number of loops required.
-            for (int y = 0; y < sqrt_samples; ++y)
+            for (size_t y = 0; y < sqrt_samples; ++y)
             {
-                int linear_y = y * sqrt_samples;
-                for (int current = sqrt_samples - 1; current > 0; --current)
+                size_t linear_y = y * sqrt_samples;
+                for (size_t current = sqrt_samples - 1; current > 0; --current)
                 {
                     coord2<T> p = sample_generator_2d<T>::next_rand();
 
                     // Shuffle the y coordinates along the row.
-                    int target_x = int(p.x() * current);
-                    std::swap(vec[linear_y + current].y(),
-                        vec[linear_y + target_x].y());
+                    size_t target_x = size_t(p.x() * current);
+                    vec[linear_y + current].swap_y(vec[linear_y + target_x]);
 
                     // Shuffle the x coordinates along the column.
-                    int target_y = int(p.y() * current);
+                    size_t target_y = size_t(p.y() * current);
                     // This is just here to make the swap code look like it came from a
                     // proper loop (in x) -- improves readability.
-                    int x = y;
-                    std::swap(vec[current * sqrt_samples + x].x(),
-                        vec[target_y * sqrt_samples + x].x());
+                    size_t x = y;
+                    vec[current * sqrt_samples + x].swap_x(vec[target_y * sqrt_samples + x]);
                 }
             }
             return vec;

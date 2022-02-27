@@ -21,36 +21,39 @@ namespace amethyst
         alpha_vertex_2d<T> v3;
     };
 
-    enum alpha_vertex_fields
+    enum class alpha_index_2d
     {
-        E_VERTEX2_X = 0, E_VERTEX2_Y,
-        E_VERTEX2_R, E_VERTEX2_G, E_VERTEX2_B,
-        E_VERTEX2_A,
+        X, Y,
+        R, G, B,
+        A,
     };
 
+
     template <class T>
-    void compare_and_swap(alpha_vertex_2d<T>& p1, alpha_vertex_2d<T>& p2, alpha_vertex_fields field)
+    bool compare(alpha_vertex_2d<T>& p1, alpha_vertex_2d<T>& p2, alpha_index_2d field)
     {
-        bool less = false;
         switch (field)
         {
-        case E_VERTEX2_X:
-            less = p2.xy.x() < p1.xy.x();
-            break;
-        case E_VERTEX2_Y:
-            less = p2.xy.y() < p1.xy.y();
-            break;
-        case E_VERTEX2_R:
-        case E_VERTEX2_G:
-        case E_VERTEX2_B:
-            less = p2.xy[field - E_VERTEX2_R] < p1.xy[field - E_VERTEX2_R];
-            break;
-        case E_VERTEX2_A:
-            less = p2.a < p1.a;
-            break;
+        case alpha_index_2d::X:
+            return p2.xy.x() < p1.xy.x();
+        case alpha_index_2d::Y:
+            return p2.xy.y() < p1.xy.y();
+        case alpha_index_2d::R:
+            return p2.rgb.r() < p1.rgb.r();
+        case alpha_index_2d::G:
+            return p2.rgb.g() < p1.rgb.g();
+        case alpha_index_2d::B:
+            return p2.rgb.b() < p1.rgb.b();
+        case alpha_index_2d::A:
+            return p2.a < p1.a;
         }
+        return false;
+    }
 
-        if (less)
+    template <class T>
+    void compare_and_swap(alpha_vertex_2d<T>& p1, alpha_vertex_2d<T>& p2, alpha_index_2d field)
+    {
+        if (compare(p1, p2, field))
         {
             std::swap(p2, p1);
         }
@@ -180,9 +183,9 @@ namespace amethyst
     {
 
         // Do a sort of the 3 points by y coord.  This is done with 3 compare/swap operations.
-        compare_and_swap(p1, p2, E_VERTEX2_Y);
-        compare_and_swap(p2, p3, E_VERTEX2_Y);
-        compare_and_swap(p1, p2, E_VERTEX2_Y);
+        compare_and_swap(p1, p2, alpha_index_2d::Y);
+        compare_and_swap(p2, p3, alpha_index_2d::Y);
+        compare_and_swap(p1, p2, alpha_index_2d::Y);
 
         // This needs to be fixed to avoid the problem when ((p2.y - p1.y) < 1).
         // Note that I didn't say "or (p3.x - p1.x) < 1", since that would be a
@@ -194,14 +197,14 @@ namespace amethyst
         if (fabs(p2.xy.y() - p1.xy.y()) < 1)
         {
             swap_x_and_y = true;
-            std::swap(p1.xy.x(), p1.xy.y());
-            std::swap(p2.xy.x(), p2.xy.y());
-            std::swap(p3.xy.x(), p3.xy.y());
+            std::swap(p1.xy[0], p1.xy[1]);
+            std::swap(p2.xy[0], p2.xy[1]);
+            std::swap(p3.xy[0], p3.xy[1]);
 
-            // Resort them.
-            compare_and_swap(p1, p2, E_VERTEX2_Y);
-            compare_and_swap(p2, p3, E_VERTEX2_Y);
-            compare_and_swap(p1, p2, E_VERTEX2_Y);
+            // Re-sort them.
+            compare_and_swap(p1, p2, alpha_index_2d::Y);
+            compare_and_swap(p2, p3, alpha_index_2d::Y);
+            compare_and_swap(p1, p2, alpha_index_2d::Y);
         }
 
         coord2<T> dp1 = p2.xy - p1.xy;

@@ -48,12 +48,12 @@ namespace amethyst
         rgbcolor& operator= (const rgbcolor& old) = default;
 
         // Set the r, g, and b components
-        inline void set_r(T r) { parent::x() = r; }
-        inline void set_g(T g) { parent::y() = g; }
-        inline void set_b(T b) { parent::z() = b; }
-        constexpr inline T r() const { return parent::x(); }
-        constexpr inline T g() const { return parent::y(); }
-        constexpr inline T b() const { return parent::z(); }
+        inline void set_r(T r) { parent::m_x = r; }
+        inline void set_g(T g) { parent::m_y = g; }
+        inline void set_b(T b) { parent::m_z = b; }
+        constexpr inline T r() const { return parent::m_x; }
+        constexpr inline T g() const { return parent::m_y; }
+        constexpr inline T b() const { return parent::m_z; }
 
         /** Get the element specified.  No bounds checking is performed */
         inline T& operator[](unsigned index) { return parent::operator[](index); }

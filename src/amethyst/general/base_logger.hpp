@@ -36,6 +36,19 @@ namespace amethyst
     class logger;
     typedef std::shared_ptr<logger> logger_ref;
 
+
+    enum class log_levels
+    {
+        LOG_LEVEL_NONE,
+        LOG_LEVEL_FATAL_ERROR,
+        LOG_LEVEL_ERROR,
+        LOG_LEVEL_WARNING,
+        LOG_LEVEL_INFO,
+        LOG_LEVEL_DEBUG,
+        LOG_LEVEL_EXCESSIVE_DEBUG,
+        LOG_LEVEL_EVERYTHING
+    };
+
     /**
      *
      * The base logger.
@@ -46,21 +59,8 @@ namespace amethyst
      */
     class logger
     {
-    public:
-        enum log_levels
-        {
-            LOG_LEVEL_NONE,
-            LOG_LEVEL_FATAL_ERROR,
-            LOG_LEVEL_ERROR,
-            LOG_LEVEL_WARNING,
-            LOG_LEVEL_INFO,
-            LOG_LEVEL_DEBUG,
-            LOG_LEVEL_EXCESSIVE_DEBUG,
-            LOG_LEVEL_EVERYTHING
-        };
-
     private:
-        log_levels my_level;
+        log_levels my_level = log_levels::LOG_LEVEL_ERROR;
     protected:
         std::shared_ptr<log_formatter> formatter;
         output_stream_ref output_stream;

@@ -550,6 +550,8 @@ namespace amethyst
             fun = &cubic_interpolate<T, IT>;
             fn_name = "cubic";
             break;
+        default:
+            throw std::runtime_error("New interpolation added but not handled");
         }
 
         return user_interpolation<T, IT, fn_ptr>(fun, fn_name);

@@ -65,12 +65,12 @@ struct vert_index_triplet
 struct file_data
 {
     std::string header;
-    int width;
-    int height;
-    number_type gamma;
-    int samples_per_pixel;
-    size_t num_verts;
-    size_t num_triangles;
+    int width = 0;
+    int height = 0;
+    number_type gamma = 1.0;
+    int samples_per_pixel = 0;
+    size_t num_verts = 0;
+    size_t num_triangles = 0;
     std::vector<point_entry> vertices;
     std::vector<vert_index_triplet> triangles;
 };
@@ -285,7 +285,7 @@ void rasterize_triangle(const point_entry& p1, const point_entry& p2, const poin
             total_sample_count += samples_inside;
             if (samples_inside > 0)
             {
-                number_type epsilon = std::numeric_limits<number_type>::epsilon();
+                constexpr number_type epsilon = std::numeric_limits<number_type>::epsilon();
                 number_type scale = (1 / number_type(samples_inside));
                 z = z * scale;
                 int inverted_y = int(image.get_height()) - 1 - y;

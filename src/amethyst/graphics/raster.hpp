@@ -29,9 +29,9 @@ namespace amethyst
         raster(size_t width, size_t height);
         virtual ~raster();
         raster(const raster& old);
-        raster(raster&& old);
+        raster(raster&& old) noexcept;
         raster& operator=(const raster& old);
-        raster& operator=(raster&& old);
+        raster& operator=(raster&& old) noexcept;
 
         /**
          * Get the element at the given (x,y)
@@ -309,7 +309,7 @@ namespace amethyst
     }
 
     template <class T>
-    raster<T>::raster(raster<T>&& old)
+    raster<T>::raster(raster<T>&& old) noexcept
         : width(old.width), height(old.height), raster_data(old.raster_data)
     {
         old.width = 0;
@@ -347,7 +347,7 @@ namespace amethyst
     }
 
     template <class T>
-    raster<T>& raster<T>::operator=(raster<T>&& old)
+    raster<T>& raster<T>::operator=(raster<T>&& old) noexcept
     {
         width = old.width;
         height = old.height;

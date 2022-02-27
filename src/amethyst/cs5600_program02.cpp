@@ -76,7 +76,7 @@ typedef double number_type;
 typedef rgbcolor<number_type> color;
 typedef sample_generator_2d<number_type> generator;
 
-number_type f(number_type x, number_type y, number_type kx, number_type ky, int nx, int ny)
+number_type f(number_type x, number_type y, number_type kx, number_type ky, size_t nx, size_t ny)
 {
     return 0.25 *
            (x / nx) *
@@ -87,14 +87,14 @@ number_type f(number_type x, number_type y, number_type kx, number_type ky, int 
 }
 
 void generate_image(const std::string& filename,
-                    int width, int height, int samples_per_pixel,
+                    size_t width, size_t height, size_t samples_per_pixel,
                     number_type kx, number_type ky, number_type gamma,
                     std::shared_ptr<generator> sampler)
 {
     image<number_type> image(width, height);
-    for (int y = 0; y < height; ++y)
+    for (size_t y = 0; y < height; ++y)
     {
-        for (int x = 0; x < width; ++x)
+        for (size_t x = 0; x < width; ++x)
         {
             std::vector<coord2<number_type>> samples =
                 sampler->get_samples(samples_per_pixel);

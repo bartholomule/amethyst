@@ -72,7 +72,7 @@ namespace amethyst
     rgbcolor<float>
     convert_color<float, unsigned char>(const rgbcolor<unsigned char>& color)
     {
-        const float conversion_factor = 1.0f / float(std::numeric_limits<uint8_t>::max());
+        constexpr float conversion_factor = 1.0f / float(std::numeric_limits<uint8_t>::max());
 
         // Just perform the conversion (no clipping).
         return rgbcolor<float>(color.r() * conversion_factor,

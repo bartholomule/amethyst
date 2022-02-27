@@ -44,7 +44,9 @@ namespace amethyst
         using parent::x;
         using parent::y;
         using parent::z;
-
+        using parent::set_x;
+        using parent::set_y;
+        using parent::set_z;
 
         inline vector3& operator+=(const vector3& p2) { parent::operator+=(p2); return *this; }
         inline vector3& operator-=(const vector3& p2) { parent::operator-=(p2); return *this; }

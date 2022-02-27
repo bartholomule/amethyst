@@ -30,9 +30,9 @@ Color color(const unit_line3<double>& l)
 
 int main(int argc, const char** argv)
 {
-    const int nx = 400;
-    const int ny = 200;
-    const int spp = 16;
+    const size_t nx = 400;
+    const size_t ny = 200;
+    const size_t spp = 16;
 
     const Point lower_left_corner(-2, -1, -1);
     const Vec horizontal(4, 0, 0);

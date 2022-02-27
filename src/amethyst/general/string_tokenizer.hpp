@@ -7,12 +7,12 @@ namespace amethyst
 {
     namespace tokenizer
     {
-        enum delimiter_action_types
+        enum class delimiter_action_types
         {
             IGNORE_DELIMITERS,
             RETURN_DELIMITERS
         };
-        enum token_action_flags
+        enum class token_action_flags
         {
             IGNORE_EMPTY_TOKENS,
             RETURN_EMPTY_TOKENS
@@ -27,6 +27,6 @@ namespace amethyst
     std::vector<std::string> tokenize(
         const std::string& s,
         const char* delims = "\n\r\t ",
-        tokenizer::delimiter_action_types keep_delims = tokenizer::IGNORE_DELIMITERS,
-        tokenizer::token_action_flags keep_tokens = tokenizer::IGNORE_EMPTY_TOKENS);
+        tokenizer::delimiter_action_types keep_delims = tokenizer::delimiter_action_types::IGNORE_DELIMITERS,
+        tokenizer::token_action_flags keep_tokens = tokenizer::token_action_flags::IGNORE_EMPTY_TOKENS);
 }

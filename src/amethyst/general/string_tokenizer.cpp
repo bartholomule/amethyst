@@ -43,7 +43,7 @@ namespace amethyst
                     else
                     {
                         // Multiple delimiters in a row...
-                        if (keep_empty_tokens == tokenizer::RETURN_EMPTY_TOKENS)
+                        if (keep_empty_tokens == tokenizer::token_action_flags::RETURN_EMPTY_TOKENS)
                         {
                             // We can only call it an empty token if it is between
                             // tokens, not at the beginning of the string.
@@ -53,7 +53,7 @@ namespace amethyst
                             }
                         }
                     }
-                    if (keep_delims == tokenizer::RETURN_DELIMITERS)
+                    if (keep_delims == tokenizer::delimiter_action_types::RETURN_DELIMITERS)
                     {
                         results.push_back(std::string(token, 1));
                     }

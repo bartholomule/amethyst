@@ -87,12 +87,12 @@ struct vert_index_triplet
 struct file_data
 {
     std::string header;
-    int width;
-    int height;
-    number_type gamma;
-    int samples_per_pixel;
-    size_t num_verts;
-    size_t num_triangles;
+    int width = 0;
+    int height = 0;
+    number_type gamma = 1.0;
+    int samples_per_pixel = 0;
+    size_t num_verts = 0;
+    size_t num_triangles = 0;
     std::vector<point_entry> vertices;
     std::vector<vert_index_triplet> triangles;
 };
@@ -161,10 +161,7 @@ void rasterize_triangle(const point_entry& p1, const point_entry& p2, const poin
 
     // Stick the vertices in a array to simplify the searching, slope
     // calculation, etc.
-    coord2<number_type> verts[3];
-    verts[0].set(p1.location.x(), p1.location.y());
-    verts[1].set(p2.location.x(), p2.location.y());
-    verts[2].set(p3.location.x(), p3.location.y());
+    coord2<number_type> verts[3] = { {p1.location.x(), p1.location.y() }, {p2.location.x(), p2.location.y()}, {p3.location.x(), p3.location.y()} };
 
     // Precalculate the vectors defining the two sides of the triangle that
     // include the first point (common corner).

@@ -53,7 +53,7 @@ namespace amethyst
         const value_type& peek_at_value() const { return value; }
 
     private:
-        value_type value;
+        value_type value = value_type{};
         test_type test_value = test_type(0);
         condition_test test;
     };

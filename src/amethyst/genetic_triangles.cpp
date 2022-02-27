@@ -23,20 +23,20 @@ using alpha_triangle = alpha_triangle_2d<number_type>;
 
 struct globals
 {
-    number_type birth_rate;
-    number_type death_rate;
-    number_type mutation_rate;
-    size_t images_per_generation;
+    number_type birth_rate = 0.1;
+    number_type death_rate = 0.1;
+    number_type mutation_rate = 0.1;
+    size_t images_per_generation = 1;
     std::string population_filename;
-    size_t min_triangles;
-    size_t max_triangles;
-    size_t generation_for_max;
-    size_t crossover_points;
-    size_t num_offspring;
-    size_t min_population_size;
-    size_t max_population_size;
-    size_t width;
-    size_t height;
+    size_t min_triangles = 1;
+    size_t max_triangles = 300;
+    size_t generation_for_max = 10000;
+    size_t crossover_points = 30;
+    size_t num_offspring = 3;
+    size_t min_population_size = 200;
+    size_t max_population_size = 300;
+    size_t width = 0;
+    size_t height = 0;
     std::shared_ptr<image_io<number_type>> io;
 } GLOBALS;
 
@@ -356,8 +356,8 @@ void generate_random_population(size_t width, size_t height, amethyst::random<nu
 
 struct pleb_data
 {
-    size_t pleb_index;
-    number_type error;
+    size_t pleb_index = 0;
+    number_type error = 0;
     amethyst::image<number_type> image;
 };
 

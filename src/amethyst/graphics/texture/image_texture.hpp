@@ -63,11 +63,11 @@ namespace amethyst
 
             if (clipped.x() < 0)
             {
-                clipped.x() += T(1);
+                clipped[0] += T(1);
             }
             if (clipped.y() < 0)
             {
-                clipped.y() += T(1);
+                clipped[0] += T(1);
             }
 
             // Now clipped is in [0,1]^2

@@ -156,12 +156,12 @@ int main(int, char**)
     int* bar_rp = reinterpret_cast<int*>(bar);
 
     TEST_RESULT_NAMED("to see if reinterpretation works as required",
-                      ((bar_rp[0] = 10) && (bar_rp[1] = 11) &&
-                       (bar_rp[2] = 12) && (bar_rp[3] = 13) &&
-                       (bar_rp[4] = 14) && (bar_rp[5] = 15) &&
-                       (bar_rp[6] = 16) && (bar_rp[7] = 17) &&
-                       (bar_rp[8] = 18) && (bar_rp[9] = 19) &&
-                       (bar_rp[10] = 20) && (bar_rp[11] = 21)),
+                      ((bar_rp[0] == 10) && (bar_rp[1] == 11) &&
+                       (bar_rp[2] == 12) && (bar_rp[3] == 13) &&
+                       (bar_rp[4] == 14) && (bar_rp[5] == 15) &&
+                       (bar_rp[6] == 16) && (bar_rp[7] == 17) &&
+                       (bar_rp[8] == 18) && (bar_rp[9] == 19) &&
+                       (bar_rp[10] == 20) && (bar_rp[11] == 21)),
                       passed,
                       ERROR_TEXT(failed));
 

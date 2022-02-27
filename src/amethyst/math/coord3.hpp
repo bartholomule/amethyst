@@ -59,12 +59,12 @@ namespace amethyst
         T& operator[](unsigned i) { return (i == X) ? m_x : ((i == Y) ? m_y : m_z); }
         constexpr T operator[](unsigned i) const { return (i == X) ? m_x : ((i == Y) ? m_y : m_z); }
 
-        T& x() { return m_x; }
         constexpr T x() const { return m_x; }
-        T& y() { return m_y; }
         constexpr T y() const { return m_y; }
-        T& z() { return m_z; }
         constexpr T z() const { return m_z; }
+        inline void set_x(T x) { m_x = x; }
+        inline void set_y(T y) { m_y = y; }
+        inline void set_z(T z) { m_z = z; }
 
         coord3& operator= (const coord3& old_coord) = default;
         coord3& operator+=(const coord3& p2);
@@ -82,7 +82,7 @@ namespace amethyst
             return T(std::sqrt(double((x() * x()) + (y() * y()) + (z() * z()))));
         }
 
-    private:
+    protected:
         T m_x;
         T m_y;
         T m_z;
