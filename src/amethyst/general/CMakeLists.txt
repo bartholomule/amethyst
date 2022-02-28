@@ -6,6 +6,8 @@ add_library(amethyst_general
 	string_tokenizer.cpp
 	stream_reference.cpp
 	string_dumpable.cpp
+	file_descriptor.cpp
+	auto_descriptor.cpp
 )
 
 unit_test(test_tokenizer LIBS amethyst_general)

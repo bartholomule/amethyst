@@ -82,6 +82,8 @@
 #if defined(WINDOWS)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+using ssize_t = size_t;
 #endif
 
 #if defined(LINUX)
