@@ -89,9 +89,30 @@ void test_coord_math()
     TEST_XYZ_CLOSE(2 * Y, 0, 2, 0);
     TEST_XYZ_CLOSE(2 * Z, 0, 0, 2);
 
-    TEST_XYZ_CLOSE(X / 4, 0.25, 0, 0);
-    TEST_XYZ_CLOSE(Y / 4, 0, 0.25, 0);
-    TEST_XYZ_CLOSE(Z / 4, 0, 0, 0.25);
+    if constexpr (std::is_same<T, double>::value || std::is_same<T, float>::value)
+    {
+        TEST_XYZ_CLOSE(X / 4, 0.25, 0, 0);
+        TEST_XYZ_CLOSE(Y / 4, 0, 0.25, 0);
+        TEST_XYZ_CLOSE(Z / 4, 0, 0, 0.25);
+    }
+    else
+    {
+        TEST_XYZ_CLOSE(2 * X / 2, 1, 0, 0);
+        TEST_XYZ_CLOSE(2 * Y / 2, 0, 1, 0);
+        TEST_XYZ_CLOSE(2 * Z / 2, 0, 0, 1);
+    }
+
+    auto x1 = 31 * X;
+    x1 /= (typename T::base)(31);
+    TEST_XYZ_CLOSE(x1, 1, 0, 0);
+
+    auto y1 = 43 * Y;
+    y1 /= (typename T::base)(43);
+    TEST_XYZ_CLOSE(y1, 0, 1, 0);
+
+    auto z1 = 57 * Z;
+    z1 /= (typename T::base)(57);
+    TEST_XYZ_CLOSE(z1, 0, 0, 1);
 
     TEST_XYZ_CLOSE(2 * X + 4 * Y + 15 * Z, 2, 4, 15);
 }
@@ -100,6 +121,7 @@ AUTO_UNIT_TEST(coord_math)
 {
     test_coord_math<coord3<double>>();
     test_coord_math<vector3<double>>();
+    test_coord_math<vector3<int>>();
 }
 
 template <typename T>
@@ -144,6 +166,18 @@ AUTO_UNIT_TEST(abs_index)
     TEST_COMPARE_EQUAL(min_abs_index(c(1, 1, 0)), 2);
     TEST_COMPARE_EQUAL(min_abs_index(c(1, 1, -1)), 0);
     TEST_COMPARE_EQUAL(min_abs_index(c(0, 1, -1)), 0);
+}
+
+AUTO_UNIT_TEST(test_unit_vector)
+{
+    using vec = vector3<double>;
+
+    TEST_XYZ_CLOSE(unit(vec(1, 0, 0)), 1, 0, 0);
+    TEST_XYZ_CLOSE(unit(vec(0, 1, 0)), 0, 1, 0);
+    TEST_XYZ_CLOSE(unit(vec(0, 0, 1)), 0, 0, 1);
+    TEST_XYZ_CLOSE(unit(vec(1, 1, 0)), 0.707106781187, 0.707106781187, 0);
+    TEST_XYZ_CLOSE(unit(vec(1, 0, 1)), 0.707106781187, 0, 0.707106781187);
+    TEST_XYZ_CLOSE(unit(vec(0, 1, 1)), 0, 0.707106781187, 0.707106781187);
 }
 
 AUTO_UNIT_TEST(test_perp_vector)

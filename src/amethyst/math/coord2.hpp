@@ -90,14 +90,25 @@ namespace amethyst
         template <class U>
         coord2& operator/=(U factor)
         {
-            m_x = T(m_x / factor);
-            m_y = T(m_y / factor);
+            if constexpr (
+                std::is_same<T, double>::value || std::is_same<T, float>::value
+                || std::is_same<U, double>::value || std::is_same<U, float>::value)
+            {
+                auto v = T(1) / factor;
+                m_x = T(m_x * v);
+                m_y = T(m_y * v);
+            }
+            else
+            {
+                m_x = T(m_x / factor);
+                m_y = T(m_y / factor);
+            }
             return *this;
         }
         /* Functions that more relate to vectors, but are needed */
         inline T length() const
         {
-            return T(sqrt(double(x() * x() + y() * y())));
+            return T(sqrt(x() * x() + y() * y()));
         }
     };
 
@@ -125,7 +136,17 @@ namespace amethyst
     template <class T, typename U>
     inline constexpr coord2<T> operator/(coord2<T> p1, U d)
     {
-        return { p1.x() / d, p1.y() / d };
+        if constexpr (
+            std::is_same<T, double>::value || std::is_same<T, float>::value
+            || std::is_same<U, double>::value || std::is_same<U, float>::value)
+        {
+            auto v = T(1) / d;
+            return { v * p1.x(), v * p1.y() };
+        }
+        else
+        {
+            return { p1.x() / d, p1.y() / d };
+        }
     }
 
     template <class T>

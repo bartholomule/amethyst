@@ -219,8 +219,7 @@ namespace amethyst
     vector_type rotated_from(const vector_type& v, T angle)
     {
         auto p = perp_vector(v);
-        auto v2 = quaternion<typename vector_type::base>::rotate(v, angle, p);
-        return { v2.x(), v2.y(), v2.z() };
+        return quaternion<typename vector_type::base>::rotate(v, angle, p);
     }
 
     template <typename vector_type, typename T>

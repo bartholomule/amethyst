@@ -196,8 +196,17 @@ namespace amethyst
         }
         inline quaternion& operator/= (T scalar)
         {
-            real /= scalar;
-            imag /= scalar;
+            if constexpr (std::is_same<T, double>::value || std::is_same<T, float>::value)
+            {
+                auto v = T(1) / scalar;
+                real *= v;
+                imag *= v;
+            }
+            else
+            {
+                real /= scalar;
+                imag /= scalar;
+            }
             return *this;
         }
 
@@ -266,7 +275,7 @@ namespace amethyst
         template <typename CoordType1, typename CoordType2>
         static inline CoordType1 rotate(const CoordType1& c, T angle, const CoordType2& line)
         {
-            quaternion temp = makeUnitQuaternion(angle, coord_type{ line.x(), line.y(), line.z() });
+            quaternion temp = makeUnitQuaternion(angle, line);
             return rotate(c, temp);
         }
 
@@ -339,7 +348,7 @@ namespace amethyst
 
         assert(norm > T(0));
 
-        return quaternion<T>(real, sin(angle / 2) * line / norm);
+        return quaternion<T>(real, (sin(angle / 2) / norm) * line);
     }
 
     // Make a quaternion to represent the rotation about the given vector (line),

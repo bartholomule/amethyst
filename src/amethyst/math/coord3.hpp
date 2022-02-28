@@ -77,9 +77,9 @@ namespace amethyst
         template <class U>
         coord3& operator/=(U factor);
 
-        inline T length() const
+        inline constexpr T length() const
         {
-            return T(std::sqrt(double((x() * x()) + (y() * y()) + (z() * z()))));
+            return T(std::sqrt(x() * x() + y() * y() + z() * z()));
         }
 
     protected:
@@ -128,10 +128,22 @@ namespace amethyst
     template <typename T>
     inline coord3<T>& coord3<T>::operator/=(T factor)
     {
-        m_x /= factor;
-        m_y /= factor;
-        m_z /= factor;
-        return *this;
+        if constexpr (std::is_same<T, double>::value || std::is_same<T, float>::value)
+        {
+            // Replace the 3 separate FP divides with a single one.
+            auto v = T(1) / factor;
+            m_x *= v;
+            m_y *= v;
+            m_z *= v;
+            return *this;
+        }
+        else
+        {
+            m_x /= factor;
+            m_y /= factor;
+            m_z /= factor;
+            return *this;
+        }
     }
 
     template <typename T>
@@ -148,9 +160,23 @@ namespace amethyst
     template <class U>
     inline coord3<T>& coord3<T>::operator/=(U factor)
     {
-        m_x = T(m_x / factor);
-        m_y = T(m_y / factor);
-        m_z = T(m_z / factor);
+        if constexpr (
+            std::is_same<T, double>::value || std::is_same<T, float>::value
+            || std::is_same<U, double>::value || std::is_same<U, float>::value)
+        {
+            auto v = T(1) / factor;
+
+            m_x = T(m_x * v);
+            m_y = T(m_y * v);
+            m_z = T(m_z * v);
+        }
+        else
+        {
+            m_x = T(m_x / factor);
+            m_y = T(m_y / factor);
+            m_z = T(m_z / factor);
+        }
+
         return *this;
     }
 
@@ -190,7 +216,17 @@ namespace amethyst
     template <typename T, class U>
     inline constexpr coord3<T> operator/(const coord3<T>& p1, U factor)
     {
-        return { p1.x() / factor, p1.y() / factor, p1.z() / factor };
+        if constexpr (
+            std::is_same<T, double>::value || std::is_same<T, float>::value
+            || std::is_same<U, double>::value || std::is_same<U, float>::value)
+        {
+            auto v = T(1) / factor;
+            return { v * p1.x(), v * p1.y(), v * p1.z() };
+        }
+        else
+        {
+            return { p1.x() / factor, p1.y() / factor, p1.z() / factor };
+        }
     }
 
     // Unary minus

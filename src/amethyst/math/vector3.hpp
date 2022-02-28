@@ -53,7 +53,7 @@ namespace amethyst
         template <typename U>
         inline vector3& operator*=(U factor) { parent::operator*=(factor); return *this; }
         template <typename U>
-        inline vector3& operator/=(U factor) { parent::operator*=(factor); return *this; }
+        inline vector3& operator/=(U factor) { parent::operator/=(factor); return *this; }
 
     };
 
