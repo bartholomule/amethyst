@@ -79,7 +79,7 @@ namespace amethyst
 #define TEST_COMPARE_LESS(a, b) TEST_COMPARE_GENERIC(a, b, <, >=)
 #define TEST_COMPARE_LESS_EQ(a, b) TEST_COMPARE_GENERIC(a, b, <=, >)
 
-#define TEST_COMPARE_CLOSE(a, b, epsilon) \
+#define TEST_COMPARE_CLOSE_IMPL(a, b, epsilon, desc) \
     do { \
         ::amethyst::test::test_information local_info = TEST_INFORMATION("close_" + std::to_string(__LINE__)); \
         ::amethyst::test::current_test()->test_started(local_info); \
@@ -106,15 +106,26 @@ namespace amethyst
         } \
         else \
         { \
-            ::amethyst::test::current_test()->test_failed(local_info, ::amethyst::string_format(" test failed for " #a "~=" #b ": (%1 != %2)", amethyst::convert_to_string(aaaa,0,0,12), amethyst::convert_to_string(bbbb,0,0,12))); \
+            ::amethyst::test::current_test()->test_failed(local_info, ::amethyst::string_format(" test failed for %1: (%2 != %3)", desc, amethyst::convert_to_string(aaaa,0,0,12), amethyst::convert_to_string(bbbb,0,0,12))); \
         } \
     } while (0)
 
-#define TEST_CLOSE(a,b) TEST_COMPARE_CLOSE(a,b, (std::is_same<decltype((a)+(b)), float>::value ? AMETHYST_EPSILON_FLOAT : AMETHYST_EPSILON))
-#define TEST_XY_EQUALS(a, p, q) TEST_COMPARE_EQUAL((a).x(), p); TEST_COMPARE_EQUAL((a).y(), q);
-#define TEST_XY_CLOSE(a, p, q) TEST_CLOSE((a).x(), p); TEST_CLOSE((a).y(), q);
-#define TEST_XYZ_EQUALS(a, p, q, r) TEST_COMPARE_EQUAL((a).x(), p); TEST_COMPARE_EQUAL((a).y(), q); TEST_COMPARE_EQUAL((a).z(), r);
-#define TEST_XYZ_CLOSE(a, p, q, r) TEST_CLOSE((a).x(), p); TEST_CLOSE((a).y(), q); TEST_CLOSE((a).z(), r);
+#define TEST_COMPARE_CLOSE(a, b, epsilon) TEST_COMPARE_CLOSE_IMPL(a,b,epsilon, #a"~="#b )
+
+
+#define TEST_CLOSE_IMPL(a,b,desc) \
+TEST_COMPARE_CLOSE_IMPL(a, b, (std::is_same<decltype((a)+(b)), float>::value ? AMETHYST_EPSILON_FLOAT : AMETHYST_EPSILON), desc)
+#define TEST_CLOSE(a,b) TEST_CLOSE_IMPL(a, b, #a" ~= "#b)
+#define TEST_XY_EQUALS(a, p, q) do { auto aaaaaaa = (a); TEST_COMPARE_EQUAL(aaaaaaa.x(), p); TEST_COMPARE_EQUAL(aaaaaaa.y(), q); } while(0)
+#define TEST_XY_CLOSE(a, p, q) do { auto aaaaaaa = (a); TEST_CLOSE(aaaaaaa x(), p); TEST_CLOSE(aaaaaaa.y(), q); } while(0)
+#define TEST_XYZ_EQUALS(a, p, q, r) do { auto aaaaaaa = (a); TEST_COMPARE_EQUAL(aaaaaaa.x(), p); TEST_COMPARE_EQUAL(aaaaaaa.y(), q); TEST_COMPARE_EQUAL(aaaaaaa.z(), r); } while(0)
+#define TEST_XYZ_CLOSE(a, p, q, r) \
+    do { \
+        auto aaaa_xyz = (a); \
+        TEST_CLOSE_IMPL(aaaa_xyz.x(), p, #a".x ~= "#p ); \
+        TEST_CLOSE_IMPL(aaaa_xyz.y(), q, #a".y ~= "#q ); \
+        TEST_CLOSE_IMPL(aaaa_xyz.z(), r, #a".z ~= "#r ); \
+    } while(0)
 
 #define TEST_EXCEPTION_GENERIC_TRYBLOCK(tryblock, catchtype, catchblock, catchallblock) \
     do { \
